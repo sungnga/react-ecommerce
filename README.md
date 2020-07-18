@@ -1,12 +1,13 @@
 # STEPS TO BUILDING THIS ECOMMERCE APPLICATION
 
-1. Setup the project
+### NODE: PROJECT SETUP
+1. **Setup the project**
 - Initialize npm and create package.json file: `npm init -y`
 - Install: `npm i express dotenv nodemon`
 - In package.json file, write a script to run nodemon: `"start": "nodemon app.js"`
 - Create a .gitignore file and include `node_module` and `.env`
 
-2. Setup express server and configure port in app.js file
+2. **Setup express server and configure port in app.js file**
 ```javascript
 const express = require('express');
 const app = express();
@@ -23,7 +24,7 @@ app.listen(port, () => {
 });
 ```
 
-3. Setup database MongoDB Atlas
+3. **Setup database MongoDB Atlas**
 - https://www.mongodb.com/cloud/atlas
 - Create a new project on the mongoDB Atlas website
 - On the left sidebar, click on 'Network Access' and create an IP Whitelist address to be: 0.0.0.0/0
@@ -35,7 +36,7 @@ app.listen(port, () => {
 	PORT=8000
 	```
 
-4. Setup mongoose
+4. **Setup mongoose**
 - Install: `npm install mongoose`
 - Import mongoose in app.js file: `const mongoose = require('mongoose')`
 - Setup the db connection in app.js:
@@ -55,7 +56,7 @@ app.listen(port, () => {
 	Nga-MacBook-Air:~ nga$ /Users/Nga/mongodb/bin/mongod --dbpath=/Users/Nga/mongodb-data
 	```
 
-5. Create routes
+5. **Create routes**
 - Create a new folder called routes
 - Inside routes folder, create a file called user.js
 - In user.js file:
@@ -64,7 +65,7 @@ app.listen(port, () => {
 	- Don't forget to export the module
 - Import the user routes in app.js file and register routes as middleware: `app.use('/api', userRoutes)`
 
-6. Create controllers
+6. **Create controllers**
 - Controllers are methods to handle incoming routes
 - Create a new folder called controllers
 - Inside the folder, create a file called user.js
@@ -72,6 +73,18 @@ app.listen(port, () => {
 	- Write a function that sends back a response in json format
 	- Don't forget to export
 - Import the above module in routes/user.js file and call the function in router
+
+### NODE: USER SIGNUP AND SIGNIN
+1. **Create user model and define userSchema, virtual fields, and methods**
+- Create a new folder called models
+- Inside the folder, create a file called user.js
+- In user.js file, define the user schema:
+	- Require mongoose to create the User model and schema: `const mongoose = require('mongoose')`
+	- Require crypto to encrypt the password: `const crypto = require('crypto')`
+	- Require uuid to generate unique id: `const { v4: uuidv4 } = require('uuid')`
+	- Define the user schema
+	- Create userSchema virtual fields and methods that encrypts the password with uuid
+	- Export the module: `module.exports = mongoose.model('User', userSchema)`
 
 
 
@@ -82,3 +95,6 @@ app.listen(port, () => {
 - express
 - dotenv
 - nodemon
+- mongoose
+- crypto
+- uuid

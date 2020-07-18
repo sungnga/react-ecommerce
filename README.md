@@ -1,11 +1,12 @@
 # STEPS TO BUILDING THIS ECOMMERCE APPLICATION
 
 1. Setup the project
+- Initialize npm and create package.json file: `npm init -y`
 - Install: `npm i express dotenv nodemon`
 - In package.json file, write a script to run nodemon: `"start": "nodemon app.js"`
 - Create a .gitignore file and include `node_module` and `.env`
 
-2. Setup express server and configure port
+2. Setup express server and configure port in app.js file
 ```javascript
 const express = require('express');
 const app = express();
@@ -28,7 +29,7 @@ app.listen(port, () => {
 - On the left sidebar, click on 'Network Access' and create an IP Whitelist address to be: 0.0.0.0/0
 - On the left sidebar, click on 'Database Access'. Add database user and remember the password
 - On the left sidebar, click on 'Clusters' and click the 'CONNECT' button. Select the second item on the list 'Connect your application'. Copy this string
-- In .env file:
+- In .env file: type out the entire IP address instead of using localhost
 	```javascript
 	DATABASE=mongodb://127.0.0.1:27017/ecommerce
 	PORT=8000
@@ -48,7 +49,7 @@ app.listen(port, () => {
 		})
 		.then(() => console.log('DB Connected'));
 	``` 
-- Connect to mongoDB through the terminal: NOTE ON THE IP ADDRESS AND THE PORT NUMBER
+- Connect to mongoDB using the terminal: NOTE ON THE IP ADDRESS AND THE PORT NUMBER
 	```
 	Nga-MacBook-Air:react-ecommerce nga$ cd
 	Nga-MacBook-Air:~ nga$ /Users/Nga/mongodb/bin/mongod --dbpath=/Users/Nga/mongodb-data
@@ -61,7 +62,16 @@ app.listen(port, () => {
 	- Import express in order to use router
 	- Create the router: `router.get('/', (req, res) => {res.send('hello from node')})`
 	- Don't forget to export the module
-- Import the user routes in app.js file and use it: `app.use('/api', userRoutes)`
+- Import the user routes in app.js file and register routes as middleware: `app.use('/api', userRoutes)`
+
+6. Create controllers
+- Controllers are methods to handle incoming routes
+- Create a new folder called controllers
+- Inside the folder, create a file called user.js
+- In user.js file:
+	- Write a function that sends back a response in json format
+	- Don't forget to export
+- Import the above module in routes/user.js file and call the function in router
 
 
 

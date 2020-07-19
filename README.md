@@ -86,6 +86,16 @@ app.listen(port, () => {
 	- Create userSchema virtual fields and methods that encrypts the password with uuid
 	- Export the module: `module.exports = mongoose.model('User', userSchema)`
 
+2. **User signup**
+- Install: `npm i body-parser cookie-parser morgan`
+- Require all three middlewares in app.js file and use them
+- In controllers/user.js file:
+	- Require in User from models/user.js
+	- Create a signup method to sign up a new user
+		- Save the new user or error in json format
+- In routes/user.js file:
+	- Require in the signup method from constrollers/user.js
+	- Call a post() method that takes in takes '/signup' route as the 1st arg and the signup method as 2nd arg
 
 
 
@@ -98,3 +108,6 @@ app.listen(port, () => {
 - mongoose
 - crypto
 - uuid
+- body-parser
+- cookie-parser
+- morgan

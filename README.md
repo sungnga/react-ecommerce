@@ -97,6 +97,21 @@ app.listen(port, () => {
 	- Require in the signup method from constrollers/user.js
 	- Call a post() method that takes in takes '/signup' route as the 1st arg and the signup method as 2nd arg
 
+3. **Use Postman to signup user**
+- Select a POST request from the dropdown menu
+- Provide the url: `http://localhost:8000/api/signup`
+- Select 'Body' and 'raw' and 'JSON' from the pulldown menu
+- Then enter name, email, and password in json format. Should get a success or failed code status
+
+4. **Write a friendly error message**
+- Create a folder called helpers
+- Inside helpers, create a file called dbErrorHandler.js
+- Write an errorHandler method that takes in the error response code to create a unique message
+- Require in the errorHanderler method in controllers/user.js file
+	- Call the method in the error handling code block
+
+
+
 
 
 

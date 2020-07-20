@@ -163,6 +163,11 @@ app.listen(port, () => {
 In routes/user.js file:
 	- Import requireSignin method from controllers/user.js
 
+**2. RENAMING USER TO AUTH (IN CONTROLLERS AND ROUTES)**
+- Rename controllers/user.js file to auth.js
+- Rename routes/user.js file to auth.js
+- In app.js file, rename userRoutes to authRoutes
+
 
 # LIBRARIES USED
 

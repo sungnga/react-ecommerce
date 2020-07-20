@@ -36,7 +36,7 @@ exports.signin = (req, res) => {
 			// 401 status code is unauthorized
 			return res.status(401).json({
 				error: "Email and password don't match"
-			})
+			});
 		}
 
 		// Generate a signed token with user id and secret
@@ -47,4 +47,10 @@ exports.signin = (req, res) => {
 		const { _id, name, email, role } = user;
 		return res.json({ token, user: { _id, email, name, role } });
 	});
+};
+
+exports.signout = (req, res) => {
+	// Clear the cookie from the response
+	res.clearCookie('t');
+	res.json({ message: 'Successfully signout' });
 };

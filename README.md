@@ -96,7 +96,8 @@ app.listen(port, () => {
 		- Save the new user or error in json format
 - In routes/user.js file:
 	- Import the signup method from constrollers/user.js
-	- Call a post() method that takes in takes '/signup' route as the 1st arg and the signup method as 2nd arg
+	- Create a user signup route using post() method: `router.get('/signup', signup)`
+		- The 2nd argument is the signup method coming from controllers/user.js
 
 **3. Use Postman to signup user**
 - Select a POST request from the dropdown menu
@@ -126,7 +127,8 @@ app.listen(port, () => {
 **6. User signin using Jason Web Token(JWT) and express-jwt**
 - Install: `npm i express-jwt jsonwebtoken`
 - In routes/user.js file:
-	- Create a user '/signin' route: `router.post('/signin', signin)`
+	- Create a user signin route: `router.post('/signin', signin)`
+		- 2nd arg is the signup method coming from controllers/user.js
 	- Import signin method from controllers/user.js
 - In controllers/user.js file:
 	- Import jwt. It's used to generate signed token: `const jwt = require('jsonwebtoken')`
@@ -147,11 +149,19 @@ app.listen(port, () => {
 **7. Implement user signout**
 - In route/user.js file:
 	- Create a user signout route using get() method: `router.get('/signout', signout)`
+		- 2nd arg is the signout method coming from controllers/user.js
 	- Import signout method from controllers/user.js
 - In controllers/user.js file:
 	- Write a signout method that clears the token that is stored in the cookie
 - Test the signout route in Postman
 
+### NODE: AUTH AND ADMIN MIDDLEWARES
+**1. Require signin middleware**
+- In controllers/user.js file:
+	- Write a requireSignin method that acts as middleware for routes that restricts unauthorized user access
+	- Use express-jwt
+In routes/user.js file:
+	- Import requireSignin method from controllers/user.js
 
 
 # LIBRARIES USED

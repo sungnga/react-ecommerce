@@ -103,14 +103,24 @@ app.listen(port, () => {
 - Select 'Body' and 'raw' and 'JSON' from the pulldown menu
 - Then enter name, email, and password in json format. Should get a success or failed code status
 
-4. **Write a friendly error message**
+4. **Write a friendly error message for user signup**
 - Create a folder called helpers
 - Inside helpers, create a file called dbErrorHandler.js
 - Write an errorHandler method that takes in the error response code to create a unique message
 - Require in the errorHanderler method in controllers/user.js file
 	- Call the method in the error handling code block
 
-
+5. **Write a helper method that validates the data for user signup process**
+- Install middleware: `npm i express-validator@5.3.1`
+- Require expressValidator in app.js file and use it as middleware: `app.use(expressValidator())`
+- Create a new folder called validator
+- Inside validator, create a file called index.js
+- Inside index.js file:
+	- Write a userSignupValidator method that validates the user name, email, and password
+	- Also catch all the errors coming from the request
+	- Whenever using a middleware, don't forget to call next() as a callback to move forward
+- Then require in the userSignupValidator method in routes/user.js file
+	- Pass in this method as a 2nd argument to the post method
 
 
 
@@ -126,3 +136,4 @@ app.listen(port, () => {
 - body-parser
 - cookie-parser
 - morgan
+- express-validator

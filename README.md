@@ -69,11 +69,11 @@ app.listen(port, () => {
 **6. Create controllers**
 - Controllers are methods to handle incoming routes
 - Create a new folder called controllers
-- Inside the folder, create a file called user.js
-- In user.js file:
+- Inside the folder, create a file called auth.js
+- In auth.js file:
 	- Write a function that sends back a response in json format
 	- Don't forget to export
-- Import the above module in routes/user.js file and call the function in router
+- Import the above module in routes/auth.js file and call the function in router
 
 ### NODE: USER SIGNUP AND SIGNIN
 **1. Create user model and define userSchema, virtual fields, and methods**
@@ -90,14 +90,14 @@ app.listen(port, () => {
 **2. User signup**
 - Install: `npm i body-parser cookie-parser morgan`
 - Import all three middlewares in app.js file and use them
-- In controllers/user.js file:
+- In controllers/auth.js file:
 	- Import User from models/user.js
 	- Create a signup method to sign up a new user
 		- Save the new user or error in json format
-- In routes/user.js file:
-	- Import the signup method from constrollers/user.js
+- In routes/auth.js file:
+	- Import the signup method from constrollers/auth.js
 	- Create a user signup route using post() method: `router.get('/signup', signup)`
-		- The 2nd argument is the signup method coming from controllers/user.js
+		- The 2nd argument is the signup method coming from controllers/auth.js
 
 **3. Use Postman to signup user**
 - Select a POST request from the dropdown menu
@@ -109,7 +109,7 @@ app.listen(port, () => {
 - Create a folder called helpers
 - Inside helpers, create a file called dbErrorHandler.js
 - Write an errorHandler method that takes in the error response code to create a unique message
-- Import the errorHanderler method in controllers/user.js file
+- Import the errorHanderler method in controllers/auth.js file
 	- Call the method in the error handling code block
 
 **5. Write a helper method that validates the data for user signup process**
@@ -121,16 +121,16 @@ app.listen(port, () => {
 	- Write a userSignupValidator method that validates the user name, email, and password
 	- Also catch all the errors coming from the request
 	- Whenever using a middleware, don't forget to call next() as a callback to move forward
-- Then import the userSignupValidator method in routes/user.js file
+- Then import the userSignupValidator method in routes/auth.js file
 	- Pass in this method as a 2nd argument to the post method
 
 **6. User signin using Jason Web Token(JWT) and express-jwt**
 - Install: `npm i express-jwt jsonwebtoken`
-- In routes/user.js file:
+- In routes/auth.js file:
 	- Create a user signin route: `router.post('/signin', signin)`
-		- 2nd arg is the signup method coming from controllers/user.js
-	- Import signin method from controllers/user.js
-- In controllers/user.js file:
+		- 2nd arg is the signup method coming from controllers/auth.js
+	- Import signin method from controllers/auth.js
+- In controllers/auth.js file:
 	- Import jwt. It's used to generate signed token: `const jwt = require('jsonwebtoken')`
 	- Import expressJWT. It's used for authorization check: `const expressJWT = require('express-jwt')`
 	- Write a signin method...
@@ -147,26 +147,56 @@ app.listen(port, () => {
 - Use Postman to test user signin
 
 **7. Implement user signout**
-- In route/user.js file:
+- In route/auth.js file:
 	- Create a user signout route using get() method: `router.get('/signout', signout)`
-		- 2nd arg is the signout method coming from controllers/user.js
-	- Import signout method from controllers/user.js
-- In controllers/user.js file:
+		- 2nd arg is the signout method coming from controllers/auth.js
+	- Import signout method from controllers/auth.js
+- In controllers/auth.js file:
 	- Write a signout method that clears the token that is stored in the cookie
 - Test the signout route in Postman
 
 ### NODE: AUTH AND ADMIN MIDDLEWARES
 **1. Require signin middleware**
-- In controllers/user.js file:
+- In controllers/auth.js file:
 	- Write a requireSignin method that acts as middleware for routes that restricts unauthorized user access
 	- Use express-jwt
-In routes/user.js file:
-	- Import requireSignin method from controllers/user.js
+In routes/auth.js file:
+	- Import requireSignin method from controllers/auth.js
 
 **2. RENAMING USER TO AUTH (IN CONTROLLERS AND ROUTES)**
 - Rename controllers/user.js file to auth.js
 - Rename routes/user.js file to auth.js
 - In app.js file, rename userRoutes to authRoutes
+
+**3. Create user by id middleware**
+- Inside routes folder, create a file called user.js. And in this file:
+	- Import express and create router from express
+	- Create a route that, whenever there's a 'userId' in the route paramenter, call the userById method: `router.param('userId', userById)`
+	- Import userById method from controllers/user.js
+- Inside controller folder, create a file called user.js. And in this file:
+  - Import User from user model, models/user.js
+	- Write a userById method that..
+		- takes the parameters of req, res, next and id
+		- then it tries to find the user by their id using the findById() method
+		- then calls the exec() method to execute the callback function
+		- in this callback, we'll either get an error or the user as param
+		- if error or no user, return a response with status code of 400 and an error message
+		- if a user is found, set the user info to profile: `req.profile = user`
+		- since this is a middleware, call next() to move on
+- In routes/user.js file:
+	- Create a route using get() method with 3 arguments
+		- 1st arg is the path: `'/secret/:userId'`
+		- 2nd arg is the require signin middleware: `requireSignin`
+		- 3rd arg is a function that responds with the user info, in json format, coming from `req.profile`
+- In app.js file:
+	- Import user routes: `const userRoutes = require('./routes/user')`
+	- Use user routes as routes middleware: `app.use('/api', userRoutes)`
+- Test with Postman
+	- Use get() method and set URL to `http://localhost:8000/api/secret/userId`
+	- Under 'Headers' tab:
+		- Set Key to be Authorization and set the value to be Bearer + userToken
+		- Set Key to be Content-Type and set the value to be application/json
+
 
 
 # LIBRARIES USED

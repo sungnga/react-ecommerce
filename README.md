@@ -239,7 +239,7 @@ In routes/auth.js file:
 		- Save the data in json format
 		- Or handle the request error with status code of 400 and a json response message
 
-**2. Create a category using Postman**
+**2. Add middlewares and create a category using Postman**
 - In routes/category.js file:
 	- Add middlewares so that only admin users can create a category. Also, user must require signin and is an authenticated user
 	- Import requireSignin, isAuth, and isAdmin middlewares from controllers/auth
@@ -249,6 +249,14 @@ In routes/auth.js file:
 	- Make sure this userId is already signed-in
 	- Make sure this user role property has a value of 1
 	- Make sure the Bearer token matches the token generated when the user signin
+
+**2. Add product model**
+- In models folder, create a file called product.js. In this file:
+	- Import mongoose: `const mongoose = requir('mongoose')`
+	- Create a productSchema using mongoose schema
+		- Define its properties
+		- For the category property, the schema type is an ObjectId that reference the Category model
+	- Export the module: `module.exports = mongoose.model('Product', productSchema)`
 
 
 # LIBRARIES USED

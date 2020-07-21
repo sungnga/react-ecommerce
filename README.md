@@ -310,6 +310,31 @@ In routes/auth.js file:
 		- Write a condition that checks for all properties
 		- If error, return a response with status code and error message
 
+**6. Create productById middleware and read a productById**
+- Create a middleware
+- In routes/product.js file:
+	- Create a route that, whenever there's a 'productId' in the route paramenter, call the productById method: `router.param('productId', productById)`
+	- Import productById method from controllers/product.js
+- In controllers/product.js file:
+	- Write a productById method that..
+		- takes the parameters of req, res, next and id
+		- then it tries to find the product in the Product model using the findById() method
+		- then calls the exec() method to execute the callback function
+		- in this callback, we'll either get an error or the product as param
+		- if error or no product, return a response with status code of 400 and an error message
+		- if a product is found, set the product info to product: `req.product = product`
+		- since this is a middleware, call next() to move on
+- In routes/product.js file:
+	- Create a route that retrieves a product by its id
+		- `router.get('/product/:productId', read);`
+		- Use get() request method
+		- 1st arg is the path: `'/product/:productId'`
+		- 2nd arg is the read middleware coming from controllers/product.js
+	- Import read method from controllers/product.js
+- In controllers/product.js file:
+	- Write a middleware read method that sends back a json response of `req.product`
+		- Leave the product.photo property as undefined for now. We will write a separate method to handle the photo
+
 
 
 # LIBRARIES USED

@@ -289,6 +289,28 @@ In routes/auth.js file:
 		- Import errorHandler helper method
 		- Or send the result in json response
 
+**4. Create a product using Postman**
+- Make a post request with this URL: `http://localhost:8000/api/product/create/userId`
+- Make sure this userId is already signed-in
+- Make sure this user role property has a value of 1
+- Make sure the Bearer token matches the token generated when the user signin
+- Under the Headers tab: delete ContentType and only Authorization key is provided
+- Under Body tab, select form-data to fill out product information
+	- Under key column, enter all the product properties that were defined in product schema
+	- For category property, the value for ObjectId is the id of the category created earrlier
+	- For photo property, select 'file' instead of 'text'. And then upload a photo
+
+**5. Create product validation**
+- In controllers/product.js file:
+	- Validate uplode photo size
+		- In create method, write a condition that checks for image size less than 1mb
+		- If greater than 1mb, return a response with status code and error message
+	- Validate that all fields are filled out
+		- Destructure all properties from fields
+		- Write a condition that checks for all properties
+		- If error, return a response with status code and error message
+
+
 
 # LIBRARIES USED
 

@@ -216,6 +216,31 @@ In routes/auth.js file:
 	- Make sure the Bearer token value is the same as the token when signin
 	- To test if a user is an admin user, change the role property with a value of 1
 
+### NODE: PRODUCT AND CATEGORIES
+**1. Create category model, route, and controller**
+- In models folder, create a file called category.js. In this file:
+	- Import mongoose: `const mongoose = requir('mongoose')`
+	- Create a categorySchema using mongoose schema
+		- Define name and timestamps properties
+	- Export the module: `module.exports = mongoose.model('Category', categorySchema)`
+- In routes folder, create a file called category.js. In this file:
+	- Import express: `const express = require('express')`
+	- Create a new router from express.Router()
+	- Create a route using post() method to create a new category
+		- 1st arg is the path: `'/category/create'`
+		- 2nd arg is the create method coming from controllers/category: `create` 
+- In app.js file:
+	- Import category routes: `const categoryRoutes = require('./routes/category')`
+	- Use the routes as middleware: `app.use('/api', categoryRoutes)`
+- In controllers folder, create a file called category.js. In this file:
+	- Import Category from category model: `const Category = require('../models/category')`
+	- Import errorHandler helper method: `const { errorHandler } = require('../helpers/dbErrorHandler')`
+	- Write a create method that creates and saves a category
+		- Save the data in json format
+		- Or handle the request error with status code of 400 and a json response message
+
+
+
 
 # LIBRARIES USED
 

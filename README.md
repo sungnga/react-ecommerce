@@ -258,6 +258,37 @@ In routes/auth.js file:
 		- For the category property, the schema type is an ObjectId that reference the Category model
 	- Export the module: `module.exports = mongoose.model('Product', productSchema)`
 
+**3. Create product with file upload**
+- In routes folder, create a file called product.js. In this file:
+	- Import express: `const express = require('express')`
+	- Create a new router from express.Router()
+	- Create a route using post() method to create a new product and add middlewares to validate user
+		- 1st arg is the path: `'/product/create/:userId'`
+		- 2nd arg requires user signin: `requireSignin`
+		- 3rd arg checks to see if user is authenticated: `isAuth`
+		- 4th arg checks to see if it is admin user: `isAdmin`
+		- 5th arg is the create method coming from controllers/category: `create`
+	- If userId is in route param, run the userById method
+- In app.js file:
+	- Import category routes: `const productRoutes = require('./routes/product')`
+	- Use the routes as middleware: `app.use('/api', productRoutes)`
+- In controllers folder, create a file called product.js. In this file:
+	- Import Product from product model: `const Product = require('../models/product')`
+	- Write a create method that creates a product, accepts product photo upload and saves the product
+	- For photo upload, we need to handle form data coming from the client using libraries
+		- Install libraries: `npm i formidable lodash`
+		- Import both formidable and lodash
+		- Create a new form using formidable library
+		- Parse the form for error, fields and files
+			- Handle the error by sending status code and error message
+			- Assign the fields to product
+			- Accept the incoming photo file using fs library
+			- Import fs filesystem built-in library
+	- Save the prodduct either with a result or an error
+		- Handle the error using errorHandler helper function
+		- Import errorHandler helper method
+		- Or send the result in json response
+
 
 # LIBRARIES USED
 
@@ -273,3 +304,5 @@ In routes/auth.js file:
 - express-validator
 - express-jwt
 - jsonwebtoken
+- formidable
+- lodash

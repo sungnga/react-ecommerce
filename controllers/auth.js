@@ -55,8 +55,30 @@ exports.signout = (req, res) => {
 	res.json({ message: 'Successfully signout' });
 };
 
+// Middleware to require a user to signin
 exports.requireSignin = expressJWT({
 	secret: process.env.JWT_SECRET,
-	algorithms: ["HS256"],
-	userProperty: 'auth'
-})
+	algorithms: ['HS256']
+});
+
+// Middleware for authenticated user
+exports.isAuth = (req, res, next) => {
+	let user = req.profile._id == req.user.id;
+	//console.log(req.user)
+	if (!user) {
+		return res.status(403).json({
+			error: 'Access denied'
+		});
+	}
+	next();
+};
+
+// Middleware for admin user
+exports.isAdmin = (req, res, next) => {
+	if (req.profile.role === 0) {
+		return res.status(403).json({
+			error: 'Admin resource! Access denied'
+		});
+	}
+	next();
+};

@@ -187,7 +187,7 @@ In routes/auth.js file:
 	- Create a route using get() method with 3 arguments
 		- 1st arg is the path: `'/secret/:userId'`
 		- 2nd arg is the require signin middleware: `requireSignin`
-		- 3rd arg is a function that responds with the user info, in json format, coming from `req.profile`
+		- 3rd arg is a function that sends back a json response with the user info coming from `req.profile`
 - In app.js file:
 	- Import user routes: `const userRoutes = require('./routes/user')`
 	- Use user routes as routes middleware: `app.use('/api', userRoutes)`
@@ -197,6 +197,24 @@ In routes/auth.js file:
 		- Set Key to be Authorization and set the value to be Bearer + userToken
 		- Set Key to be Content-Type and set the value to be application/json
 
+**4. Create two middlewares: one for authenticated user and another for admin user**
+- In controllers/auth.js file:
+	- Write an isAuth function that checks to see if the user is an authenticated user
+		- This middleware prevents a signed-in user to have access to another user's profile
+		- The authenticated id must match the profile id
+		- Handle the error with a status code of 403 and a json response message
+		- Then call next() to move on
+	- Write an isAdmin function that checks to see if the user is an admin user
+		- If a user has a role property with the value of 0, then the user is NOT an admin user
+		- Handle the error with status code of 403 and a json response message
+		- Call next() to move forward
+- In routes/user.js file:
+	- Import isAuth and isAdmin middlewares from controllers/auth.js
+	- Pass in the isAuth and isAdmin middlewares to the router as arguments
+	- `router.get('/secret/:userId', requireSignin, isAuth, isAdmin, (req, res) => {...}`
+- Use Postman to test
+	- Make sure the Bearer token value is the same as the token when signin
+	- To test if a user is an admin user, change the role property with a value of 1
 
 
 # LIBRARIES USED

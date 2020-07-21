@@ -239,7 +239,16 @@ In routes/auth.js file:
 		- Save the data in json format
 		- Or handle the request error with status code of 400 and a json response message
 
-
+**2. Create a category using Postman**
+- In routes/category.js file:
+	- Add middlewares so that only admin users can create a category. Also, user must require signin and is an authenticated user
+	- Import requireSignin, isAuth, and isAdmin middlewares from controllers/auth
+	- `router.post('/category/create/:userId', requireSignin, isAuth, isAdmin, create)`
+- Use Postman to create a category
+	- Make a post request with this URL: `http://localhost:8000/api/category/create/userId`
+	- Make sure this userId is already signed-in
+	- Make sure this user role property has a value of 1
+	- Make sure the Bearer token matches the token generated when the user signin
 
 
 # LIBRARIES USED

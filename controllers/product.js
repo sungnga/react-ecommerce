@@ -17,10 +17,10 @@ exports.productById = (req, res, next, id) => {
 };
 
 exports.read = (req, res) => {
-  // We'll create a separate method to return photo
-  req.product.photo = undefined
-  return res.json(req.product)
-}
+	// We'll create a separate method to return photo
+	req.product.photo = undefined;
+	return res.json(req.product);
+};
 
 exports.create = (req, res) => {
 	let form = new formidable.IncomingForm();
@@ -68,4 +68,18 @@ exports.create = (req, res) => {
 			res.json(result);
 		});
 	});
+};
+
+exports.remove = (req, res) => {
+  let product = req.product;
+  product.remove((error, deletedProduct) => {
+    if (error) {
+      return res.status(400).json({
+        error: errorHandler(error)
+      });
+    }
+    res.json({
+      message: 'Product deleted'
+    })
+  })
 };

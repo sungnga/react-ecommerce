@@ -226,7 +226,7 @@ In routes/auth.js file:
 - In routes folder, create a file called category.js. In this file:
 	- Import express: `const express = require('express')`
 	- Create a new router from express.Router()
-	- Create a route using post() method to create a new category
+	- Create a route using **post()** method to create a new category
 		- 1st arg is the path: `'/category/create'`
 		- 2nd arg is the create method coming from controllers/category: `create` 
 - In app.js file:
@@ -262,7 +262,7 @@ In routes/auth.js file:
 - In routes folder, create a file called product.js. In this file:
 	- Import express: `const express = require('express')`
 	- Create a new router from express.Router()
-	- Create a route using post() method to create a new product and add middlewares to validate user
+	- Create a route using **post()** request method to create a new product and add middlewares to validate user
 		- 1st arg is the path: `'/product/create/:userId'`
 		- 2nd arg requires user signin: `requireSignin`
 		- 3rd arg checks to see if user is authenticated: `isAuth`
@@ -294,7 +294,7 @@ In routes/auth.js file:
 - Make sure this userId is already signed-in
 - Make sure this user role property has a value of 1
 - Make sure the Bearer token matches the token generated when the user signin
-- Under the Headers tab: delete ContentType and only Authorization key is provided
+- **Under the Headers tab: delete ContentType and only Authorization key is provided**
 - Under Body tab, select form-data to fill out product information
 	- Under key column, enter all the product properties that were defined in product schema
 	- For category property, the value for ObjectId is the id of the category created earrlier
@@ -311,7 +311,6 @@ In routes/auth.js file:
 		- If error, return a response with status code and error message
 
 **6. Create productById middleware and read a productById**
-- Create a middleware
 - In routes/product.js file:
 	- Create a route that, whenever there's a 'productId' in the route paramenter, call the productById method: `router.param('productId', productById)`
 	- Import productById method from controllers/product.js
@@ -327,7 +326,7 @@ In routes/auth.js file:
 - In routes/product.js file:
 	- Create a route that retrieves a product by its id
 		- `router.get('/product/:productId', read);`
-		- Use get() request method
+		- Use **get()** request method
 		- 1st arg is the path: `'/product/:productId'`
 		- 2nd arg is the read middleware coming from controllers/product.js
 	- Import read method from controllers/product.js
@@ -335,6 +334,19 @@ In routes/auth.js file:
 	- Write a middleware read method that sends back a json response of `req.product`
 		- Leave the product.photo property as undefined for now. We will write a separate method to handle the photo
 
+**7. Delete product**
+- In routes/product.js file:
+	- Create a route that deletes a product by its id and by a specific user
+		- `router.delete('/product/:productId/:userId', requireSignin, isAuth, isAdmin, remove);`
+		- Use **delete()** method
+		- 1st arg is the path: `'/product/:productId/:userId'`
+		- 2nd arg is user must sign in: `requireSignin`
+		- 3rd arg is user is authenticated: `isAuth`
+		- 4th arg is an admin user: `isAdmin`
+		- 5th arg is the remove method: `remove`
+	- Import remove method from controllers/product.js
+- Test delete a product using Postman
+	- Make a **delete** request with this URL: `http://localhost:8000/api/product/:productId/:userId`
 
 
 # LIBRARIES USED

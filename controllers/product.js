@@ -132,3 +132,33 @@ exports.update = (req, res) => {
 		});
 	});
 };
+
+/*
+ * Display products by sell or arrival
+ * By sell = /products?sortBy=sold&order=desc&limit=4
+ * By arrival = /products?sortBy=createdAt&order=desc&limit=4
+ * If no params are sent by client, then all products are returned
+ */
+
+exports.list = (req, res) => {
+	// Check if order is given by the request query. Use the given query order, else set the order to ascending
+	let order = req.query.order ? req.query.order : 'asc';
+	// Check if sortBy is given by the request query. Use the given sortBy, else set the sortBy to _id
+	let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
+	// Check if limit is given by the request query. Use the given query limit, else set the limit by 6 as default
+	let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+	Product.find()
+		.select('-photo')
+		.populate('category')
+		.sort([[sortBy, order]])
+		.limit(limit)
+		.exec((err, products) => {
+			if (err) {
+				return res.status(400).json({
+					error: 'Products not found'
+				});
+			}
+			res.send(products);
+		});
+};

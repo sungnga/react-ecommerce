@@ -75,6 +75,7 @@ app.listen(port, () => {
 	- Don't forget to export
 - Import the above module in routes/auth.js file and call the function in router
 
+
 ### NODE: USER SIGNUP AND SIGNIN
 **1. Create user model and define userSchema, virtual fields, and methods**
 - Create a new folder called models
@@ -175,13 +176,13 @@ In routes/auth.js file:
 	- Import userById method from controllers/user.js
 - Inside controller folder, create a file called user.js. And in this file:
   - Import User from user model, models/user.js
-	- Write a userById method that...
+	- Write a userById method that
 		- takes the parameters of req, res, next and id
 		- then it tries to find the user by their id using the findById() method
 		- then calls the exec() method to execute the callback function
 		- in this callback, we'll either get an error or the user as param
-		- if error or no user, return a response with status code of 400 and an error message
-		- if a user is found, set the user info to profile: `req.profile = user`
+			- if error or no user, return a response with status code of 400 and an error message
+			- if a user is found, set the user info to profile: `req.profile = user`
 		- since this is a middleware, call next() to move on
 - In routes/user.js file:
 	- Create a route using get() method with 3 arguments
@@ -215,6 +216,7 @@ In routes/auth.js file:
 - Use Postman to test
 	- Make sure the Bearer token value is the same as the token when signin
 	- To test if a user is an admin user, change the role property with a value of 1
+
 
 ### NODE: PRODUCT AND CATEGORIES
 **1. Create category model, route, and controller**
@@ -436,6 +438,42 @@ In routes/auth.js file:
 	- Delete: use **delete** request with this URL: `http://localhost:8000/api/category/:categorytId/:userId`
 	- Update: use **put** request with this URL: `http://localhost:8000/api/category/:categorytId/:userId`
 	- List categories: use **get** request with this URL: `http://localhost:8000/api/categories`
+
+
+### NODE: SENDING PRODUCTS WITH QUERIES
+**1. Display products by sell/arrival on request query params**
+- In route/products.js file
+	- Create a route that list all the products
+		- `router.get('/products', list)`
+		- Use **get()** method
+	- Import list method from controllers/products
+- In controllers/product.js file:
+	- Write a list method that lists all the products based on the request query params
+		- Get the order, sortBy, and limit params from the request query. If no param is provided, set a default value param
+		- `let limit = req.query.limit ? parseInt(req.query.limit) : 6`
+		- On Product model, call find() method to find all the products, then call populate() method to populate the category property, then call sort() method to sort products by 'sortBy' and 'order', then call limit() method to set the number of products returned, lastly call exec() method to execute the callback function that has either the error or the products
+			- If error, return a status code and a json response of the error message
+			- If success, send the response with the products: `res.send(products)`
+		```javascript	
+		Product.find()
+		.select('-photo')
+		.populate('category')
+		.sort([[sortBy, order]])
+		.limit(limit)
+		.exec((err, products) => {
+			if (err) {
+				return res.status(400).json({
+					error: 'Products not found'
+				});
+			}
+			res.send(products);
+		});
+		```
+- Test using Postman
+	- Use **get** request with this url: `http://localhost:8000/api/products`
+	- Request with params: `http://localhost:8000/api/products?sortBy=sold&order=desc&limit=4`
+
+
 
 
 # LIBRARIES USED

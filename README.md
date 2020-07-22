@@ -175,7 +175,7 @@ In routes/auth.js file:
 	- Import userById method from controllers/user.js
 - Inside controller folder, create a file called user.js. And in this file:
   - Import User from user model, models/user.js
-	- Write a userById method that..
+	- Write a userById method that...
 		- takes the parameters of req, res, next and id
 		- then it tries to find the user by their id using the findById() method
 		- then calls the exec() method to execute the callback function
@@ -345,8 +345,38 @@ In routes/auth.js file:
 		- 4th arg is an admin user: `isAdmin`
 		- 5th arg is the remove method: `remove`
 	- Import remove method from controllers/product.js
+- In controllers/product.js file:
+	- Write a remove method that removes the product from `req.product`
+		- Call a remove() method on req.product
+		- And what you'll get back from the callback is either an error or the deletedProduct
+		- If error, return a status code and a json response of the error message
+		- If success, return a json response message that the product is deleted
 - Test delete a product using Postman
 	- Make a **delete** request with this URL: `http://localhost:8000/api/product/:productId/:userId`
+
+**8. Update product**
+- In routes/product.js file:
+	- Create a route that updates a product by its id and by a specific user
+		- `router.put('/product/:productId/:userId', requireSignin, isAuth, isAdmin, update)`
+		- Use **put()** method
+		- 1st arg is the path: `'/product/:productId/:userId'`
+		- 2nd arg is user must sign in: `requireSignin`
+		- 3rd arg is user is authenticated: `isAuth`
+		- 4th arg is an admin user: `isAdmin`
+		- 5th arg is the update method: `update`
+	- Import update method from controllers/product.js
+- In controllers/product.js file:
+	- Write an update method that updates the product from `req.product`
+	- This method is very similar to the create product method
+	- The difference is instead of creating a product from Product model: `let product = new Product(fields);`
+	- We'er updating the `req.product` with the new fields using the extend() method from the lodash library
+	- ```javascript
+	  let product = req.product;
+    product = _.extend(product, fields)
+		```
+- Test update a product using Postman
+	- Make a **put** request with this URL: `http://localhost:8000/api/product/:productId/:userId`
+
 
 
 # LIBRARIES USED

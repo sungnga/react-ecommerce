@@ -100,7 +100,7 @@ app.listen(port, () => {
 		- The 2nd argument is the signup method coming from controllers/auth.js
 
 **3. Use Postman to signup user**
-- Select a POST request from the dropdown menu
+- Select a **POST** request from the dropdown menu
 - Provide the url: `http://localhost:8000/api/signup`
 - Select 'Body' and 'raw' and 'JSON' from the pulldown menu
 - Then enter name, email, and password in json format. Should get a success or failed code status
@@ -192,7 +192,7 @@ In routes/auth.js file:
 	- Import user routes: `const userRoutes = require('./routes/user')`
 	- Use user routes as routes middleware: `app.use('/api', userRoutes)`
 - Test with Postman
-	- Use get() method and set URL to `http://localhost:8000/api/secret/userId`
+	- Use **get** request and set URL to `http://localhost:8000/api/secret/:userId`
 	- Under 'Headers' tab:
 		- Set Key to be Authorization and set the value to be Bearer + userToken
 		- Set Key to be Content-Type and set the value to be application/json
@@ -245,7 +245,7 @@ In routes/auth.js file:
 	- Import requireSignin, isAuth, and isAdmin middlewares from controllers/auth
 	- `router.post('/category/create/:userId', requireSignin, isAuth, isAdmin, create)`
 - Use Postman to create a category
-	- Make a post request with this URL: `http://localhost:8000/api/category/create/userId`
+	- Make a **post** request with this URL: `http://localhost:8000/api/category/create/:userId`
 	- Make sure this userId is already signed-in
 	- Make sure this user role property has a value of 1
 	- Make sure the Bearer token matches the token generated when the user signin
@@ -290,7 +290,7 @@ In routes/auth.js file:
 		- Or send the result in json response
 
 **4. Create a product using Postman**
-- Make a post request with this URL: `http://localhost:8000/api/product/create/userId`
+- Make a **post** request with this URL: `http://localhost:8000/api/product/create/:userId`
 - Make sure this userId is already signed-in
 - Make sure this user role property has a value of 1
 - Make sure the Bearer token matches the token generated when the user signin
@@ -370,13 +370,37 @@ In routes/auth.js file:
 	- This method is very similar to the create product method
 	- The difference is instead of creating a product from Product model: `let product = new Product(fields);`
 	- We'er updating the `req.product` with the new fields using the extend() method from the lodash library
-	- ```javascript
-	  let product = req.product;
-    product = _.extend(product, fields)
-		```
+	```javascript
+	let product = req.product;
+	product = _.extend(product, fields)
+	```
 - Test update a product using Postman
 	- Make a **put** request with this URL: `http://localhost:8000/api/product/:productId/:userId`
 
+**9. Create categoryById middleware and read a categoryById**
+- In routes/category.js file:
+	- Create a route that, whenever there's a 'categoryId' in the route paramenter, call the categoryById middleware method: `router.param('categoryId', categoryById)`
+	- Import categoryById method from controllers/category.js
+- In controllers/product.js file:
+	- Write a categoryById method that..
+		- takes the parameters of req, res, next and id
+		- then it tries to find the product in the Category model using the findById() method
+		- then calls the exec() method to execute the callback function
+		- in this callback, we'll either get an error or the category as param
+		- if error or no category, return a response with status code of 400 and an error message that category does not exist
+		- if a category is found, set the category info to the category object: `req.category = category`
+		- since this is a middleware, call next() to move on
+- In routes/product.js file:
+	- Create a route that retrieves a single category by its id
+		- `router.get('/category/:categoryId', read);`
+		- Use **get()** request method
+		- 1st arg is the path: `'/category/:categoryId'`
+		- 2nd arg is the read middleware coming from controllers/category.js
+	- Import read method from controllers/category.js
+- In controllers/product.js file:
+	- Write a middleware read method that sends back a json response of `req.category`
+- Test read categoryById using Postman
+	- Make a **get** request with this url: `http://localhost:8000/api/category/:categoryId`
 
 
 # LIBRARIES USED

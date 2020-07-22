@@ -8,8 +8,8 @@ exports.categoryById = (req, res, next, id) => {
 				error: 'Category does not exist'
 			});
 		}
-    req.category = category;
-    next();
+		req.category = category;
+		next();
 	});
 };
 
@@ -27,5 +27,46 @@ exports.create = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  return res.json(req.category)
-}
+	return res.json(req.category);
+};
+
+exports.update = (req, res) => {
+	// Get the category
+	const category = req.category;
+	category.name = req.body.name;
+	category.save((err, data) => {
+		if (err) {
+			return res.status(400).json({
+				error: errorHandler(err)
+			});
+		}
+		res.json(data);
+	});
+};
+
+exports.remove = (req, res) => {
+	// Get the category
+	const category = req.category;
+	category.remove((err, data) => {
+		if (err) {
+			return res.status(400).json({
+				error: errorHandler(err)
+			});
+		}
+    res.json({
+      message: 'Category is deleted'
+    });
+	});
+};
+
+exports.list = (req, res) => {
+  // Find the categories in category model
+  Category.find().exec((err, data) => {
+    if (err) {
+			return res.status(400).json({
+				error: errorHandler(err)
+			});
+		}
+		res.json(data);
+  })
+};

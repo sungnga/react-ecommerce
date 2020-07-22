@@ -346,11 +346,11 @@ In routes/auth.js file:
 		- 5th arg is the remove method: `remove`
 	- Import remove method from controllers/product.js
 - In controllers/product.js file:
-	- Write a remove method that removes the product from `req.product`
-		- Call a remove() method on req.product
-		- And what you'll get back from the callback is either an error or the deletedProduct
-		- If error, return a status code and a json response of the error message
-		- If success, return a json response message that the product is deleted
+	- Write a remove method that removes the product
+		- Get the product from `req.product` object: `const product = req.product`
+		- Then call a remove() method on product with a callback that either has the error or the deletedProduct
+			- If error, return a status code and a json response of the error message
+			- If success, return a json response with a message that product is deleted
 - Test delete a product using Postman
 	- Make a **delete** request with this URL: `http://localhost:8000/api/product/:productId/:userId`
 
@@ -366,10 +366,11 @@ In routes/auth.js file:
 		- 5th arg is the update method: `update`
 	- Import update method from controllers/product.js
 - In controllers/product.js file:
-	- Write an update method that updates the product from `req.product`
+	- Write an update method that updates the product
 	- This method is very similar to the create product method
 	- The difference is instead of creating a product from Product model: `let product = new Product(fields);`
-	- We'er updating the `req.product` with the new fields using the extend() method from the lodash library
+	- We first get the product from `req.product` object: `const product = req.product`
+	- Then we update the product with the new fields using the extend() method from the lodash library
 	```javascript
 	let product = req.product;
 	product = _.extend(product, fields)
@@ -400,7 +401,41 @@ In routes/auth.js file:
 - In controllers/product.js file:
 	- Write a middleware read method that sends back a json response of `req.category`
 - Test read categoryById using Postman
-	- Make a **get** request with this url: `http://localhost:8000/api/category/:categoryId`
+	- Read: us **get** request with this url: `http://localhost:8000/api/category/:categoryId`
+
+**10. Update, delete, and get all category**
+- In routes/category.js file:
+	- Create a route that deletes a category by its id and by a specific user
+		- `router.delete('/category/:categoryId/:userId', requireSignin, isAuth, isAdmin, remove);`
+		- Use **delete()** method
+	- Create a route that updates a category by its id and by a specific user
+		- `router.put('/category/:categoryId/:userId', requireSignin, isAuth, isAdmin, update);`
+		- Use **put()** method
+	- Create a route that lists all the categories
+		- `router.get('/categories', list)`
+		- Use **get()** method
+	- Import remove, update, and list methods from controllers/category.js
+- In controllers/category.js file:
+	- Write an update method that updates the category
+		- Get the category from `req.category` object: `const category = req.category`
+		- Set the category name property to request body name object: `category.name = req.body.name`
+		- Then call a save() method on category with a callback that either has the error or the data
+			- If error, return a status code and a json response of the error message
+			- If success, return a json response of the data
+	- Write a remove method that removes the category
+		- Get the category from `req.category` object: `const category = req.category`
+		- Then call a remove() method on category with a callback that either has the error or the data
+			- If error, return a status code and a json response of the error message
+			- If success, return a json response with a message that category is deleted
+	- Write a list method that lists all the categories
+		- Use find() method to find categories in Category model
+		- Then call the exec() function to execute a callback that either has the error or the data
+			- If error, return a status code and a json response of the error message
+			- If success, return a json response of the data
+- Test using Postman
+	- Delete: use **delete** request with this URL: `http://localhost:8000/api/category/:categorytId/:userId`
+	- Update: use **put** request with this URL: `http://localhost:8000/api/category/:categorytId/:userId`
+	- List categories: use **get** request with this URL: `http://localhost:8000/api/categories`
 
 
 # LIBRARIES USED

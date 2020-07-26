@@ -172,7 +172,11 @@ exports.listRelated = (req, res) => {
 		.limit(limit)
 		.populate('category', '_id name')
 		.exec((err, product) => {
-			return res.status(400).json({
-				error: 'Products not found'
+			if (err) {
+				return res.status(400).json({
+					error: 'Products not found'
+				});
+			}
+			res.json(products)
 	})
 }

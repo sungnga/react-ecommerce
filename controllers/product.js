@@ -159,15 +159,18 @@ exports.list = (req, res) => {
 					error: 'Products not found'
 				});
 			}
-			res.send(products);
+			res.json(products);
 		});
 };
 
-// Find the products base on the req product category
-// Other products that has the same category,  it will return
+// Find the products based on the req product category
+// Other products that has the same category, will be returned
 exports.listRelated = (req, res) => {
 	let limit = req.query.limit ? parseInt(req.query.limit) : 6;
 
+	// Find all the products in Product model based on the id, except the requested product itself
+	// Use $ne for 'not included'
+	// Also, find product based on the category
 	Product.find({ _id: { $ne: req.product }, category: req.product.category })
 		.limit(limit)
 		.populate('category', '_id name')
@@ -177,6 +180,17 @@ exports.listRelated = (req, res) => {
 					error: 'Products not found'
 				});
 			}
-			res.json(products)
-	})
-}
+			res.json(products);
+		});
+};
+
+exports.listCategories = (req, res) => {
+	Product.distinct('category', {}, (err, categories) => {
+		if (err) {
+			return res.status(400).json({
+				error: 'Categories not found'
+			});
+		}
+		res.json(categories);
+	});
+};

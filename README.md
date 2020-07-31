@@ -175,7 +175,7 @@ In routes/auth.js file:
 	- Create a route that, whenever there's a 'userId' in the route paramenter, call the userById method: `router.param('userId', userById)`
 	- Import userById method from controllers/user.js
 - Inside controller folder, create a file called user.js. And in this file:
-  - Import User from user model, models/user.js
+  - Import User model from models/user.js
 	- Write a userById method that
 		- takes the parameters of req, res, next and id
 		- then it tries to find the user by their id using the findById() method
@@ -322,8 +322,8 @@ In routes/auth.js file:
 		- then it tries to find the product in the Product model using the findById() method
 		- then calls the exec() method to execute the callback function
 		- in this callback, we'll either get an error or the product as param
-		- if error or no product, return a response with status code of 400 and an error message
-		- if a product is found, set the product info to product: `req.product = product`
+			- if error or no product, return a response with status code of 400 and an error message
+			- if a product is found, set the product info to product: `req.product = product`
 		- since this is a middleware, call next() to move on
 - In routes/product.js file:
 	- Create a route that retrieves a product by its id
@@ -390,8 +390,8 @@ In routes/auth.js file:
 		- then it tries to find the product in the Category model using the findById() method
 		- then calls the exec() method to execute the callback function
 		- in this callback, we'll either get an error or the category as param
-		- if error or no category, return a response with status code of 400 and an error message that category does not exist
-		- if a category is found, set the category info to the category object: `req.category = category`
+			- if error or no category, return a response with status code of 400 and an error message that category does not exist
+			- if a category is found, set the category info to the category object: `req.category = category`
 		- since this is a middleware, call next() to move on
 - In routes/product.js file:
 	- Create a route that retrieves a single category by its id
@@ -453,7 +453,7 @@ In routes/auth.js file:
 		- `let limit = req.query.limit ? parseInt(req.query.limit) : 6`
 		- On Product model, call find() method to find all the products, then call populate() method to populate the category property, then call sort() method to sort products by 'sortBy' and 'order', then call limit() method to set the number of products returned, lastly call exec() method to execute the callback function that has either the error or the products
 			- If error, return a status code and a json response of the error message
-			- If success, send the response with the products: `res.send(products)`
+			- If success, send a json response with the products: `res.json(products)`
 		```javascript	
 		Product.find()
 		.select('-photo')
@@ -466,12 +466,56 @@ In routes/auth.js file:
 					error: 'Products not found'
 				});
 			}
-			res.send(products);
+			res.json(products);
 		});
 		```
 - Test using Postman
 	- Use **get** request with this url: `http://localhost:8000/api/products`
 	- Request with params: `http://localhost:8000/api/products?sortBy=sold&order=desc&limit=4`
+
+**2. Display related products**
+- In route/products.js file
+	- Create a route that fetch related products based on the product id
+		- `router.get('/products/related/:productId', listRelated)`
+		- Use **get()** method
+	- Import listRelated method from controllers/products
+- In controllers/product.js file:
+	- Write a listRelated method that
+		- finds the products based on the req product category
+		- And other products that has the same category, will be returned
+		- First, define the limit. Use the limit param from the request query, if given. Else set a default value param
+		- `let limit = req.query.limit ? parseInt(req.query.limit) : 6;`
+		- Next, on Product model, call find() method to find all the products in the category based on the product id EXCEPT the requested product itself. Then call limit() method to set the number of products returned, call populate() method to populate the category property, then lastly call exec() method to execute the callback function that has either the error or the products
+			- If error, return a status code and a json response of the error message
+			- If success, send json response with the products: `res.json(products)`
+		```javascript
+		Product.find({ _id: { $ne: req.product }, category: req.product.category })
+		.limit(limit)
+		.populate('category', '_id name')
+		.exec((err, product) => {
+			if (err) {
+				return res.status(400).json({
+					error: 'Products not found'
+				});
+			}
+			res.json(products);
+		});
+		```
+- Test using Postman
+	- Use **get** request with this url: `http://localhost:8000/api/products/related/:productId`
+
+**3. List product categories**
+- In route/products.js file
+	- Create a route that lists product categories
+		- `router.get('/products/categories', listCategories);`
+		- Use **get()** method
+	- Import listCategories method from controllers/products
+- In controllers/product.js file:
+	- Write a listCategories method that lists all categories used on products
+		- On Product model, call distinct() method to get the 'category' that is used on product model
+		- Pass a callback function that has either the error or the categories
+			- If error, return a status code and a json response of the error message
+			- If success, send json response with the categories: `res.json(categories)`
 
 
 

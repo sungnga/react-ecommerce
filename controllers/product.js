@@ -174,7 +174,7 @@ exports.listRelated = (req, res) => {
 	Product.find({ _id: { $ne: req.product }, category: req.product.category })
 		.limit(limit)
 		.populate('category', '_id name')
-		.exec((err, product) => {
+		.exec((err, products) => {
 			if (err) {
 				return res.status(400).json({
 					error: 'Products not found'

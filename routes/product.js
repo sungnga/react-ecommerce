@@ -32,7 +32,7 @@ router.put(
 );
 
 router.get('/products', list);
-router.get('/products/realated/:productId', listRelated);
+router.get('/products/related/:productId', listRelated);
 router.get('/products/categories', listCategories);
 
 router.param('userId', userById);

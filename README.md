@@ -442,7 +442,7 @@ In routes/auth.js file:
 
 ### NODE: SENDING PRODUCTS WITH QUERIES
 **1. Display products by sell/arrival on request query params**
-- In route/products.js file
+- In route/products.js file:
 	- Create a route that list all the products
 		- `router.get('/products', list)`
 		- Use **get()** method
@@ -474,7 +474,7 @@ In routes/auth.js file:
 	- Request with params: `http://localhost:8000/api/products?sortBy=sold&order=desc&limit=4`
 
 **2. Display related products**
-- In route/products.js file
+- In route/products.js file:
 	- Create a route that fetch related products based on the product id
 		- `router.get('/products/related/:productId', listRelated)`
 		- Use **get()** method
@@ -505,7 +505,7 @@ In routes/auth.js file:
 	- Use **get** request with this url: `http://localhost:8000/api/products/related/:productId`
 
 **3. List product categories**
-- In route/products.js file
+- In route/products.js file:
 	- Create a route that lists product categories
 		- `router.get('/products/categories', listCategories);`
 		- Use **get()** method
@@ -516,7 +516,27 @@ In routes/auth.js file:
 		- Pass a callback function that has either the error or the categories
 			- If error, return a status code and a json response of the error message
 			- If success, send json response with the categories: `res.json(categories)`
+- Test using Postman
+	- Use **get** request with this url: `http://localhost:8000/api/products/categories`
 
+**4. List products by search**
+- In route/products.js file:
+	- Create a route that lists products based on search requirements
+	- `router.post('/products/by/search', listBySearch)`
+	- Use **post()** method
+	- Import listBySearch method from controllers/products
+- In controllers/product.js file:
+	- We will implement product search in react frontend
+	- We will show categories in checkbox and price range in radio buttons
+	- We will make api request and show the products to users based on what the user wants
+	- Write a listBySearch method that lists products by search
+		- First, define the order, sortBy, limit, skip, and findArgs. Use the params from the request query if they are given. Else set a default value params
+		- Second, look through the request body for the key and set it to the findArgs object
+		- Then in Product model, use find() method to find products based on the findArgs object, call exec() method to execute the callback function that has either the error or the products
+			- If error, return a status code and a json response of the error message
+			- If success, send json response with the size of products and product details
+- Test using Postman
+	- Use **post** request with this url: `http://localhost:8000/api/products/by/search`
 
 
 

@@ -547,9 +547,18 @@ In routes/auth.js file:
 - In controllers/product.js file:
 	- Write a photo method that sends product photo
 		- This method acts as middleware
-		- Check to see if photo is in req.product: `req.product.photo.data`
-		- If it is, set the content-type, then send the product photo: `return res.send(req.product.photo.data)`
+		- Check to see if photo exists in req.product: `req.product.photo.data`
+		- If it does, set the content-type of req.product to `req.product.photo.contentType`
+		- Then send the product photo: `return res.send(req.product.photo.data)`
 		- Cal next() method to move forward
+- Test using Postman
+	- Use **get** request with this url: `http://localhost:8000/api/product/photo/:productId`
+	- Copy and paste this url in the browser to view the product image
+
+
+
+
+
 
 
 

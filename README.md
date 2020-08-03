@@ -607,7 +607,12 @@ In routes/auth.js file:
 	- Use **put** request with this url: `http://localhost:8000/api/user/:userId`
 	- In Body tab, use raw json data format to update user info
 
-
+**7. Install CORS**
+- CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS for various options
+- This way our application will be able to handle requests coming from different routes/ports
+- Install: npm install cors
+- Import cors in app.js file: `const cors = require('cors')`
+- Use the middleware: `app.use(cors())`
 
 
 
@@ -627,3 +632,4 @@ In routes/auth.js file:
 - jsonwebtoken
 - formidable
 - lodash
+- cors

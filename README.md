@@ -538,6 +538,19 @@ In routes/auth.js file:
 - Test using Postman
 	- Use **post** request with this url: `http://localhost:8000/api/products/by/search`
 
+**5. Send a product photo**
+- In route/products.js file:
+	- Create a route that displays product photo based on product id
+	- `router.get('/poduct/photo/:productId', photo)`
+	- Use **get()** method
+	- Import photo method from controllers/products
+- In controllers/product.js file:
+	- Write a photo method that sends product photo
+		- This method acts as middleware
+		- Check to see if photo is in req.product: `req.product.photo.data`
+		- If it is, set the content-type, then send the product photo: `return res.send(req.product.photo.data)`
+		- Cal next() method to move forward
+
 
 
 # LIBRARIES USED

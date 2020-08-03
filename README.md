@@ -442,7 +442,7 @@ In routes/auth.js file:
 
 ### NODE: SENDING PRODUCTS WITH QUERIES
 **1. Display products by sell/arrival on request query params**
-- In route/products.js file:
+- In routes/products.js file:
 	- Create a route that list all the products
 		- `router.get('/products', list)`
 		- Use **get()** method
@@ -474,7 +474,7 @@ In routes/auth.js file:
 	- Request with params: `http://localhost:8000/api/products?sortBy=sold&order=desc&limit=4`
 
 **2. Display related products**
-- In route/products.js file:
+- In routes/products.js file:
 	- Create a route that fetch related products based on the product id
 		- `router.get('/products/related/:productId', listRelated)`
 		- Use **get()** method
@@ -505,7 +505,7 @@ In routes/auth.js file:
 	- Use **get** request with this url: `http://localhost:8000/api/products/related/:productId`
 
 **3. List product categories**
-- In route/products.js file:
+- In routes/products.js file:
 	- Create a route that lists product categories
 		- `router.get('/products/categories', listCategories);`
 		- Use **get()** method
@@ -520,7 +520,7 @@ In routes/auth.js file:
 	- Use **get** request with this url: `http://localhost:8000/api/products/categories`
 
 **4. List products by search**
-- In route/products.js file:
+- In routes/products.js file:
 	- Create a route that lists products based on search requirements
 	- `router.post('/products/by/search', listBySearch)`
 	- Use **post()** method
@@ -539,7 +539,7 @@ In routes/auth.js file:
 	- Use **post** request with this url: `http://localhost:8000/api/products/by/search`
 
 **5. Send a product photo**
-- In route/products.js file:
+- In routes/products.js file:
 	- Create a route that displays product photo based on product id
 	- `router.get('/poduct/photo/:productId', photo)`
 	- Use **get()** method
@@ -555,8 +555,57 @@ In routes/auth.js file:
 	- Use **get** request with this url: `http://localhost:8000/api/product/photo/:productId`
 	- Copy and paste this url in the browser to view the product image
 
-
-
+**6. Read and update user profile**
+- In routes/user.js file:
+	- Create a route for user to read their profile
+		- Add requireSignin and isAuth middlewares
+		- Use **get()** method
+		- `router.get('/user/:userId', requireSignin, isAuth, read)`
+		- Import read method from controllers/user
+	- Create a route for user to update their profile
+		- Add requireSignin and isAuth middlewares
+		- Use **put()** method
+		- `router.put('/user/:userId', requireSignin, isAuth, update)`
+		- Import update method from controllers/user
+- In controllers/user.js file:
+	- Write a read method that reads user profile based on the user id
+		- Send a json response of the user profile from `req.profile`
+		- However, don't send the hashed password and salt
+	- Write an update method that updates the user profile base on the user id
+		- On User model, call findOneAndUpdate() method to 
+			- find the user by id
+			- set the incoming data to request body
+			- set new data to be true
+			- a callback function that has either the error or the user
+				- if error, return a status code of 400 and a json response of the error message
+				- if success, set user hashed_password and salt to undefined, and send json response of the user
+		```javascript
+		exports.update = (req, res) => {
+			User.findOneAndUpdate(
+				{ _id: req.profile._id },
+				{ $set: req.body },
+				{ new: true },
+				(err, user) => {
+					if (err) {
+						return res.status(400).json({
+							error: 'You are not authorized to perform this action'
+						});
+					}
+					user.hashed_password = undefined;
+					user.salt = undefined;
+					res.json(user);
+				}
+			);
+		};
+		```
+- Test read user profile using Postman
+	- Use **get** request with this url: `http://localhost:8000/api/user/:userId`
+	- Make sure user is signed in
+	- Make sure user is authenticated. Get the generated token
+	- Then in Headers tab, set the Bearer token value to this token
+- Test update user profile using Postman
+	- Use **put** request with this url: `http://localhost:8000/api/user/:userId`
+	- In Body tab, use raw json data format to update user info
 
 
 

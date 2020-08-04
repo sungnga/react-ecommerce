@@ -615,6 +615,12 @@ In routes/auth.js file:
 - Use the middleware: `app.use(cors())`
 
 
+### REACT: REACT APP WITH PAGES AND LAYOUTS
+**1. Create react app**
+
+
+
+
 
 # LIBRARIES USED
 

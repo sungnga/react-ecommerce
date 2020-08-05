@@ -51,7 +51,7 @@
     - Import Signup component: `import Signup from './user/Signup'`
     - Import Signin component: `import Signin from './user/Signin'`
     - Import Home component: `import Home from './core/Home'`
-    - Write a Routes functional component that renders the routes for signup and signin pages
+    - Write a Routes functional component that renders the routes for user signup, signin, and home pages
     ```javascript
     const Routes = () => {
       return (
@@ -74,6 +74,42 @@
     - Signin page: `http://localhost:3000/signin`
     - Signup papge: `http://localhost:3000/signup`
 
+**3. Style the application using Bootstrap**
+- Bootstrap website: getbootstrap.com
+- Get the CSS CDN link and paste it in public/index.html file
+
+**4. Menu and active links**
+- In core folder, create a file called Menu.js
+- In Menu.js file:
+  - Import React: `import React from 'react'`
+  - Import Link and withRouter components: `import {Link, withRouter} from 'react-router-dom'`
+  - Write a Menu functional component that renders a link list for home, signup, and signin
+    - Use ul and li elements to create the menu list
+    - Use Link component to create the links with a given path
+    - Use Bootstrap to style the menu list
+  - Export the component with withRouter: `export default withRouter(Menu)`
+  - withRouter allows us to access props history
+- In Routes.js file:
+  - Import Menu component: `import Menu from './core/Menu'`
+  - Render the Menu component just above the Switch component: `<Menu />`
+- Implement active links
+  - In Menu.js file:
+    - Write a helper function called isActive that checks to see if the current path matches the path in props history. If it matches, the link is active and make the text color orange, else make the text link white
+      - It takes two arguments, history and path
+      ```javascript
+      const isActive = (history, path) => {
+        if (history.location.pathname === path) {
+          return { color: '#ff9900' };
+        } else {
+          return { color: '#ffffff' };
+        }
+      };
+      ```
+    - Call this helper function on each of the link list: 
+      - Destructure history from props.history
+      - Pass history as first argument
+      - Pass the Link path property as second argument
+      - `style={isActive(history, '/signup')}` 
 
 
 

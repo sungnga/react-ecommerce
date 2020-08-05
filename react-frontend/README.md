@@ -111,6 +111,30 @@
       - Pass the Link path property as second argument
       - `style={isActive(history, '/signup')}` 
 
+**5. Shared Layout component**
+- This Layout component contains the Menu component, title, and description
+- This component can be used in other components
+- In core folder, create a file called Layout.js
+- In Layout.js file:
+  - Write a Layout functional component that
+    - takes these arguments: title, description, className, children
+    - and renders the title, description and children
+    - Use Bootstrap to style the component
+  - Render the Menu component
+    - Import Menu component: `import Menu from './Menu'`
+    - Render the Menu component first thing: `<Menu />`
+    - And remove the Menu component from Routes.js component
+- To use this component:
+  - Import the Layout component
+  - Render the component: `<Layout title='...' description='...' >...</Layout>`
+- Use this component in Home.js, Signin.js, Signup.js components
+  ```javascript
+  const Signup = () => (
+    <Layout title='Signup' description='Signup to Node React E-commerce App'>
+      ...
+    </Layout>
+  );
+  ```
 
 
 

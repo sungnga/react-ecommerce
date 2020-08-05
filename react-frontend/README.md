@@ -147,6 +147,37 @@
   - Import the API: `import {API} from '../config'`
 
 
+### REACT: USER SIGNUP AND SIGNIN
+**1. Create Signup form and handle change**
+- In Signup.js file:
+  - Inside the Signup component, write a signUpForm function that renders the signup form
+    - The form should have a name, email, and password input fields, and a submit button
+    - Use Bootstrap to style the form
+  - Render this form in the Layout component
+  - Next, we need to grab the values from the input fields and store them in a component state. Then send the state to the backend so we can create a new user
+  - Create state
+    - Import useState from react: `import React, {useState} from 'react'`
+    ```javascript
+    const [values, setValues] = useState({
+      name: '',
+      email: '',
+      password: '',
+      error: '',
+      success: false
+    });
+    ```
+  - Write a handleChange HOF that updates the state whenever the input value of form changes
+    ```javascript
+    // handleChange is a HOF that returns another function
+    // The value we pass in for name is either name, email, or password
+    // On handleChange, we want to set the value state
+    // The value for [name] is dynamically generated depending on where it's coming from
+    const handleChange = name => event => {
+      setValues({...values, error: false, [name]: event.target.value})
+    }
+    ```
+    - Call this handleChange function on onChange event in the input fields and pass in the appropriate name to the function
+    - `<input onChange={handleChange('password')} type='password' className='form-control' />`
 
 
 

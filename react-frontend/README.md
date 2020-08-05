@@ -25,9 +25,61 @@
   ReactDOM.render(<App />, document.getElementById('root'));
   ```
 
+**2. Create user signin, signup, and home pages and implement routing**
+- In src folder, create a folder called user
+- Inside the user folder, create two files called Signup.js and Signin.js
+- Note in React: capitalized first letter of a file name means that it's a component
+- In Signup.js file:
+  - Import React: `import React from 'react'`
+  - Write a Signup functional component that returns a text says 'signup'
+  - Export the component: `export default Signup`
+- In Signin.js file:
+  - Import React: `import React from 'react'`
+  - Write a Signin functional component that returns a text says 'signin'
+  - Export the component: `export default Signin`
+- In src folder, create a folder called core. Inside core folder, create a file called Home.js
+- In Home.js file:
+  - Import React: `import React from 'react'`
+  - Write a Home functional component that returns a text says 'Home'
+  - Export the component: `export default Home`
+- Implement routing
+  - Install in react-frontend directory: `npm i react-router-dom`
+  - In src folder, create a file called Routes.js
+  - In Routes.js file:
+    - Import React: `import React from 'react'`
+    - Import BrowserRouter, Switch, Route components: `import {BrowserRouter, Switch, Route} from 'react-router-dom'`
+    - Import Signup component: `import Signup from './user/Signup'`
+    - Import Signin component: `import Signin from './user/Signin'`
+    - Import Home component: `import Home from './core/Home'`
+    - Write a Routes functional component that renders the routes for signup and signin pages
+    ```javascript
+    const Routes = () => {
+      return (
+        <BrowserRouter>
+          <Switch>
+            <Route path='/' exact component={Home} />
+            <Route path='/signin' exact component={Signin} />
+            <Route path='/signup' exact component={Signup} />
+          </Switch>
+        </BrowserRouter>
+      );
+    };
+    ```
+    - Export the component: `export default Routes`
+  - In index.js file, render the Routes component instead of the App component:
+    - Import Routes component: `import Routes from './Routes'`
+    - `ReactDOM.render(<Routes />, document.getElementById('root'));`
+  - Test routes in the browser with these url:
+    - Home page: `http://localhost:3000`
+    - Signin page: `http://localhost:3000/signin`
+    - Signup papge: `http://localhost:3000/signup`
 
 
 
+
+
+# LIBRARIES USED
+- React router dom: `npm i react-router-dom`
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

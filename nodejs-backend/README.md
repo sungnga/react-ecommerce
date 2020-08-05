@@ -615,14 +615,6 @@ In routes/auth.js file:
 - Use the middleware: `app.use(cors())`
 
 
-### REACT: REACT APP WITH PAGES AND LAYOUTS
-**1. Create react app**
-- At the root of project directory, run: `npx create-react-app react-frontend --use-npm`
-- This will create a react application. Add the switch flag to ensure that it's using the npm package manager
-- Go to the project directory: `cd react-frontend`
-- Start the project: `npm start`
-
-
 
 
 # LIBRARIES USED

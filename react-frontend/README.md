@@ -136,6 +136,18 @@
   );
   ```
 
+**6. Create environment variables**
+- At the root of react-frontend directory, create a file called .env
+- In .env file: 
+  - This environment variable holds the value of the backend api
+- In src folder, create a file called config.js
+  - `export const API = process.env.<the url>;`
+  - Now can use this API anywhere else
+- In Signup.js file:
+  - Import the API: `import {API} from '../config'`
+
+
+
 
 
 # LIBRARIES USED

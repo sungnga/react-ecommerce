@@ -183,21 +183,21 @@
 **2. User signup**
 - In Signup.js file:
   - When the form submit button is clicked, the user data (name, email, password) is sent to the backend to create a new user
-  - Write a clickSubmit method that executes the signup() method which takes the user's data (name, email, and password) as arguments
+  - Write a clickSubmit method that executes the signup() method which receives the user's data (name, email, and password) as arguments
   ```javascript
-  const clickSubmit = (event) => {
-    // Prevent default behavior of reload of the browser when the button is clicked
-    event.preventDefault();
-    // The data we send is an object
-    signup({ name, email, password });
-  };
+	const clickSubmit = (event) => {
+		// Prevent default behavior of reload of the browser when the button is clicked
+		event.preventDefault();
+		// The data we send is an object
+		signup({ name, email, password });
+	};
   ```
   - Write a signup method that sends the data to backend to create a new user
   ```javascript
   // Note: user is an object received from clickSubmit() method
 	const signup = (user) => {
 		// console.log(name, email, password);
-		fetch(`${API}/signup`, {
+		return fetch(`${API}/signup`, {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
@@ -214,6 +214,57 @@
   };
   ```
 - Check to see if a new user has been successfully created in mongoDB database
+
+**3. User signup success and error handling**
+- In Signup.js file:
+  - When form submit button is clicked, we send the data to backend to create a new user using the signup() method
+  - This is an async operation. The data we get back is either an error or a success
+  - If it's an error, set error property state to the data.error we get back and set success state to false
+  - If it's a success, clear the form input fields and set success state to true
+  ```javascript
+  const clickSubmit = (event) => {
+		event.preventDefault();
+		setValues({ ...values, error: false });
+		signup({ name, email, password }).then((data) => {
+			if (data.error) {
+				setValues({ ...values, error: data.error, success: false });
+			} else {
+				setValues({
+					...values,
+					name: '',
+					email: '',
+					password: '',
+					error: '',
+					success: true
+				});
+			}
+		});
+	};
+  ```
+- Write a showError function to display the error 
+  ```javascript
+	const showError = () => (
+		<div
+			className='alert alert-danger'
+			style={{ display: error ? '' : 'none' }}
+		>
+			{error}
+		</div>
+	);
+  ```
+  - Render it inside the Layout component: `{showError()}`
+- Write a showSuccess function that lets user know they've successfully signup
+  ```javascript
+  const showSuccess = () => (
+		<div
+			className='alert alert-info'
+			style={{ display: success ? '' : 'none' }}
+		>
+			New account is created. Please <Link to='/signin'>Signin</Link>
+		</div>
+  );
+  - Use Link to create a link to Signin page
+  - Render it inside the Layout component: `{showSuccess()}`
 
 
 

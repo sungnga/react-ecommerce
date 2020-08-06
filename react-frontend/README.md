@@ -277,6 +277,37 @@
 - Use the signup method in Signup.js functional component
   - Import signup: `import {signup} from '../auth'`
 
+**5. Implement user signin**
+- Code for user signin is very similar to code for user signup. We only need user email and password to signin. We also need to display loading progress
+- In auth/index.js file:
+  - Write a signin method that sends the data (email and password) to the backend
+  - Very similar to signup method
+- In Signin.js file
+  - Create state with these properties: email, password, error, loading, redirectToReferrer
+    - Use useState() react hook
+  - Create a signInForm that displays email and password input fields and a submit button
+  - Write a handleChange HOF method that updates the state with the new input values
+  - Write a clickSubmit method that executes the signin() which receives the email and password data
+  - Import the signin method from auth/index.js and run this method when the submit button is clicked
+    - This method sends the data to the backend
+    - And it's an async operation, so we'll get back either an error data or a success
+    - If it's an error, set the error property state to data.error and display the error message
+    - If it's successful, set the redirectToReferrer property state to true and redirect user
+  - Write a showError method that displays the error message
+  - Write a showLoading method that displays 'Loading...' when data is being sent to backend
+  - Write a redirectUser method that redirects the user if they've successfully signed in
+    - Do this by checking if redirectToReferrer is set to true
+    - Use the Redirect component that comes with react-router-dom
+    ```javascript
+    import { Redirect } from 'react-router-dom';
+    const redirectUser = () => {
+      if (redirectToReferrer) {
+        return <Redirect to='/' />;
+      }
+    };
+    ```
+  - Render the Layout component which contains the menu, page title and description
+
 
 # LIBRARIES USED
 - React router dom: `npm i react-router-dom`

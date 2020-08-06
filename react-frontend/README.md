@@ -137,6 +137,7 @@
   ```
 
 **6. Create environment variables**
+- Install dotenv: `npm i dotenv`
 - At the root of react-frontend directory, create a file called .env
 - In .env file: 
   - This environment variable holds the value of the backend api
@@ -153,7 +154,7 @@
   - Inside the Signup component, write a signUpForm function that renders the signup form
     - The form should have a name, email, and password input fields, and a submit button
     - Use Bootstrap to style the form
-  - Render this form in the Layout component
+  - Render this form in the Layout component: `{signUpForm()}`
   - Next, we need to grab the values from the input fields and store them in a component state. Then send the state to the backend so we can create a new user
   - Create state
     - Import useState from react: `import React, {useState} from 'react'`
@@ -179,10 +180,46 @@
     - Call this handleChange function on onChange event in the input fields and pass in the appropriate name to the function
     - `<input onChange={handleChange('password')} type='password' className='form-control' />`
 
+**2. User signup**
+- In Signup.js file:
+  - When the form submit button is clicked, the user data (name, email, password) is sent to the backend to create a new user
+  - Write a clickSubmit method that executes the signup() method which takes the user's data (name, email, and password) as arguments
+  ```javascript
+  const clickSubmit = (event) => {
+    // Prevent default behavior of reload of the browser when the button is clicked
+    event.preventDefault();
+    // The data we send is an object
+    signup({ name, email, password });
+  };
+  ```
+  - Write a signup method that sends the data to backend to create a new user
+  ```javascript
+  // Note: user is an object received from clickSubmit() method
+	const signup = (user) => {
+		// console.log(name, email, password);
+		fetch(`${API}/signup`, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		})
+			.then((response) => {
+				return response.json();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+  };
+  ```
+- Check to see if a new user has been successfully created in mongoDB database
+
 
 
 # LIBRARIES USED
 - React router dom: `npm i react-router-dom`
+- Environment variable: `npm i dotenv`
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -11,12 +11,41 @@ const Signup = () => {
 		success: false
 	});
 
+	const { name, email, password } = values;
+
 	// handleChange is a HOF that returns another function
 	// The value we pass in for name is either name, email, or password
 	// On handleChange, we want to set the value state
 	// The value for [name] is dynamically generated depending on where it's coming from
 	const handleChange = (name) => (event) => {
 		setValues({ ...values, error: false, [name]: event.target.value });
+	};
+
+	// Send the data to backend to create a new user
+	// Note: user is an object received from clickSubmit() method
+	const signup = (user) => {
+		// console.log(name, email, password);
+		fetch(`${API}/signup`, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		})
+			.then((response) => {
+				return response.json();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const clickSubmit = (event) => {
+		// Prevent default behavior of reload of the browser when the button is clicked
+		event.preventDefault();
+		// The data we send is an object
+		signup({ name, email, password });
 	};
 
 	const signUpForm = () => (
@@ -48,7 +77,9 @@ const Signup = () => {
 				/>
 			</div>
 
-			<button className='btn btn-primary'>Submit</button>
+			<button onClick={clickSubmit} className='btn btn-primary'>
+				Submit
+			</button>
 		</form>
 	);
 

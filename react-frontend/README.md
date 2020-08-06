@@ -266,6 +266,16 @@
   - Use Link to create a link to Signin page
   - Render it inside the Layout component: `{showSuccess()}`
 
+**4. Signup - refactor code**
+- Move authentication matters to its own folder
+- In src folder, create a folder called auth
+- In auth folder, create a file called index.js
+- In index.js file:
+  - Move the signup method from Signup.js file
+  - Don't forget to export the method
+  - Import the API: `import { API } from '../config';`
+- Use the signup method in Signup.js functional component
+  - Import signup: `import {signup} from '../auth'`
 
 
 # LIBRARIES USED

@@ -49,3 +49,21 @@ export const authenticate = (data, cb) => {
 		cb();
 	}
 };
+
+// Remove token from local storage
+// Make request to backend so we're logged out
+// Then redirect user to homepage
+export const signout = (cb) => {
+	if (typeof window !== 'undefined') {
+		// Pass in the key to remove an item from local storage
+		localStorage.removeItem('jwt');
+		cb();
+		return fetch(`${API}/signout`, {
+			method: 'GET'
+		})
+			.then((response) => {
+				console.log('signout', response);
+			})
+			.catch((err) => console.log(err));
+	}
+};

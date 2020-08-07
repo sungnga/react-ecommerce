@@ -333,7 +333,41 @@
   - Inside the signin() method, if the user is successfully signed-in, call the authenticate() method to save the data in local storage
   - For 2nd arg callback function, set the redirectToReferrer property state to true. This will redirect user after the data is saved in local storage
 
-
+**6. Implement user signout**
+- Upon signing out,
+  - remove user token from local storage
+  - make request to backend so we're logged out
+  - then redirect user to homepage
+- In auth/index.js file:
+  - Write a signout method that removes user token from localStorage, makes a request to backend to logout, and a callback function that executes to redirect user
+  ```javascript
+  export const signout = (cb) => {
+    if (typeof window !== 'undefined') {
+      // Pass in the key to remove an item from local storage
+      localStorage.removeItem('jwt');
+      cb();
+      return fetch(`${API}/signout`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          console.log('signout', response);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+  ```
+- In Menu.js file:
+  - Import the signout method from auth/index.js: `import { signout } from '../auth';`
+  - Create a signout item link
+    - On click event, call the signout() method which takes a callback function
+    - In this callback function, redirect user to homepage
+    ```javascript
+    onClick={() =>
+      signout(() => {
+        history.push('/');
+      })
+    }
+    ```
 
 
 

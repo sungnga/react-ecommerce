@@ -372,7 +372,7 @@
     ```
 - Check to see if the user jwt has been remove from local storage
   - In dev tools, click the Application tab and click on localhost under the Storage section on the left
-  
+
 **7. Conditionally show and hide signin signout**
 - If the user is authenticated(signed in), hide signup and signin. Only show signout
 - In auth/index.js file:
@@ -400,6 +400,60 @@
   - Write a condition that if the user is authenticated, display the signout link
     - Make sure to invoke the isAuthenticated method
     - `{isAuthenticated() && ( <render signout link> )}`
+
+
+### REACT: PRIVATE AND ADMIN ROUTE WITH USER DASHBOARD
+**1. Private route for authenticated users only**
+- In src/user folder, create a file called UserDashboard.js
+- In UserDashboard.js file:
+  - Import react: `import React from 'react'`
+  - Import Layout component: `import Layout from '../core/Layout'`
+  - Write a Dashboard functional component
+    - Render the Layout component
+- In Menu.js file:
+  - Create a Dashboard item link right after Home link
+- This Dashboard route is different from other routes. Only a user who is authenticated will be redirected (redirect auth concept) to the Dashboard route
+- To do this, we first need to create a private route component
+- In src/auth folder, create a component/file called PrivateRoute.js
+- In PrivateRoute.js file:
+  - Import react and react component: `import React, {Component} from 'react'`
+  - Import Route and Redirect from router-dom: `import { Route, Redirect } from 'react-router-dom'`
+  - Import isAuthenticated function: `import {isAuthenticated} from './index'
+  - The isAuthenticated function will check for the authenticated user. If we have the user, we get the user from the local storage
+  - Write a PrivateRoute functional component that
+    - takes the react Component and the rest of the props as arguments
+    - returns the Route
+      - In this Route component, first grab the rest of the props
+      - then check to see if the user is authenticated by calling the isAuthenticated method
+      - if user is authenticated, return the Component with the rest of the props
+      - otherwise, redirect them to signin page
+    ```javascript
+    const PrivateRoute = ({ component: Component, ...rest }) => (
+      <Route
+        {...rest}
+        render={(props) =>
+          isAuthenticated() ? (
+            <Component {...props} />
+          ) : (
+            <Redirect
+              to={{ pathname: '/signin', state: { from: props.location } }}
+            />
+          )
+        }
+      />
+    );
+    ```
+- In Routes.js file:
+  - Import the PrivateRoute component: `import PrivateRoute from './auth/PrivateRoute'`
+  - Import the Dashboard component: `import Dashboard from './user/UserDashboard'`
+  - To use the private route and Dashboard component: 
+  - `<PrivateRoute path='/dashboard' exact component={Dashboard} />`
+- Test in the browser
+  - Click on Dashboard, if user is not authenticated, it will redirect them to signin page
+  - Once the user is signed-in, they should have access to Dashboard page
+
+
+
 
 
 

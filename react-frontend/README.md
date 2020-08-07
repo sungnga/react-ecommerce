@@ -308,6 +308,34 @@
     ```
   - Render the Layout component which contains the menu, page title and description
 
+**6. Save user and token in local storage**
+- If the user is successfully able to sign in, save the user data and token in local storage
+- In auth/index.js file:
+  - Write a authenticate method that saves the user data in local storage
+    - It takes two arguments. The first is the data, the 2nd is a callback function
+    ```javascript
+    export const authenticate = (data, cb) => {
+      // Check if we have the window object, because local storage is a property of the browser window object
+      // If we do, we want to access the local storage
+      if (typeof window !== 'undefined') {
+        // Use setItem() method to save to local storage
+        // 1st arg is the key
+        // 2nd arg is the item you want to save
+        // Make sure the data is saved as JSON data, use JSON stringify() method
+        localStorage.setItem('jwt', JSON.stringify(data));
+        // This callback function will execute after the data is saved to local storage
+        cb();
+      }
+    }; 
+    ```
+- In Signin.js file:
+  - Import the authenicate method: `import { authenticate } from '../auth'`
+  - Inside the signin() method, if the user is successfully signed-in, call the authenticate() method to save the data in local storage
+  - For 2nd arg callback function, set the redirectToReferrer property state to true. This will redirect user after the data is saved in local storage
+
+
+
+
 
 # LIBRARIES USED
 - React router dom: `npm i react-router-dom`

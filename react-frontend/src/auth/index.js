@@ -35,3 +35,17 @@ export const signin = (user) => {
 			console.log(err);
 		});
 };
+
+export const authenticate = (data, cb) => {
+	// Check if we have the window object, because local storage is a property of the browser window object
+	// If we do, we want to access the local storage
+	if (typeof window !== 'undefined') {
+		// Use setItem() method to save to local storage
+		// 1st arg is the key
+		// 2nd arg is the item you want to save
+		// Make sure the data is saved as JSON data, use JSON stringify() method
+		localStorage.setItem('jwt', JSON.stringify(data));
+		// This callback function will execute after the data is saved to local storage
+		cb();
+	}
+};

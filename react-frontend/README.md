@@ -332,6 +332,8 @@
   - Import the authenicate method: `import { authenticate } from '../auth'`
   - Inside the signin() method, if the user is successfully signed-in, call the authenticate() method to save the data in local storage
   - For 2nd arg callback function, set the redirectToReferrer property state to true. This will redirect user after the data is saved in local storage
+- Check to see if user jwt is in local storage
+  - In dev tools, click on Application tab. Click the localhost list under Storage section
 
 **6. Implement user signout**
 - Upon signing out,
@@ -368,6 +370,36 @@
       })
     }
     ```
+- Check to see if the user jwt has been remove from local storage
+  - In dev tools, click the Application tab and click on localhost under the Storage section on the left
+  
+**7. Conditionally show and hide signin signout**
+- If the user is authenticated(signed in), hide signup and signin. Only show signout
+- In auth/index.js file:
+  - We need to access the user from the local storage
+  - Write a isAuthenticated helpher method that returns true if the user is authenticated (jwt is in local storage), else returns false
+  ```javascript
+  export const isAuthenticated = () => {
+    // Check if window object is undefined, return false
+    if (typeof window == 'undefined') {
+      return false;
+    }
+    // If we can get jwt from local storage, return the jwt in javascript form
+    if (localStorage.getItem('jwt')) {
+      return JSON.parse(localStorage.getItem('jwt'));
+    } else {
+      return false;
+    }
+  };
+  ```
+- In Menu.js file:
+  - Import the isAuthenticated method: `import { signout, isAuthenticated } from '../auth'`
+  - Write a condition that if the user is NOT authenticated, display the signup and signin links
+    - Make sure to invoke the isAuthenticated method here
+    - `{!isAuthenticated() && ( <render signup and signin links> )}`
+  - Write a condition that if the user is authenticated, display the signout link
+    - Make sure to invoke the isAuthenticated method
+    - `{isAuthenticated() && ( <render signout link> )}`
 
 
 

@@ -67,3 +67,18 @@ export const signout = (cb) => {
 			.catch((err) => console.log(err));
 	}
 };
+
+export const isAuthenticated = () => {
+	// Check if window object is undefined, return false
+	if (typeof window == 'undefined') {
+		return false;
+	}
+	// If we can get jwt from local storage, return the jwt in javascript form
+	if (localStorage.getItem('jwt')) {
+		const jwt = JSON.parse(localStorage.getItem('jwt'));
+		console.log(jwt)
+		return jwt
+	} else {
+		return false;
+	}
+};

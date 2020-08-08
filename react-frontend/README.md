@@ -542,6 +542,41 @@
   ```
 
 
+### REACT: CATEGORIES AND PRODUCTS
+**1. Add category component**
+- In src folder, create a folder called admin
+- In admin folder, create a component/file called AddCategory.js
+- In AddCategory.js file:
+  - Import react and useState hook : `import React, {useState} from 'react'`
+  - Import Link : `import { Link } from 'react-router-dom'`
+  - Import Layout component : `import Layout from '../core/Layout'`
+  - Import isAuthenticated method: `import { isAuthenticated } from '../auth'`
+  - Write a AddCategory functional component creates a new category
+    - Create state using useState hook
+      ```javascript
+      const [name, setName] = useState('')
+      const [error, setError] = useState(false)
+      const [success, setSuccess] = useState(false)
+      ```
+    - Destructure user and token from localStorage
+      - `const {user, token} = isAuthenticated()`
+    - Create a form that creates a category. Write a newCategoryForm function that renders the form
+      - the form has a label, input field and submit button
+      - handleChange method is called when the value in input field is changing: `onChange={handleChange}`
+      - clickSubmit method is called when the button is clicked: `<form onSubmit={clickSubmit}>`
+    - Write a handleChange method that updates the name state to the value coming from the input
+      ```javascript
+      const handleChange = (e) => {
+        setError('');
+        setName(e.target.value);
+      };
+      ```
+    - Write a clickSubmit method that makes a request to api to create category
+    - Render the Layout component and execute the newCategoryForm function in Layout component
+  - In Routes.js file:
+    - Import the AddCategory component: `import AddCategory from './admin/AddCategory'`
+    - Use the component in AdminRoute private route
+      - `<AdminRoute path='/create/category' exact component={AddCategory} />`
 
 
 

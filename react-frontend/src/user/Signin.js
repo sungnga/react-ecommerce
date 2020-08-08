@@ -97,8 +97,12 @@ const Signin = () => {
 				return <Redirect to='/admin/dashboard' />;
 			} else {
 				// Redirect to registered user dashboard page
-				return <Redirect to='/user/dashboard' />
+				return <Redirect to='/user/dashboard' />;
 			}
+		}
+		// If user is already signed in, redirect to home page
+		if (isAuthenticated()) {
+			return <Redirect to='/' />;
 		}
 	};
 

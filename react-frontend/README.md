@@ -506,7 +506,7 @@
 **4. Create Admin Dashboard page**
 - In src/user folder, create a file called AdminDashboard.js
 - In AdminDashboard.js file:
-  - Start by copying the code from the UserDashboard.js component
+  - Start by copying the code from UserDashboard.js component
   - Name this functional component AdminDashboard
   - Write an adminLinks method that renders links for Create Category and Create Product
     - The link path to Create Category is `to='/create/category'`
@@ -516,6 +516,35 @@
     - Code is identical to userInfo
     - Call this adminInfo() method in Layout component
  
+**5. Create private route for admin user**
+- In src/auth folder, create a component/file called AdminRoute.js
+- In AdminRoute.js file:
+  - The code is very similar to PrivateRoute component. Start by copying the code from PrivateRoute.js component
+  - Name this functional component AdminRoute
+  - Here, we want to check if the user is authenticated AND also the user role value is 1. If it is, the user is an admin user
+    - `isAuthenticated() && isAuthenticated().user.role === 1 ? (...) : (...)`
+- In Routes.js file:
+  - Import AdminRoute component: `import AdminRoute from './auth/AdminRoute'`
+  - Import AdminDashboard component: `import AdminDashboard from './user/AdminDashboard'`
+  - To use the admin route with the AdminDashboard component
+    - `<AdminRoute path='/admin/dashboard' exact component={AdminDashboard} />`
+- In Menu.js file:
+  - Write a conditional that takes the user to user dashboard if they're a user
+    - `{isAuthenticated() && isAuthenticated().user.role === 0 && (<Link to='/user/dashboard'> ...)`
+  - Write a conditional that takes the user to admin dashboard if they're an admin user
+    - `{isAuthenticated() && isAuthenticated().user.role === 1 && (<Link to='/admin/dashboard'> ...)`
+- In src/user/Signin.js file:
+  - Inside redirectUser method, write a condition that checks if the user is already signed in, redirect the user to home page
+  ```javascript
+  if (isAuthenticated()) {
+    return <Redirect to='/' />;
+  }
+  ```
+
+
+
+
+
 
 
 

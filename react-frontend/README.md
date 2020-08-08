@@ -503,6 +503,19 @@
   - In the Layout component description, make a customized greeting with the user's name
     - `description={`Hello ${name}!`}`
 
+**4. Create Admin Dashboard page**
+- In src/user folder, create a file called AdminDashboard.js
+- In AdminDashboard.js file:
+  - Start by copying the code from the UserDashboard.js component
+  - Name this functional component AdminDashboard
+  - Write an adminLinks method that renders links for Create Category and Create Product
+    - The link path to Create Category is `to='/create/category'`
+    - The link path to Create Product is `to='/create/product'`
+    - Call this adminLinks() method in Layout component
+  - Write an adminInfo method that renders admin info
+    - Code is identical to userInfo
+    - Call this adminInfo() method in Layout component
+ 
 
 
 

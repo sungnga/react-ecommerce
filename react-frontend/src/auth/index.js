@@ -75,9 +75,7 @@ export const isAuthenticated = () => {
 	}
 	// If we can get jwt from local storage, return the jwt in javascript form
 	if (localStorage.getItem('jwt')) {
-		const jwt = JSON.parse(localStorage.getItem('jwt'));
-		console.log(jwt)
-		return jwt
+		return JSON.parse(localStorage.getItem('jwt'));
 	} else {
 		return false;
 	}

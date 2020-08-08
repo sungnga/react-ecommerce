@@ -419,7 +419,7 @@
   - Import react and react component: `import React, {Component} from 'react'`
   - Import Route and Redirect from router-dom: `import { Route, Redirect } from 'react-router-dom'`
   - Import isAuthenticated function: `import {isAuthenticated} from './index'
-  - The isAuthenticated function will check for the authenticated user. If we have the user, we get the user from the local storage
+  - The isAuthenticated function will check for the authenticated user. If we have the user, we get the user information from the local storage
   - Write a PrivateRoute functional component that
     - takes the react Component and the rest of the props as arguments
     - returns the Route
@@ -452,7 +452,41 @@
   - Click on Dashboard, if user is not authenticated, it will redirect them to signin page
   - Once the user is signed-in, they should have access to Dashboard page
 
-
+**2. User Dashboard page**
+- Display user information and purchase history in user dashboard page
+- In src/user/UserDashboard.js file:
+  - Import isAuthenticated method: `import { isAuthenticated } from '../auth'`
+  - Render user information which we can get from the local storage with isAuthenticated()
+    - `const {user: {_id, name, email, role}} = isAuthenticated()`
+    - Show user name, email, and role as a list
+  - Render purchase history
+    - Show each purchase as a list
+- Check if a user is authenticated and redirect them to either a user dashboard or admin dashboard based on their role
+- In src/user/Signin.js file:
+  - Import isAuthenticated method: `import { isAuthenticated } from '../auth'`
+  - Destructure the user from isAuthenticated(): `const {user} = isAuthenticated()`
+  - In redirectUser method, check the condition if the user is authenticated and if they're admin user
+    - redirect them to admin dashboard page if their user role value is 1
+    - else redirect them to registered user dashboard page
+    ```javascript
+    const redirectUser = () => {
+      if (redirectToReferrer) {
+        // Check if the user is authenticated and if they're admin user
+        if (user && user.role === 1) {
+          // Redirect to admin dashboard page
+          return <Redirect to='/admin/dashboard' />;
+        } else {
+          // Redirect to registered user dashboard page
+          return <Redirect to='/user/dashboard' />
+        }
+      }
+    };
+    ```
+- In Routes.js file:
+  - Change the path for user dashboard
+  - `<PrivateRoute path='/user/dashboard' exact component={Dashboard} />`
+- In Menu.js file:
+  - Change the path for user dashboard to `'/user/dashboard'`
 
 
 

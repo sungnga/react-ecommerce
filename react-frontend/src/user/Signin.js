@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import Layout from '../core/Layout';
-import { signin, authenticate } from '../auth';
+import { signin, authenticate, isAuthenticated } from '../auth';
 
 const Signin = () => {
 	const [values, setValues] = useState({
@@ -13,6 +13,7 @@ const Signin = () => {
 	});
 
 	const { email, password, error, loading, redirectToReferrer } = values;
+	const { user } = isAuthenticated();
 
 	// handleChange is a HOF that returns another function
 	// The value we pass in for name is either name, email, or password
@@ -33,7 +34,7 @@ const Signin = () => {
 			} else {
 				// If successfully signin, save user data to local storage
 				// 1st arg is the data coming back
-				// 2nd arg is a callback
+				// 2nd arg is a callback that sets the redirectToReferrer to true. This will enable redirect
 				authenticate(data, () => {
 					setValues({
 						...values,
@@ -90,7 +91,14 @@ const Signin = () => {
 
 	const redirectUser = () => {
 		if (redirectToReferrer) {
-			return <Redirect to='/' />;
+			// Check if the user is authenticated and if they're admin user
+			if (user && user.role === 1) {
+				// Redirect to admin dashboard page
+				return <Redirect to='/admin/dashboard' />;
+			} else {
+				// Redirect to registered user dashboard page
+				return <Redirect to='/user/dashboard' />
+			}
 		}
 	};
 

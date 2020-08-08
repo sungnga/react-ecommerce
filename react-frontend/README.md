@@ -488,6 +488,21 @@
 - In Menu.js file:
   - Change the path for user dashboard to `'/user/dashboard'`
 
+**3. Add links on user dashboard and reorganize code**
+- In src/user/UserDashboard.js file:
+  - Write a userLinks method that renders links for My Cart and Update Profile
+    - Use Link from react-router-dom to create links: `import { Link } from 'react-router-dom'`
+    - Make the links as a list
+    - Call this userLinks() method in Layout component
+  - Write a userInfo method that renders user info
+    - Just move the user info div that's already written into this method
+    - Call this userInfo() method in Layout component
+  - Write a purchaseHistory method that renders purchase history info
+    - Just move the purchase history div that's already written into this method
+    - Call this purchaseHistory() method in Layout component
+  - In the Layout component description, make a customized greeting with the user's name
+    - `description={`Hello ${name}!`}`
+
 
 
 

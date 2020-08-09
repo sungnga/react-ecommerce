@@ -543,7 +543,7 @@
 
 
 ### REACT: CATEGORIES AND PRODUCTS
-**1. Add category component**
+**1. AddCategory component**
 - In src folder, create a folder called admin
 - In admin folder, create a component/file called AddCategory.js
 - In AddCategory.js file:
@@ -578,7 +578,74 @@
     - Use the component in AdminRoute private route
       - `<AdminRoute path='/create/category' exact component={AddCategory} />`
 
-
+**2. AddCategory - handling success and error from api request**
+- In src/admin folder, create a method/file called apiAdmin.js
+- In apiAdmin.js file:
+  - Import the api: `import { API } from '../config'`
+  - Write a createCategory method that makes an api request to the backend to create new category with the name we have in the state
+    - In the backend we need to send/pass in the userId, token, and category
+    - Make the request to this api: `${API}/category/create/${userId}`
+    - The method is a POST method
+    - In the headers, we also need to send the authorization token: `Authorization: `Bearer ${token}``
+    - In the body, we stringify the category: `body: JSON.stringify(category)`
+    ```javascript
+    export const createCategory = (userId, token, category) => {
+      return fetch(`${API}/category/create/${userId}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(category)
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    ```
+- In AddCategory.js file:
+  - Import the createCategory method: `import { createCategory } from './apiAdmin'`
+  - Call the createCategory method inside the clickSubmit function
+    - Pass in the user id, token, and name of category coming from state
+    - This is an async operation. So what we'll get back is the data, which containers either the error or the data info
+    - if it's an error, set the error state to true
+    - if it's a success, get error state to empty and set success state to true
+    ```javascript
+    createCategory(user._id, token, { name }).then((data) => {
+			if (data.error) {
+				setError(true);
+			} else {
+				setError('');
+				setSuccess(true);
+			}
+    });
+    ```
+  - Next, write a showSuccess method that display to the user that they've successfully create a category
+    ```javascript
+    const showSuccess = () => {
+      if (success) {
+        return <h3 className='text-success'>{name} is create</h3>;
+      }
+    };
+    ```
+  - Write a showError method that display to the user the error message
+  - Invoke the showSuccess() and showError() methods just above the newCategoryForm() method inside the Layout component
+  - Write a goBack method that takes user back to admin dashboard
+    - Create the link using Link from react-router-dom
+    - Invoke the goBack method inside the Layout component
+    ```javascript
+    const goBack = () => (
+      <div className='mt-5'>
+        <Link className='text-warning' to='/admin/dashboard'>
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+    ```
 
 
 

@@ -41,6 +41,11 @@ const AddProduct = () => {
 	// Destructure user and token from localStorage
 	const { user, token } = isAuthenticated();
 
+	// Populate new formData when component mounts and state changes
+	useEffect(() => {
+		setValues({ ...values, formData: new FormData() });
+	}, []);
+
 	// This is a Higher Order Function
 	const handleChange = (name) => (e) => {
 		const value = name === 'photo' ? e.target.files[0] : e.target.value;
@@ -50,6 +55,23 @@ const AddProduct = () => {
 
 	const clickSubmit = (e) => {
 		e.preventDefault();
+		setValues({ ...values, error: '', loading: true });
+		createProduct(user._id, token, formData).then((data) => {
+			if (data.error) {
+				setValues({ ...values, error: data.error });
+			} else {
+				setValues({
+					...values,
+					name: '',
+					description: '',
+					photo: '',
+					price: '',
+					quantity: '',
+					loading: false,
+					createdProduct: data.name
+				});
+			}
+		});
 	};
 
 	const newPostForm = () => (
@@ -99,6 +121,7 @@ const AddProduct = () => {
 				<label className='text-muted'>Category</label>
 				<select onChange={handleChange('category')} className='form-control'>
 					<option value='5f2f754efb1f61e9aa465ca0'>Python</option>
+					<option value='5f2f754efb1f61e9aa465ca0'>Node</option>
 				</select>
 			</div>
 

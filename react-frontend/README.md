@@ -700,14 +700,47 @@
     - Next, we want to send the formData to the api. Now, we want that formData to be available as soon as the component mounts. So we can make use of the useEffect() hook
       - Call the useEffect() method that takes a function as the first argument
       - In this function, set the formData property state to `new FormData()`
+      ```javascript
+      useEffect(() => {
+        setValues({ ...values, formData: new FormData() });
+      }, []);
+      ```
       - The useEffect() runs when the component mounts and anytime the values state changes
       - useEffect() is a replacement to lifecyle method that is used in class component
       - So when handleChange() method runs, we update the state and populate the formData as well
       - Everything in the state will go into the formData. And we send the formData to the backend to create a new product
       - In handleChange method, call set() method on formData to set the name and value
-      - `formData.set(name, value);`
-    - Write a clickSubmit method to submit the form
-    
+        - `formData.set(name, value);`
+    - Write a clickSubmit method to send the data to api to create a product
+      - Prevent the browser default behavior
+      - Empty the error state if there's any and set loading state to true
+      - Call the createProduct method to send the data to backend
+        - Pass in the user id, token, and formData
+        - This is an async operation. So what we'll get back is the data, which contains either the error or the data info
+        - if it's an error, set the error state to data.error
+        - if it's a success, empty the form fields
+        ```javascript
+        const clickSubmit = (e) => {
+          e.preventDefault();
+          setValues({ ...values, error: '', loading: true });
+          createProduct(user._id, token, formData).then((data) => {
+            if (data.error) {
+              setValues({ ...values, error: data.error });
+            } else {
+              setValues({
+                ...values,
+                name: '',
+                description: '',
+                photo: '',
+                price: '',
+                quantity: '',
+                loading: false,
+                createdProduct: data.name
+              });
+            }
+          });
+        };
+        ```
 - In Routes.js file:
   - Import the AddProduct component: `import AddProduct from './admin/AddProduct'`
   - Use the component in AdminRoute private route

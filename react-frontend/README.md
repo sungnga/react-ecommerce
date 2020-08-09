@@ -582,7 +582,7 @@
 - In src/admin folder, create a method/file called apiAdmin.js
 - In apiAdmin.js file:
   - Import the api: `import { API } from '../config'`
-  - Write a createCategory method that makes an api request to the backend to create new category with the name we have in the state
+  - Write a createCategory method that makes api request to backend to create a new category with the name we have in the state
     - In the backend we need to send/pass in the userId, token, and category
     - Make the request to this api: `${API}/category/create/${userId}`
     - The method is a POST method
@@ -646,6 +646,34 @@
       </div>
     );
     ```
+
+**3. Create a new product**
+- Write a method that makes api request to backend to create a new product
+- In src/admin/apiAdmin.js file:
+  - Write a createProduct method that makes api request to backend to create new product with the form data given
+    - This method is very similar to the createCategory method
+    - In the backend we need to send/pass in the userId, token, and product data form
+    - Make the request to this api: `${API}/product/create/${userId}`
+    - The method is a POST method
+    - The body is the product data form
+- In src/admin folder, create a component/file called AddProduct.js
+- In AddProduct.js file:
+  - Import: `import React, { useState, useEffect } from 'react'`
+  - Import: `import { Link } from 'react-router-dom'`
+  - Import: `import Layout from '../core/Layout'`
+  - Import: `import { isAuthenticated } from '../auth'`
+  - Import: `import { createProduct} from './apiAdmin'`
+  - Write a AddProfuct functional component creates a new product
+    - Destructure user and token from localStorage
+      - `const {user, token} = isAuthenticated()`
+    -
+- In Routes.js file:
+  - Import the AddProduct component: `import AddProduct from './admin/AddProduct'`
+  - Use the component in AdminRoute private route
+    - `<AdminRoute path='/create/product' exact component={AddProduct} />`
+
+
+
 
 
 

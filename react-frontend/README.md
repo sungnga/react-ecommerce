@@ -664,9 +664,50 @@
   - Import: `import { isAuthenticated } from '../auth'`
   - Import: `import { createProduct} from './apiAdmin'`
   - Write a AddProfuct functional component creates a new product
+    - Create state using useState hook
+      ```javascript
+      const [values, setValues] = useState({ object properties })
+      ```
+    - Destructure all the values of the state
+      - `const {name, description, price, quantity, etc} = values`
     - Destructure user and token from localStorage
       - `const {user, token} = isAuthenticated()`
-    -
+    - Create a newPostForm method that renders the product form
+      - Create an input field that lets user upload a photo
+        ```javascript
+        <h4>Post Photo</h4>
+        <div className='form-group'>
+          <label className='btn btn-secondary'>
+            <input onChange={handleChange('photo')} type='file' name='photo' accept='image/*' />
+          </label>
+        </div>
+        ```
+      - Create input fields for name, description, price, category, shipping, quantity
+      - Add a submit button to create product
+      - Call handleChange() method to update the values state when the input field changes
+      - Call clickSubmit() method when the form button is clicked to submit the form
+      - Render the newPostForm method in Layout component: `{newPostForm()}`
+    - Write a handleChange Higher Order Function that updates the values state with the value coming from the input field
+      - This function takes in the name value (name is a property of input field) and set the value for that specific property of values state
+      - Name is the property of values state, such as name, description, price, photo, etc
+      ```javascript
+      const handleChange = (name) => (e) => {
+        const value = name === 'photo' ? e.target.files[0] : e.target.value;
+        formData.set(name, value);
+        setValues({ ...values, [name]: value });
+      };
+      ```
+    - Next, we want to send the formData to the api. Now, we want that formData to be available as soon as the component mounts. So we can make use of the useEffect() hook
+      - Call the useEffect() method that takes a function as the first argument
+      - In this function, set the formData property state to `new FormData()`
+      - The useEffect() runs when the component mounts and anytime the values state changes
+      - useEffect() is a replacement to lifecyle method that is used in class component
+      - So when handleChange() method runs, we update the state and populate the formData as well
+      - Everything in the state will go into the formData. And we send the formData to the backend to create a new product
+      - In handleChange method, call set() method on formData to set the name and value
+      - `formData.set(name, value);`
+    - Write a clickSubmit method to submit the form
+    
 - In Routes.js file:
   - Import the AddProduct component: `import AddProduct from './admin/AddProduct'`
   - Use the component in AdminRoute private route

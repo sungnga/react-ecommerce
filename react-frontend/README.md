@@ -584,7 +584,7 @@
   - Import the api: `import { API } from '../config'`
   - Write a createCategory method that makes api request to backend to create a new category with the name we have in the state
     - In the backend we need to send/pass in the userId, token, and category
-    - Make the request to this api: `${API}/category/create/${userId}`
+    - Use fetch() method to make the request to this api: `${API}/category/create/${userId}`
     - The method is a POST method
     - In the headers, we also need to send the authorization token: `Authorization: `Bearer ${token}``
     - In the body, we stringify the category: `body: JSON.stringify(category)`
@@ -624,7 +624,7 @@
 			}
     });
     ```
-  - Next, write a showSuccess method that display to the user that they've successfully create a category
+  - Next, write a showSuccess method that displays to the user that they've successfully create a category
     ```javascript
     const showSuccess = () => {
       if (success) {
@@ -632,7 +632,7 @@
       }
     };
     ```
-  - Write a showError method that display to the user the error message
+  - Write a showError method that displays to the user the error message
   - Invoke the showSuccess() and showError() methods just above the newCategoryForm() method inside the Layout component
   - Write a goBack method that takes user back to admin dashboard
     - Create the link using Link from react-router-dom
@@ -653,7 +653,7 @@
   - Write a createProduct method that makes api request to backend to create new product with the form data given
     - This method is very similar to the createCategory method
     - In the backend we need to send/pass in the userId, token, and product data form
-    - Make the request to this api: `${API}/product/create/${userId}`
+    - Use fetch() method to make the request to this api: `${API}/product/create/${userId}`
     - The method is a POST method
     - The body is the product data form
 - In src/admin folder, create a component/file called AddProduct.js
@@ -714,7 +714,7 @@
     - Write a clickSubmit method to send the data to api to create a product
       - Prevent the browser default behavior
       - Empty the error state if there's any and set loading state to true
-      - Call the createProduct method to send the data to backend
+      - Call the createProduct method to send the data to backend and handle success and error of the request
         - Pass in the user id, token, and formData
         - This is an async operation. So what we'll get back is the data, which contains either the error or the data info
         - if it's an error, set the error state to data.error
@@ -746,7 +746,61 @@
   - Use the component in AdminRoute private route
     - `<AdminRoute path='/create/product' exact component={AddProduct} />`
 
-
+**4. Create product with categories**
+- When creating a new product, populate the list of categeories for users to pick
+- Write a method that gets the categories from backend
+- In src/admin/apiAdmin.js file:
+  - Write a getCategories method that gets the categories from backend
+  - Use fetch() method to make the request to this api: `${API}/categories`
+  - The method is a GET method
+  - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+  ```javascript
+  export const getCategories = () => {
+    return fetch(`${API}/categories`, {
+      method: 'GET'
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .catch((err) => console.log(err));
+  };
+  ```
+- In AddProduct.js file:
+  - Import the getCategories method: `import { getCategories } from './apiAdmin'`
+  - When the component mounts in useEffect(), we need to get the categories from backend
+  - Write an init method that loads categories and sets form data
+    - Call the getCategories method, which we'll get back either the data or the error
+      - This is an async operation. Use .then() method to handle the data returned
+      - if it's an error, set error state to data.error
+      - if it's a success, set categories state to data and set formData state to new FormData(). This makes formData ready to use as well
+    ```javascript
+    const init = () => {
+      getCategories().then((data) => {
+        if (data.error) {
+          setValues({ ...values, error: data.error });
+        } else {
+          setValues({ ...values, categories: data, formData: new FormData() });
+        }
+      });
+    };
+    ```
+  - In the useEffect() callback function, call the init() method and nothing else
+  - Now that categories state has the list of categories from the backend, we need to display them
+    - In the form category section, first check to make sure there is categories and then loop through the categories state using map() method to display the category name in the option tag
+    - Note that categories state is an array
+    ```javascript
+    {categories &&
+      categories.map((c, i) => (
+        <option key={i} value={c._id}>
+          {c.name}
+        </option>
+      ))}
+    ```
+  - Display a message to user letting them know whether they have successfully created a product or not
+    - Write a showError method that displays to the user the error message
+    - Write a showSuccess method that displays the product is created
+  - Write a showLoading method that displays Loading...
+  - Call these three methods in Layout component
 
 
 

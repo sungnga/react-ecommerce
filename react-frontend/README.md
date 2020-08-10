@@ -802,6 +802,68 @@
   - Write a showLoading method that displays Loading...
   - Call these three methods in Layout component
 
+**5. Show products on home page sorted by popular(sell) and arrival**
+- To display the products on home page, we first need to write a function that fetches the products from api
+- In src/core folder, create a file called apiCore.js
+- In apiCore.js file:
+  - Write a getProducts method that gets the products from backend
+    - Pass in sortBy as an argument
+    - Use fetch() method to make the request to this api which contains parameter queries: `${API}/products?sortBy={sortBy}&order=desc&limit=6`
+    - The method is a GET method
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const getProducts = (sortBy) => {
+      return fetch(`${API}/products?sortBy=${sortBy}&order=desc&limit=6`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- In src/core/Home.js file:
+  - Import getProducts method: `import { getProducts } from './apiCore'`
+  - Import useState and useEffect: `import { useState, useEffect } from 'react'`
+  - Create state that saves the products by sell and products by arrival, and the error
+    ```javascript
+    const [productsBySell, setProductsBySell] = useState([])
+    const [productsByArrival, setProductsByArrival] = useState([])
+    const [error, setError] = useState(false)
+    ```
+  - Write a loadProductsBySell method that loads products by sell
+    - Call the getProducts() method and pass in 'sold' as the argument. This 'sold' is a property of product model
+      - This is an async operation. So we'll get back either the data or the error
+      - If it's an error, set the error state to data.error
+      - If it's a success, set productsBySell state to the data
+      ```javascript
+      const loadProductsBySell = () => {
+        getProducts('sold').then((data) => {
+          if (data.error) {
+            setError(data.error);
+          } else {
+            setProductsBySell(data);
+          }
+        });
+      };
+      ```
+  - Write a loadProductsByArrival method that loads products by arrival
+    - Call the getProducts() method and pass in 'createdAt' as the argument. This 'createdAt' is a property of product model
+      - This is an async operation. So we'll get back either the data or the error
+      - If it's an error, set the error state to data.error
+      - If it's a success, set productsByArrival state to the data    
+  - Next, we want to call these two methods when the component mounts
+  - Use useEffect() method and pass in a callback function as the first arg and an empty array as 2nd arg
+    - This useEffect() method runs when the component loads for the first time and whenever there's a change in the state
+    - Inside the callback function, call the loadProductsBySell() and loadProductsByArrival() methods
+    ```javascript
+    useEffect(() => {
+      loadProductsBySell();
+      loadProductsByArrival();
+    }, []);
+    ```
+  - To display the products in home page, render the productsBySell and productsByArrival states in Layout component
+
 
 
 

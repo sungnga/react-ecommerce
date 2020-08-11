@@ -862,7 +862,28 @@
       loadProductsByArrival();
     }, []);
     ```
-  - To display the products in home page, render the productsBySell and productsByArrival states in Layout component
+
+**6. Show products in card**
+- In src/core folder, create a component/file called Card.js
+- In Card.js file:
+  - Write a Card component that displays a product
+    - takes product as an argument
+    - displays product name, description, price, a link button to view product, and an add to cart button
+- In src/core/Home.js file:
+  - Import the Card component: `import Card from './Card'`
+  - In Layout component,
+    - loop through productsBySell (contains all the products from backend) using map() method and render each product in the Card component
+    - pass in the product to Card component
+    - do the same thing for productsByArrival
+    - note that both productsBySell and productsByArrival are arrays
+    ```javascript
+    <h2 className='mb-4'>Best Sellers</h2>
+    <div className='row'>
+      {productsBySell.map((product, i) => (
+        <Card key={i} product={product} />
+      ))}
+    </div>
+    ```
 
 
 

@@ -885,6 +885,40 @@
     </div>
     ```
 
+**7. Show product image**
+- In src/core folder, create a component/file called ShowImage.js
+- In ShowImage.js file:
+  - Import react: `import React from 'react'`
+  - Import Link: `import { API } from '../config'`
+  - Write a ShowImage component that displays the product image
+    - it takes in an item and a url
+    - it renders an img element
+    - the image source is: `src={`${API}/${url}/photo/${item._id}`}`
+    - note that the route to get the photo is: `router.get('/product/photo/:productId', photo)`
+    - hence the item = product, url = product
+    ```javascript
+    const ShowImage = ({ item, url }) => (
+      <div className='product-Image'>
+        <img
+          src={`${API}/${url}/photo/${item._id}`}
+          alt={item.name}
+          className='mb-3'
+          style={{ maxHeight: '100%', maxWidth: '100%' }}
+        />
+      </div>
+    );
+    ```
+- Card.js file:
+  - Import the ShowImage component: `import ShowImage from './ShowImage'`
+  - Use the ShowImage component inside the card body just above the product description
+    - pass in the item argument: `item={product}`
+    - pass in the url argument: `url='product'`
+    - `<ShowImage item={product} url='product' />`
+
+
+
+
+
 
 
 

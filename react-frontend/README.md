@@ -1010,9 +1010,48 @@
     ```
     - add an h4 header that says "Filter by categories"
 
-
-
-
+**4. Handle categories toggle**
+- When a user checks for one or more categories in the shop page, we want to use a method that gets all the categories id, put them in an array and send it to the backend so we can get all the products based on those categories
+- In src/core/Checkbox.js file:
+  - Create a state that saves the checked list
+    - `const [checked, setChecked] = useState([])`
+  - When the category checkbox input field changes handleToggle() method is called that takes the category id 
+    - `<input onChange={handleToggle(c._id)} type='checkbox' className='form-check-input' />`
+  - Write a handleToggle Higher Order Function that
+    - takes a category id as an argument
+    - so first, it checks to see if this category (based on the category id) is already in the checked state. So checked is going to be an array
+      - use .indexOf() method on the checked array to find the category with the category id
+      - the .indexOf() method will return the first index at which a given element can be found in the array. If it's not found in the checked state, then it will return -1
+      - `const currentCategoryId = checked.indexOf(c._id)`
+    - next, return all the categories in the checked state
+      - `const newCheckedCategoryId = [...checked]`
+    - next, write a condition that if currently checked was not already in checked state (returned -1), then push the category to the checked state. Else if the category is unchecked, remove the category from the newCheckedCategoryId array
+      - use push() method on newCheckedCategoryId to add the category: `newCheckedCategoryId.push(c)`
+      - use splice() method on the newCheckedCategoryId to remove the category from the array: `newCheckedCategoryId.splice(currentCategoryId, 1)`
+    - lastly, call setChecked method to update checked state with newCheckedCategoryId array
+      - `setChecked(newCheckedCategoryId)`
+    ```javascript
+    // This method takes the category id as an argument
+    const handleToggle = c => () => {
+      // The indexOf() method will return the first index or -1
+      const currentCategoryId = checked.indexOf(c._id)
+      // An array that has all the categories from checked state
+      const newCheckedCategoryId = [...checked]
+      // If currently checked was not already in checked state, push the category to newCheckedCategoryId
+      // Else if it's unchecked, remove from newCheckedCategoryId
+      if (currentCategoryId === -1) {
+        newCheckedCategoryId.push(c)
+      } else {
+        newCheckedCategoryId.splice(currentCategoryId, 1)
+      }
+      // Set checked state to newCheckedCategoryId
+      setChecked(newCheckedCategoryId)
+    }
+    ```
+  - In the checkbox input field, set the value based on the checked state for that category
+    - if the category is not in checked state, then the checkbox is not checked
+    - if the category is in checked state, then the checkbox is checked
+    - `value={checked.indexOf(c._id === -1)}`
 
 
 

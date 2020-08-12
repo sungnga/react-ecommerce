@@ -1010,7 +1010,7 @@
     ```
     - add an h4 header that says "Filter by categories"
 
-**4. Handle categories toggle**
+**4. Handle categories toggl in Checkbox componente**
 - When a user checks for one or more categories in the shop page, we want to use a method that gets all the categories id, put them in an array and send it to the backend so we can get all the products based on those categories
 - In src/core/Checkbox.js file:
   - Create a state that saves the checked list
@@ -1053,6 +1053,25 @@
     - if the category is in checked state, then the checkbox is checked
     - `value={checked.indexOf(c._id === -1)}`
 
+**5. Passing categories filter to parent Shop component**
+- Checkbox is a child component of Shop component
+- In Checkbox component, we're grabbing the filtered/checked category ids and now we want to send that list to the Shop component
+- Because it's the Shop component that makes request to the backend to get the products based on the filters
+- To send the categories id list, we need to write a method in Shop component and pass it down to Checkbox as props
+- In Shop.js file:
+  - Write a handleFilters method that handles the incoming filters from child components
+    - This method expects 2 arguments: filters and filterBy
+    - In this case, filters is the category ids and filterBy is either by price or by category
+    ```javascript
+    const handleFilters = (filters, filterBy) => {
+      console.log('Shop', filters, filterBy);
+    };
+    ```
+  - Pass the handleFilters method down to Checkbox component as props. Also pass down the 2 arguments in handleFilter
+    - `<Checkbox categories={categories} handleFilters={filters => handleFilters(filters, 'category')} />`
+- In Checkbox.js file:
+  - In the Checkbox component, accept the handleFilters props and destructure the props name as an argument: `const Checkbox = ({categories, handleFilters}) => { ... }`
+  - Next, in the handleToggle() method, call the handleFilters() method and pass in the newCheckedCategoryId as argument. This will send the checked category ids to the parent component
 
 
 

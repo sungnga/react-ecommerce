@@ -915,8 +915,12 @@
     - pass in the url argument: `url='product'`
     - `<ShowImage item={product} url='product' />`
 
-
-
+**8. Styling buttons and jumbotron**
+- src folder, create a file called styles.css
+  - Remove border radius
+  - Style jumbotron - page title and description section
+- In src/core/Layout.js file:
+  - Import styles sheet: `import '../styles.css'`
 
 
 

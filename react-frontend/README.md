@@ -923,6 +923,40 @@
   - Import styles sheet: `import '../styles.css'`
 
 
+### REACT: SHOP PAGE WITH SEARCH FILTER BY CATEGORY AND PRICE RANGE
+**1. Shop Component/Page**
+- In src/core folder, create a component/file called Shop.js
+- In Shop.js file:
+  - Import react, useState, useEffect: `import React, { useState, useEffect } from 'react'`
+  - Import Layout component: `import Layout from './Layout'`
+  - Write a Shop functional component
+    - Render the Layout component with page title and description
+    - Render a left sidebar and right side for content
+- In Routes.js file:
+  - Import the Shop component: `import Shop from './core/Shop'`
+  - Add a shop route that has the Shop component. Have this route just below the home route
+  - `<Route path='/shop' exact component={Shop} />`
+- In Menu.js file:
+  - Add a shop list item in the menu navigation just below the home item. This should be a link that takes you to the shop page
+  ```javascript
+  <li className='nav-item'>
+    <Link className='nav-link' style={isActive(history, '/shop')} to='/shop'>
+      Shop
+    </Link>
+  </li>
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

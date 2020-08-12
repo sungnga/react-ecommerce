@@ -946,6 +946,41 @@
   </li>
   ```
 
+**2. Get categories in shop page**
+- We need to write a function that gets categories from backend. We've already written this function for Admin
+- In src/core/apiCore.js file:
+  - Make a copy of the getCategories method in apiAdmin.js file to apiCore.js file
+- In src/core/Shop.js file:
+  - Import the getCategories method: `import { getCategories } from './apiCore'`
+  - Create a state to hold those categories and an error state
+    - `const [categories, setCategories] = useState([])`
+    - `const [error, setError] = useState(false)`
+  - Next, write an init method that loads the categories when the component mounts
+    - Call the getCategories method. This is an async operation. We'll get back is either the data or the error. Use then() method on getCategories() to handle both
+      - if error, set the error state to data.error
+      - if success, set the categories state to data
+      ```javascript
+      const init = () => {
+        getCategories().then((data) => {
+          if (data.error) {
+            setError(data.error);
+          } else {
+            setCategories(data);
+          }
+        });
+      };
+      ```
+  - Use the useEffect() method to load the categories
+    - useEffect() takes a callback function as 1st arg, and an empty array as 2nd arg
+    - In the callback function, call the init() method
+    ```javascript
+    useEffect(() => {
+  		init();
+    }, []);
+    ```
+
+
+
 
 
 

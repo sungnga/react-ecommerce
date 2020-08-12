@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Layout from './Layout';
 import Card from './Card';
 import { getCategories } from './apiCore';
+import Checkbox from './Checkbox';
 
 const Shop = () => {
-  const [categories, setCategories] = useState([]);
-  const [error, setError] = useState(false);
+	const [categories, setCategories] = useState([]);
+	const [error, setError] = useState(false);
 
-  // Load categories and set form data
+	// Load categories and set form data
 	const init = () => {
 		getCategories().then((data) => {
 			if (data.error) {
@@ -21,7 +22,7 @@ const Shop = () => {
 	useEffect(() => {
 		init();
 	}, []);
-  
+
 	return (
 		<Layout
 			title='Shop Page'
@@ -29,7 +30,12 @@ const Shop = () => {
 			className='container-fluid'
 		>
 			<div className='row'>
-				<div className='col-4'>Left sidebar</div>
+				<div className='col-4'>
+					<h4>Filter by categories</h4>
+					<ul>
+						<Checkbox categories={categories} />
+					</ul>
+				</div>
 				<div className='col-8'>Right</div>
 			</div>
 		</Layout>

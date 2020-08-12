@@ -979,11 +979,36 @@
     }, []);
     ```
 
-
-
-
-
-
+**3. Show categories in shop sidebar**
+- Create category checkbox in shop sidebar. We should create a Checkbox component so that when the checkbox is clicked, we can apply some logic to display the products
+- In src/core folder, create a component/file called Checkbox.js
+- In Checkbox.js file:
+  - Import react, useState, and useEffect: `import React, { useState, useEffect } from 'react'`
+  - Write a Checkbox functional component that
+    - accepts the props categories. Destructure categories as parameter
+    - returns the list of categories that's coming from the Shop component. Remember that Shop component has categories state and it fetches list of categories from backend
+      - to render the categories in a list, call .map() method on categories to loop through the array list
+      - each list item has an input type of checkbox and a label of category name
+    ```javascript
+    const Checkbox = ({ categories }) => {
+      return categories.map((c, i) => (
+        <li className='list-unstyled'>
+          <input type='checkbox' className='form-check-input' />
+          <label className='form-check-label'>{c.name}</label>
+        </li>
+      ));
+    };
+    ```
+- In Shop.js file:
+  - Import the Checkbox component: `import Checkbox from './Checkbox'`
+  - In the shop left sidebar, render the Checkbox component and pass in categories from state as props
+    - since the categories list is rendered as a list item, we need to wrap the Checkbox component in an unordered list tag
+    ```javascript
+    <ul>
+      <Checkbox categories={categories} />
+    </ul>
+    ```
+    - add an h4 header that says "Filter by categories"
 
 
 

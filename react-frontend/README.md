@@ -1073,6 +1073,33 @@
   - In the Checkbox component, accept the handleFilters props and destructure the props name as an argument: `const Checkbox = ({categories, handleFilters}) => { ... }`
   - Next, in the handleToggle() method, call the handleFilters() method and pass in the newCheckedCategoryId as argument. This will send the checked category ids to the parent component
 
+**6. Set filters with category**
+- Store the filters in a state in Shop component
+- In Shop.js file:
+  - Create a myFilters state that stores all the filters. myFilters is an object
+    - In it, contains filters object property which has category array and price array
+    ```javascript
+    const [myFilters, setMyFilters] = useState({
+      filters: { category: [], price: [] }
+    });
+    ```
+  - In handleFilters() method
+    - First, grab myFilters state (an object) and assign it to a variable: `const newFilters = {...myFilters}`
+    - Next, we need to filter by price or by category
+      - we want to populate the category and price arrays with category ids or price range
+      - so we want to access the filters object by using the dot notation and set the price or category, which is coming in as 'filterBy' argument
+      - assign this value to filters. This updates the filters object
+      - `newFilters.filters[filterBy] = filters`
+    - Then call setMyFilters() and pass in newFilters to update myFilters state 
+      - `setMyFilters(newFilters)`
+    ```javascript
+    const handleFilters = (filters, filterBy) => {
+      // console.log('Shop', filters, filterBy);
+      const newFilters = { ...myFilters };
+      newFilters.filters[filterBy] = filters;
+      setMyFilters(newFilters);
+    };
+    ```
 
 
 

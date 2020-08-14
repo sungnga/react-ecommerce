@@ -1075,6 +1075,8 @@
 
 **6. Set filters with category**
 - Store the filters in a state in Shop component
+- The filters is an object that contains category and price array
+- Once we populate the category and price arrays with the criterias we want, we will send this filters object to the backend 
 - In Shop.js file:
   - Create a myFilters state that stores all the filters. myFilters is an object
     - In it, contains filters object property which has category array and price array
@@ -1085,10 +1087,10 @@
     ```
   - In handleFilters() method
     - First, grab myFilters state (an object) and assign it to a variable: `const newFilters = {...myFilters}`
-    - Next, we need to filter by price or by category
-      - we want to populate the category and price arrays with category ids or price range
-      - so we want to access the filters object by using the dot notation and set the price or category, which is coming in as 'filterBy' argument
-      - assign this value to filters. This updates the filters object
+    - Next, we need to filter by category
+      - in the filters object, we want to populate the category array with category ids
+      - so we access the filters object by using the dot notation on newFilters and set the price or category, which is coming in as 'filterBy' argument
+      - assign this value to filters. This will update the filters object
       - `newFilters.filters[filterBy] = filters`
     - Then call setMyFilters() and pass in newFilters to update myFilters state 
       - `setMyFilters(newFilters)`
@@ -1101,6 +1103,15 @@
     };
     ```
 
+**7. Set filters with price range**
+- Push the price array to the filters object
+- But first we need to create a fixed price range array for users to select
+- In src/core folder, create a file called fixedPrices.js
+- In fixedPrices.js file:
+  - Create a prices array which contains objects of price range
+  - Don't forget to export the file
+- In Shop.js file:
+  - Import the prices array: `import { prices } from './fixedPrices'`
 
 
 

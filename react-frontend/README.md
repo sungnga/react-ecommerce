@@ -985,7 +985,7 @@
 - In Checkbox.js file:
   - Import react, useState, and useEffect: `import React, { useState, useEffect } from 'react'`
   - Write a Checkbox functional component that
-    - accepts the props categories. Destructure categories as parameter
+    - accepts categories as props from Shop component. Destructure categories as parameter
     - returns the list of categories that's coming from the Shop component. Remember that Shop component has categories state and it fetches list of categories from backend
       - to render the categories in a list, call .map() method on categories to loop through the array list
       - each list item has an input type of checkbox and a label of category name
@@ -1113,7 +1113,52 @@
 - In Shop.js file:
   - Import the prices array: `import { prices } from './fixedPrices'`
 
+**8. Show radiobox price range in shop sidebar**
+- Just like categories checkbox, create price range radiobox in shop sidebar. We should create a RadioBox component so that when the radiobox is clicked, we can apply some logic to display the products according to the price range
+- In src/core folder, create a component/file called RadioBox.js
+- In RadioBox.js file:
+  - Import react, useState, useEffect, and Fragment: `import React, { useState, useEffect, Fragment } from 'react'`
+  - Write a RadioBox functional component that
+    - accepts prices as props from Shop component. Destructure prices as parameter
+    - create a state that stores the value and initialize it to 0
+      - `const [value, setValue] = useState(0)`
+    - returns the list of prices that's coming from Shop component as props
+      - to render the price range list, call .map() method on prices to loop through the array list
+      - each item has an input type of radio and a label of price name, which is the price range
+    ```javascript
+    const RadioBox = ({ prices }) => {
+      const [value, setValue] = useState(0);
+      
+      const handleChange = () => {
+        //
+      };
 
+      return prices.map((p, i) => (
+        <div key={i}>
+          <input
+            onChange={handleChange}
+            type='radio'
+            value={`${p._id}`}
+            className='mr-2 ml-4'
+          />
+          <label className='form-check-label'>{p.name}</label>
+        </div>
+      ));
+    };
+    ```
+- In Shop.js file:
+  - Import the RadioBox component: `import RadioBox from './RadioBox'`
+  - In the shop left sidebar, render the RadioBox component and pass in prices as props
+    - add an h4 header that says "Filter by price range"
+    ```javascript
+    <h4>Filter by price range</h4>
+    <div>
+      <RadioBox
+        prices={prices}
+        handleFilters={(filters) => handleFilters(filters, 'price')}
+      />
+    </div>
+    ```
 
 
 

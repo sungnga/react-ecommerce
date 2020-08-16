@@ -1010,12 +1010,12 @@
     ```
     - add an h4 header that says "Filter by categories"
 
-**4. Handle categories toggl in Checkbox componente**
+**4. Handle categories toggle in Checkbox component**
 - When a user checks for one or more categories in the shop page, we want to use a method that gets all the categories id, put them in an array and send it to the backend so we can get all the products based on those categories
 - In src/core/Checkbox.js file:
   - Create a state that saves the checked list
     - `const [checked, setChecked] = useState([])`
-  - When the category checkbox input field changes handleToggle() method is called that takes the category id 
+  - When the category checkbox input field changes, handleToggle() method is called that takes the category id 
     - `<input onChange={handleToggle(c._id)} type='checkbox' className='form-check-input' />`
   - Write a handleToggle Higher Order Function that
     - takes a category id as an argument
@@ -1070,7 +1070,7 @@
   - Pass the handleFilters method down to Checkbox component as props. Also pass down the 2 arguments in handleFilter
     - `<Checkbox categories={categories} handleFilters={filters => handleFilters(filters, 'category')} />`
 - In Checkbox.js file:
-  - In the Checkbox component, accept the handleFilters props and destructure the props name as an argument: `const Checkbox = ({categories, handleFilters}) => { ... }`
+  - In the Checkbox component, accept the handleFilters props and destructure the props name in the argument: `const Checkbox = ({categories, handleFilters}) => { ... }`
   - Next, in the handleToggle() method, call the handleFilters() method and pass in the newCheckedCategoryId as argument. This will send the checked category ids to the parent component
 
 **6. Set filters with category**
@@ -1103,7 +1103,7 @@
     };
     ```
 
-**7. Set filters with price range**
+**7. Create fixed price range list**
 - Push the price array to the filters object
 - But first we need to create a fixed price range array for users to select
 - In src/core folder, create a file called fixedPrices.js
@@ -1159,6 +1159,19 @@
       />
     </div>
     ```
+
+**9. Filter by price range**
+- HandleChange on RadioBox component
+  - When a user clicks on a price range in the shop page, we want to use a method that sends this price range (event.target.value) to the parent component and also update the value state in the RadioBox component
+- In Shop.js file:
+  - Pass the handleFilters method down to RadioBox component as props. Also pass down the 2 arguments in handleFilter
+    - `<RadioBox prices={prices} handleFilters={filters => handleFilters(filters, 'price')} />`
+- In RadioBox.js file:
+  - In the RadioBox component, accept the handleFilters props and destructure the props name in the argument: `const RadioBox = ({prices, handleFilters}) => { ... }`
+  - Next, in the handleChange() method,
+    - first, accept event as an argument
+    - next, call the handleFilters() method and pass in the event.target.value as argument. This will send the event.target.value to the parent component
+    - and lastly, update the value state by calling the setValue() method and pass in the event.target.value
 
 
 

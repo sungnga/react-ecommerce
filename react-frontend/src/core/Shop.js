@@ -30,10 +30,28 @@ const Shop = () => {
 
 	// filterBy means catetory or price
 	const handleFilters = (filters, filterBy) => {
-		// console.log('Shop', filters, filterBy);
 		const newFilters = { ...myFilters };
 		newFilters.filters[filterBy] = filters;
+
+		if (filterBy === 'price') {
+			let priceValues = handlePrice(filters);
+			newFilters.filters[filterBy] = priceValues;
+		}
+
 		setMyFilters(newFilters);
+	};
+
+	const handlePrice = (value) => {
+		const data = prices;
+		let array = [];
+
+		for (let key in data) {
+			// If the value of data id matches with the value, get the value of data array and set it to array
+			if (data[key]._id === parseInt(value)) {
+				array = data[key].array;
+			}
+		}
+		return array;
 	};
 
 	return (
@@ -42,6 +60,7 @@ const Shop = () => {
 			description='Search and find books of your choice'
 			className='container-fluid'
 		>
+			{JSON.stringify(myFilters)}
 			<div className='row'>
 				<div className='col-4'>
 					<h4>Filter by categories</h4>

@@ -1167,11 +1167,63 @@
   - Pass the handleFilters method down to RadioBox component as props. Also pass down the 2 arguments in handleFilter
     - `<RadioBox prices={prices} handleFilters={filters => handleFilters(filters, 'price')} />`
 - In RadioBox.js file:
-  - In the RadioBox component, accept the handleFilters props and destructure the props name in the argument: `const RadioBox = ({prices, handleFilters}) => { ... }`
+  - In the RadioBox component, accept handleFilters props from Shop component and destructure the props name in the argument: `const RadioBox = ({prices, handleFilters}) => { ... }`
   - Next, in the handleChange() method,
     - first, accept event as an argument
     - next, call the handleFilters() method and pass in the event.target.value as argument. This will send the event.target.value to the parent component
     - and lastly, update the value state by calling the setValue() method and pass in the event.target.value
+  - Unlike 'filter by categories' where multiple categories can be selected, only on price range can be selected for 'filter by price range'
+    - In the input field for price, add name property and set its value to price: `name={price}`. This ensures that only one price range is selected and only one item is added to the price array state
+  - However, we currently are only grabbing the key out of the prices array(fixedprices.js). We want to get the 'array' value out of the key 
+    - We can handle this in the handleFilters() method in the Shop component
+    - Before doing that, first write a handlePrice() method that will extract the 'array' value out of the key
+      - this method takes value as an argument, which is the value stored in filters
+      - grab the prices array and assign it to a variable called data
+      - create an empty array, call it array
+      - next, loop through data and check if the key _id value matches the value from filters. If true, get the key 'array' value and set it to array variable
+      - then return the array, i.e [0,9]
+      ```javascript
+      const handlePrice = (value) => {
+        const data = prices;
+        let array = [];
+
+        for (let key in data) {
+          if (data[key]._id === parseInt(value)) {
+            array = data[key].array;
+          }
+        }
+        return array;
+      };
+      `` 
+    - In the handleFilters() method,
+      - write a condition that checks if filterBy is set to "price"
+      - if true, call the handlePrice() method that accepts filtes as argument
+      - assign the returned value to a variable called priceValues
+      - also set the newFilters to priceValues
+      ```javascript
+      if (filterBy === 'price') {
+        let priceValues = handlePrice(filters);
+        newFilters.filters[filterBy] = priceValues;
+      }
+      ```
+- Now when click on a price range, the corresponding array value (i.e [9,19]) should populate in the price state. And when click on one or multiple categories, the category ids is populated in the category state
+- And so the filters object, which lists the filter category and price range, is filled out, we are ready to send the filters object to the backend to fetch the products based on those filters
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,7 +4,7 @@ const RadioBox = ({ prices, handleFilters }) => {
 	const [value, setValue] = useState(0);
 
   const handleChange = (event) => {
-    console.log(event.target.value)
+    // console.log(event.target.value)
     handleFilters(event.target.value);
 		setValue(event.target.value);
 	};

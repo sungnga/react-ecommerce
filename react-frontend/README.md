@@ -1209,8 +1209,39 @@
 - Now when click on a price range, the corresponding array value (i.e [9,19]) should populate in the price state. And when click on one or multiple categories, the category ids is populated in the category state
 - And so the filters object, which lists the filter category and price range, is filled out, we are ready to send the filters object to the backend to fetch the products based on those filters
 
-
-
+**10. Show products by filter on shop page**
+- Now that we have arrays of category and price, we are ready to make api request to backend to fetch filtered products
+- In Shop.js file:
+  - Write a loadFilteredResults method 
+  - In handleFilters() method, call the loadFilteredResults() method and pass in myFilters.filters
+- In apiCore.js file:
+  - Write a getFilteredProducts method to fetch filtered products
+    - It accepts skip, limit, and filters as arguments. Set these to be an empty object as default value
+    - Use fetch() method to make the request to this api: `${API}/products/by/search`
+    - The method is a POST method
+    - Create a variable called data and set it to the argument object: `const data = {skip, limit, filters}`
+    - In the body, give the data: `body: JSON.stringify(data)`
+    ```javascript
+    export const getFilteredProducts = (skip, limit, filters = {}) => {
+      const data = { skip, limit, filters };
+      return fetch(`${API}/products/by/search`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    ```
+- In Shop.js file:
+  - Import the 
 
 
 

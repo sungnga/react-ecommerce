@@ -1265,10 +1265,17 @@
       });
     };
     ```
-  - Next, we want to run loadFilteredResults() method when the component mounts
-
-
-
+  - Render `filteredResults` to see the products
+    - `<div className='col-8'>{JSON.stringify(filteredResults)}</div>`
+  - Next, we want to load the products on the shop page when the component mounts and first renders
+    - In the useEffect() callback function, call the loadFilteredResults() method and pass in skip, limit, and myFilters.filters as arguments
+    ```javascript
+    useEffect(() => {
+      init();
+      loadFilteredResults(skip, limit, myFilters.filters);
+    }, []);
+    ```
+    - After this, user can use the left sidebar to filter products by categories and/or price range
 
 
 

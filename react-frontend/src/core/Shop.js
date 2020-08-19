@@ -40,6 +40,7 @@ const Shop = () => {
 
 	useEffect(() => {
 		init();
+		loadFilteredResults(skip, limit, myFilters.filters);
 	}, []);
 
 	// filterBy means catetory or price
@@ -94,9 +95,9 @@ const Shop = () => {
 							handleFilters={(filters) => handleFilters(filters, 'price')}
 						/>
 					</div>
-        </div>
-        
-        <div className="col-8">{JSON.stringify(filteredResults)}</div>
+				</div>
+
+				<div className='col-8'>{JSON.stringify(filteredResults)}</div>
 			</div>
 		</Layout>
 	);

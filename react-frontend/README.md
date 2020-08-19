@@ -1213,6 +1213,7 @@
 - Now that we have arrays of category and price, we are ready to make api request to backend to fetch filtered products
 - In Shop.js file:
   - Write a loadFilteredResults method 
+    - It accepts newFilters, which is coming from the filters object of myFilters state
   - In handleFilters() method, call the loadFilteredResults() method and pass in myFilters.filters
 - In apiCore.js file:
   - Write a getFilteredProducts method to fetch filtered products
@@ -1220,7 +1221,7 @@
     - Use fetch() method to make the request to this api: `${API}/products/by/search`
     - The method is a POST method
     - Create a variable called data and set it to the argument object: `const data = {skip, limit, filters}`
-    - In the body, give the data: `body: JSON.stringify(data)`
+    - In the body, give the data in json string format: `body: JSON.stringify(data)`
     ```javascript
     export const getFilteredProducts = (skip, limit, filters = {}) => {
       const data = { skip, limit, filters };
@@ -1241,9 +1242,30 @@
     };
     ```
 - In Shop.js file:
-  - Import the 
-
-
+  - Import the getFilteredProducts method: `import { getFilteredProducts } from './apiCore'`
+  - Create state for skip, limit, and filteredResults and initialize them
+    - `const [limit, setLimit] = useState(6);`
+	  - `const [skip, setSkip] = useState(0);`
+    - `const [filteredResults, setFilteredResults] = useState(0);`
+  - In the loadFilteredProducts() method, 
+    - call the getFilteredProducts() method and pass in skip, limit, and newFilters
+      - This is an async operation. We'll get back either the data or the error
+      - Use .then() method to handle the data returned
+      - if it's an error, set error state to data.error
+      - if it's a success, set filteredResults state to data
+    ```javascript
+    const loadFilteredResults = (newFilters) => {
+      // console.log(newFilters)
+      getFilteredProducts(skip, limit, newFilters).then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setFilteredResults(data);
+        }
+      });
+    };
+    ```
+  - Next, we want to run loadFilteredResults() method when the component mounts
 
 
 

@@ -11,9 +11,10 @@ const Shop = () => {
 		filters: { category: [], price: [] }
 	});
 	const [categories, setCategories] = useState([]);
-  const [error, setError] = useState(false);
+	const [error, setError] = useState(false);
 	const [limit, setLimit] = useState(6);
 	const [skip, setSkip] = useState(0);
+	const [filteredResults, setFilteredResults] = useState(0);
 
 	// Load categories and set form data
 	const init = () => {
@@ -24,12 +25,18 @@ const Shop = () => {
 				setCategories(data);
 			}
 		});
-  };
-    
-  const loadFilteredResults = (newFilters) => {
-    // console.log(newFilters)
-    getFilteredProducts(skip, limit, newFilters)
-  }
+	};
+
+	const loadFilteredResults = (newFilters) => {
+		// console.log(newFilters)
+		getFilteredProducts(skip, limit, newFilters).then((data) => {
+			if (data.error) {
+				setError(data.error);
+			} else {
+				setFilteredResults(data);
+			}
+		});
+	};
 
 	useEffect(() => {
 		init();
@@ -45,7 +52,7 @@ const Shop = () => {
 			newFilters.filters[filterBy] = priceValues;
 		}
 
-    loadFilteredResults(myFilters.filters)
+		loadFilteredResults(myFilters.filters);
 
 		setMyFilters(newFilters);
 	};
@@ -61,7 +68,7 @@ const Shop = () => {
 			}
 		}
 		return array;
-  };
+	};
 
 	return (
 		<Layout
@@ -87,7 +94,9 @@ const Shop = () => {
 							handleFilters={(filters) => handleFilters(filters, 'price')}
 						/>
 					</div>
-				</div>
+        </div>
+        
+        <div className="col-8">{JSON.stringify(filteredResults)}</div>
 			</div>
 		</Layout>
 	);

@@ -1275,9 +1275,12 @@
       loadFilteredResults(skip, limit, myFilters.filters);
     }, []);
     ```
-    - After this, user can use the left sidebar to filter products by categories and/or price range
+  - After this, user can use the left sidebar to filter products by categories and/or price range
 
-
+**11. Pass products to Card component**
+- In Shop.js file:
+  - Import Card component: `import Card from './Card';`
+    
 
 
 

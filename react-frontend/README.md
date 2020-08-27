@@ -1246,7 +1246,7 @@
   - Create state for skip, limit, and filteredResults and initialize them
     - `const [limit, setLimit] = useState(6);`
 	  - `const [skip, setSkip] = useState(0);`
-    - `const [filteredResults, setFilteredResults] = useState(0);`
+    - `const [filteredResults, setFilteredResults] = useState([]);`
   - In the loadFilteredProducts() method, 
     - call the getFilteredProducts() method and pass in skip, limit, and newFilters
       - This is an async operation. We'll get back either the data or the error
@@ -1278,10 +1278,10 @@
   - After this, user can use the left sidebar to filter products by categories and/or price range
 
 **11. Pass products to Card component**
-- Render list of products from filteredResults in Card component
+- Pass list of products from filteredResults to Card component in shop page
 - In Shop.js file:
   - Import Card component: `import Card from './Card'`
-  - Loop through filteredResults to get each product item using map() method and pass product as props to Card component
+  - Loop through filteredResults array to get each product item using map() method and pass product as props to Card component
   ```javascript
   <h4 className='mb-4'>Products</h4>
   <div className='row'>
@@ -1292,13 +1292,68 @@
   ```
   - In loadFilteredResults method, make sure to setFilteredResults to data.data
     - `setFilteredResults(data.data)`
-- The product description can be very long, so we can set a fixed length of characters
+- The product description can be very long, so we can set a fixed length of characters using substring() method on product description
 - In Card.js file:
   - `<p>{product.description.substring(0, 100)}</p>`
 
-
-
-
+**12. Load more button**
+- Create a 'load more' button in shop page to load more products
+- In Shop.js file:
+  - Create a state for size 
+    - `const [size, setSize] = useState(0);`
+  - In the loadFilteredResults method, when we get back the data, we also need to setSize and setSkip
+  ```javascript
+  ...
+  } else {
+    setCategories(data);
+    setSize(data.size);
+    setSkip(0);
+  }
+  ```
+  - Next, write a loadMore method that fetches more products from backend based on filters
+    - It doesn't take any arguments
+    - Create a toSkip variable that contains the values of skip plus limit states
+    - In the getFilteredProducts method,
+      - it now takes toSkip, limit, myFilters.filters as arguments
+      - in setFilteredResults method, we want to pass in the filteredResults and data.data using the spread operator in AN ARRAY
+      - this way we can still have the current data, and add new data to filteredResults state using setFilteredResults()
+      - setSize() to data.size
+      - setSkip() to toSkip
+    ```javascript
+    const loadMore = () => {
+      let toSkip = skip + limit;
+      getFilteredProducts(toSkip, limit, myFilters.filters).then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setFilteredResults([...filteredResults, ...data.data]);
+          setSize(data.size);
+          setSkip(toSkip);
+        }
+      });
+    };
+    ```
+  - Write a loadMoreButton method that renders the 'load more' button
+    - Check to see if size is greater than 0 and size is greater or equal to the limit value
+    - If true, render more products when 'load more' button is clicked
+    - onClick property, call the loadMore method
+    ```javascript
+    const loadMoreButton = () => {
+      return (
+        size > 0 &&
+        size >= limit && (
+          <button onClick={loadMore} className='btn btn-warning mb-5'>
+            Load more
+          </button>
+        )
+      );
+    };
+    ```
+  - Render the loadMoreButton() method right after the list of products. Add a horizontal line above it as well
+    ```javascript
+    <hr />
+    {loadMoreButton()}
+    ```
 
 
 

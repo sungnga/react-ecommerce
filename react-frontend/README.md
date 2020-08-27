@@ -1278,9 +1278,24 @@
   - After this, user can use the left sidebar to filter products by categories and/or price range
 
 **11. Pass products to Card component**
+- Render list of products from filteredResults in Card component
 - In Shop.js file:
-  - Import Card component: `import Card from './Card';`
-    
+  - Import Card component: `import Card from './Card'`
+  - Loop through filteredResults to get each product item using map() method and pass product as props to Card component
+  ```javascript
+  <h4 className='mb-4'>Products</h4>
+  <div className='row'>
+    {filteredResults.map((product, i) => (
+      <Card key={i} product={product} />
+    ))}
+  </div>
+  ```
+  - In loadFilteredResults method, make sure to setFilteredResults to data.data
+    - `setFilteredResults(data.data)`
+- The product description can be very long, so we can set a fixed length of characters
+- In Card.js file:
+  - `<p>{product.description.substring(0, 100)}</p>`
+
 
 
 

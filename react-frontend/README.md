@@ -1,4 +1,4 @@
-# STEPS TO BUILDING THE FRONTEND OF THIS ECOMMERCE APP WITH REACT
+# STEPS TO BUILDING THE FRONTEND PORTION OF THIS ECOMMERCE APP WITH REACT
 
 ### REACT: REACT APP WITH PAGES AND LAYOUTS
 **1. Create react app**
@@ -1354,6 +1354,72 @@
     <hr />
     {loadMoreButton()}
     ```
+
+
+### REACT: PRODUCTS SEARCH IN HOME PAGE
+**1. Search component**
+- In src/core folder, create a new component/file called Search.js
+- In Search.js file:
+  - Import React, useState, useEffect: `import React, { useState, useEffect } from 'react'`
+  - Create a functional Search component. Render an h2 "Seach bar" text for now
+    ```javascript
+    const Search = () => {
+      return (
+        <div>
+          <h2>Search bar</h2>
+        </div>
+      );
+    };
+    ```
+  - Export the component: `export default Search;`
+- In Home.js file:
+  - Import the Search component: `import Search from './Search'`
+  - Render the Search component as the first item in Layout component
+- In Search.js file:
+  - Create a state for data. Note that data is an object
+    - In it, contains categories, category, search, results, and searched object properties
+    ```javascript
+    const [data, setData] = useState({
+      categories: [],
+      category: '',
+      search: '',
+      results: [],
+      searched: false
+    });
+    ```
+  - First thing we need to do is get all the categories from the backend
+    - Import getCategories method: `import { getCategories } from './apiCore'`
+    - Write a loadCategories method that loads the categories when the component mounts
+      - Call the getCategories method. This is an async operation. We'll get back is either the data or the error. Use then() method on getCategories() to handle both
+        - if error, console log the data error
+        - if success, spread in the current data object and update categories property with the fetched data
+        ```javascript
+        const loadCategories = () => {
+          getCategories().then((data) => {
+            if (data.error) {
+              console.log(data.error)
+            } else {
+              setData({...data, categories: data})
+            }
+          });
+        };
+        ```
+    - Use the useEffect() method to load the categories
+      - useEffect() takes a callback function as 1st arg and an empty array as 2nd arg
+      - In the callback function, call the loadCategories() method
+      ```javascript
+      useEffect(() => {
+        loadCategories();
+      }, []);
+      ```
+  - Next, destructure all the data object properties so we can use them
+    - `const { categories, category, search, results, searched } = data;`
+  - Lets test to see if we have categories in the state. Render categeories in json stringify form
+    - `<h2>Search bar {JSON.stringify(categories)}</h2>`
+
+
+
+
 
 
 

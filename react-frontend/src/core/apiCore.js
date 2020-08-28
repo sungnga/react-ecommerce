@@ -1,4 +1,5 @@
 import { API } from '../config';
+import queryString from 'query-string';
 
 // Get products from backend
 export const getProducts = (sortBy) => {
@@ -39,4 +40,18 @@ export const getFilteredProducts = (skip, limit, filters = {}) => {
 		.catch((err) => {
 			console.log(err);
 		});
+};
+
+// Get products from backend based on query parameters
+// params are the category id and the value the user types in the search bar
+export const list = (params) => {
+	const query = queryString.stringify(params);
+	console.log('query', query);
+	return fetch(`${API}/products?${query}`, {
+		method: 'GET'
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
 };

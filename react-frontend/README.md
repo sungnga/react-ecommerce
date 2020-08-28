@@ -1418,9 +1418,9 @@
     - `<h2>Search bar {JSON.stringify(categories)}</h2>`
 
 **2. Search form**
-- Implement the search bar
+- Create a search bar form
 - In Search.js file:
-  - Write a searchForm method that renders the searchbar form
+  - Write a searchForm method that renders the search bar form
     - the form element has 
       - a select category drop-down menu option
       - a search input field
@@ -1462,15 +1462,83 @@
     );
     ```
 
-
-
-
+**3. Implementing search**
+- In Search.js file:
+  - Write an HOF(Higher Order Function) handleChange method to update the data state with the event input values
+    - it takes the argument name. This name could be 'category' or 'search'
+    - 'category' and 'search' are properties of data object
+    - call setData() to set the current data, set whatever the name may be to event.target.value, and lastly set searched property to false
+    - for example, if name is 'search', then the value for search property is the value coming from the search input field that the user types in
+    - if name is 'category', then the value for category property is the category id that the user selects
+    ```javascript
+    const handleChange = (name) => (event) => {
+      setData({ ...data, [name]: event.target.value, searched: false });
+    };
+    ```
+  - Write a searchSubmit method that executes the searchData() method to make a request to backend to fetch the products
+    ```javascript
+    const searchSubmit = (e) => {
+      e.preventDefault();
+      searchData();
+    };
+    ```
+- We need to write a method that fetch the products from backend based on the 'category' and 'search' parameters
+- In apiCore.js file:
+  - Write a list method that gets the products from backend based on query parameters
+    - It takes params as an argument. params are the 'category' id and the 'search' value the user types in the search bar
+    - We need to use a query string library to help us turn the params into a usable query string in order to make the api request
+      - Install query string library: `npm i query-string`
+      - Import queryString in apiCore.js file: `import queryString from 'query-string'`
+      - To use, call stringify() method on queryString and pass in params as argument
+      - Assign this query string to a variable called query: `const query = queryString.stringify(params);`
+    - Now, use fetch() method to make the request to this api which contains the queryString params: `${API}/products?${query}`
+    - The method is a GET method
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const list = (params) => {
+      const query = queryString.stringify(params);
+      console.log('query', query);
+      return fetch(`${API}/products?${query}`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- In Search.js file:
+  - Import the list method: `import { getCategories, list } from './apiCore'`
+  - Write a searchData method that executes the list method to fetch products from backend based on query parameters
+    - First check to see if the input value for search is provided. If true, execute the list() method
+    - In list method,
+      - it takes search and category as arguments
+      - this is an async operation. We get back either a response or an error
+      - if error, console log the error
+      - if success, call setData() to update the data state. Set the current data, update results property to the response we get back, and update searched property to true
+    ```javascript
+    const searchData = () => {
+      // console.log(search, category);
+      if (search) {
+        list({ search: search || undefined, category: category }).then(
+          (response) => {
+            if (response.error) {
+              console.log(response.error);
+            } else {
+              setData({ ...data, results: response, searched: true });
+            }
+          }
+        );
+      }
+    };
+    ```
 
 
 
 # LIBRARIES USED
 - React router dom: `npm i react-router-dom`
 - Environment variable: `npm i dotenv`
+- Query params: `npm i query-string`
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

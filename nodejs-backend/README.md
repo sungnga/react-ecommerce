@@ -478,7 +478,7 @@ In routes/auth.js file:
 	- Create a route that fetch related products based on the product id
 		- `router.get('/products/related/:productId', listRelated)`
 		- Use **get()** method
-	- Import listRelated method from controllers/products
+	- Import listRelated method from controllers/product
 - In controllers/product.js file:
 	- Write a listRelated method that
 		- finds the products based on the req product category
@@ -522,9 +522,9 @@ In routes/auth.js file:
 **4. List products by search**
 - In routes/products.js file:
 	- Create a route that lists products based on search requirements
-	- `router.post('/products/by/search', listBySearch)`
-	- Use **post()** method
-	- Import listBySearch method from controllers/products
+		- `router.post('/products/by/search', listBySearch)`
+		- Use **post()** method
+	- Import listBySearch method from controllers/product
 - In controllers/product.js file:
 	- We will implement product search in react frontend
 	- We will show categories in checkbox and price range in radio buttons
@@ -543,7 +543,7 @@ In routes/auth.js file:
 	- Create a route that displays product photo based on product id
 	- `router.get('/poduct/photo/:productId', photo)`
 	- Use **get()** method
-	- Import photo method from controllers/products
+	- Import photo method from controllers/product
 - In controllers/product.js file:
 	- Write a photo method that sends product photo
 		- This method acts as middleware
@@ -614,6 +614,51 @@ In routes/auth.js file:
 - Import cors in app.js file: `const cors = require('cors')`
 - Use the middleware: `app.use(cors())`
 
+**8. List products by search query params**
+- In routes/products.js file:
+	- Create a route that lists products based on search query params
+	  - `router.get('/products/search', listSearch);`
+	  - Use **get()** method
+	- Import listSearch method from controllers/product
+    - `const { listSearch } = require('../controllers/product');`
+- In controllers/product.js file:
+	- Write a listSearch method that lists the products based on search query params
+		- First, create query object to hold search value and category value. Start out as an empty object
+			- `const query = {};`
+		- Then check to see if search query value is provided 
+			- If true, assign search value to query.name using regex
+		- Next, check to see a category has been selected AND that not all of the categories are selected
+			- If true, assign category value to query.category
+		- Then find the product based on query object with 2 properties: search and category
+			- In Product model, use find() method to find products based on the query object. Pass query as 1st arg
+			- Pass a 2nd arg, a callback function that has either the error or the products
+			- If error, return a status code and a json response of the error message
+			- If success, send json response with the products
+			- We also want to leave out the photo when search
+	```javascript
+	exports.listSearch = (req, res) => {
+		// Create query object to hold search value and category value
+		const query = {};
+		// Assign search value to query.name
+		if (req.query.search) {
+			query.name = { $regex: req.query.search, $options: 'i' };
+			// Assign category value to query.category
+			if (req.query.category && req.query.category != 'All') {
+				query.category = req.query.category;
+			}
+			// Find the product based on query object with 2 properties
+			// search and category
+			Product.find(query, (err, products) => {
+				if (err) {
+					return res.status(400).json({
+						error: errorHandler(err)
+					});
+				}
+				res.json(products);
+			}).select('-photo');
+		}
+	};
+	```
 
 
 

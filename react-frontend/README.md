@@ -1393,17 +1393,17 @@
       - Call the getCategories method. This is an async operation. We'll get back is either the data or the error. Use then() method on getCategories() to handle both
         - if error, console log the data error
         - if success, spread in the current data object and update categories property with the fetched data
-        ```javascript
-        const loadCategories = () => {
-          getCategories().then((data) => {
-            if (data.error) {
-              console.log(data.error)
-            } else {
-              setData({...data, categories: data})
-            }
-          });
-        };
-        ```
+      ```javascript
+      const loadCategories = () => {
+        getCategories().then((data) => {
+          if (data.error) {
+            console.log(data.error)
+          } else {
+            setData({...data, categories: data})
+          }
+        });
+      };
+      ```
     - Use the useEffect() method to load the categories
       - useEffect() takes a callback function as 1st arg and an empty array as 2nd arg
       - In the callback function, call the loadCategories() method
@@ -1498,7 +1498,7 @@
     export const list = (params) => {
       const query = queryString.stringify(params);
       console.log('query', query);
-      return fetch(`${API}/products?${query}`, {
+      return fetch(`${API}/products/search?${query}`, {
         method: 'GET'
       })
         .then((response) => {
@@ -1532,6 +1532,34 @@
       }
     };
     ```
+
+**3. Backend implementation of search**
+- Pass list of products from results to Card component in home page
+- In Search.js file:
+  - Import Card component: `import Card from './Card'`
+  - Write a searchedProducts method that displays list of products in Card component
+    - it takes results as argument. Results contains list of products based on search query. Make results as an empty array by default
+    - loop through the results array to get each product item using map() method and pass product as props to Card component
+    ```javascript
+    const searchedProducts = (results = []) => (
+      <div className='row'>
+        {results.map((product, i) => (
+          <Card key={i} product={product} />
+        ))}
+      </div>
+    );
+    ```
+  - Render the list of products by calling the searchedProducts() method inside a fluid container div element and pass in results as argument
+    - `<div className='container-fluid mb-3'>{searchedProducts(results)}</div>`
+- We need to implement backend for search:
+  - In routes/products.js file, create a route that lists products based on search query params
+  - In controllers/product.js file, write a listSearch method that finds products based on search query properties: search and category
+
+
+
+
+
+
 
 
 

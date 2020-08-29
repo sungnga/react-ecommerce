@@ -41,7 +41,7 @@ const Shop = () => {
 		});
 	};
 
-  // Fetch more products from backend based on filters
+	// Fetch more products from backend based on filters
 	const loadMore = () => {
 		let toSkip = skip + limit;
 		getFilteredProducts(toSkip, limit, myFilters.filters).then((data) => {
@@ -55,7 +55,7 @@ const Shop = () => {
 		});
 	};
 
-  // Render load more button
+	// Render load more button
 	const loadMoreButton = () => {
 		return (
 			size > 0 &&
@@ -130,7 +130,9 @@ const Shop = () => {
 					<h2 className='mb-4'>Products</h2>
 					<div className='row'>
 						{filteredResults.map((product, i) => (
-							<Card key={i} product={product} />
+							<div key={i} className='col-4 mb-3'>
+								<Card product={product} />
+							</div>
 						))}
 					</div>
 

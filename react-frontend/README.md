@@ -1659,7 +1659,62 @@
     };
     ```
 
-
+**2. Reuse Card component for single product**
+- In Product.js file:
+  - Show the page title & description as the product name & description
+  - In Layout component,
+    - set title property to product name: `title={product && product.name}`
+    - set description property to shortened product description: `description={product && product.description && product.description.substring(0, 100)}`
+    - check to make sure we have the product first before rendering the product title and description
+  - Render the Card component inside the Layout component
+    - first check to make sure we have the product and product description before rendering the Card
+    - pass in product as props in Card component: `<Card product={product} />`
+  ```javascript
+  <Layout
+    title={product && product.name}
+    description={
+      product && product.description && product.description.substring(0, 100)
+    }
+    className='container-fluid'
+  >
+    <div className='row'>
+      {product && product.description && <Card product={product} />}
+    </div>
+  </Layout>
+  ```
+- Next we need to adjust the grid layout for Card component so it can be used in multiple places
+  - In Card.js file:
+    - Remove the div element with classnames: `<div className='col-4 mb-3'>`
+    - Now the Card doesn't have any column width structure
+  - In Home.js file:
+    - Add a div element with classnames around the Card component: `<div key={i} className='col-4 mb-3'>`
+    - Move the key from Card to the div element around it
+    - Do this for Best Sellers and New Arrivals sections
+  - In Shop.js file:
+    - Repeat the same process from Home.js
+- We don't want to show the "View Product" button in the single product page
+- In Product.js file:
+  - In the Card component, pass in another props called showViewProductButton and set it to false
+- In Card.js file:
+  - In the Card component, pass in showViewProudctButton as 2nd arg and set the default value to true: `const Card = ({ product, showViewProudctButton = true }) => {...}`
+  - Let's extract the "View Product" button and the link into a separate function so we can show or hide this button when we want
+  - Write a showViewButton method that renders the "View Product" button and link
+    - it accepts showViewProductButton as argument
+    - NOTE THAT THIS BUTTON AND LINK ONLY RENDERS IF `showViewProductButton` IS TRUE. AND BY DEFAULT, IT IS SET TO TRUE IN CARD COMPONENT
+    ```javascript
+    const showViewButton = (showViewProductButton) => {
+      return (
+        showViewProductButton && (
+          <Link to={`/product/${product._id}`}>
+            <button className='btn btn-outline-primary mt-2 mb-2 mr-2'>
+              View Product
+            </button>
+          </Link>
+        )
+      );
+    };
+    ```
+  - Call the showViewButton() method and pass in showViewProductButton as argument to render the "View Product" button: `{showViewButton(showViewProductButton)}`
 
 
 

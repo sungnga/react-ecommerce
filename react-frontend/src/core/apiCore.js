@@ -42,12 +42,23 @@ export const getFilteredProducts = (skip, limit, filters = {}) => {
 		});
 };
 
-// Get products from backend based on query parameters
+// Get products from backend based on search query parameters
 // params are the category id and the value the user types in the search bar
 export const list = (params) => {
 	const query = queryString.stringify(params);
 	console.log('query', query);
 	return fetch(`${API}/products/search?${query}`, {
+		method: 'GET'
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+// Get a product based on product id
+export const read = (productId) => {
+	return fetch(`${API}/product/${productId}`, {
 		method: 'GET'
 	})
 		.then((response) => {

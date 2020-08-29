@@ -935,7 +935,7 @@
 - In Routes.js file:
   - Import the Shop component: `import Shop from './core/Shop'`
   - Add a shop route that has the Shop component. Have this route just below the home route
-  - `<Route path='/shop' exact component={Shop} />`
+    - `<Route path='/shop' exact component={Shop} />`
 - In Menu.js file:
   - Add a shop list item in the menu navigation just below the home item. This should be a link that takes you to the shop page
   ```javascript
@@ -1212,8 +1212,10 @@
 **10. Show products by filter on shop page**
 - Now that we have arrays of category and price, we are ready to make api request to backend to fetch filtered products
 - In Shop.js file:
-  - Write a loadFilteredResults method 
+  - Write a loadFilteredResults method that loads the filtered products
     - It accepts newFilters, which is coming from the filters object of myFilters state
+    - Console log newFilters to see what's being passed in to this function 
+    - Leave empty for now
   - In handleFilters() method, call the loadFilteredResults() method and pass in myFilters.filters
 - In apiCore.js file:
   - Write a getFilteredProducts method to fetch filtered products
@@ -1578,6 +1580,85 @@
       }
     };
     ```
+
+
+###REACT: PRODUCT PAGE WITH RELATED PRODUCTS
+**1. Single product component**
+- When a user clicks on "View Product" button, it'll take them to a single product page to view the detail of that product
+- In src/core folder, create a component/file called Product.js
+- In Product.js file:
+  - Import React, useState, and useEffect: `import React, { useState, useEffect } from 'react'`
+  - Import Layout component: `import Layout from './Layout'`
+  - Write a functional Product component
+    - Render the content in the Layout component
+- In src/Routes.js file:
+  - Import the Product component: `import Product from './core/Product'`
+  - Add a product route that has the Product component
+    - The path contains the product id
+    - `<Route path='/product/:productId' exact component={Product} />`
+- Next, we need create a link in the Card component that directs users to the Product page when they click the "View Product" button
+- In Card.js file:
+  - Make the path of the Link component go to the Product page
+    - `<Link to='/product/${product._id}'>`
+  - Now when the "View Product" button is clicked, it should direct user to the single Product page
+  - Note that the URL of the Product page has the product id
+- Next step is to take the product id (from the route parameter which is the URL) to make an api request to the backend to get this particular product
+- So first we want to grab the product id from the URL and make it available as soon as the component mounts and first time it renders. We do this using useEffect() hook
+- In Product.js file:
+  - Create states for product and for error. Initialize both states
+    - `const [product, setProduct] = useState({})`
+    - `const [error, setError] = useState(false)`
+  - Use useEffect() method to get the product id from the URL and execute the loadSingleProduct() method with that product id
+    - This method takes a callback function as 1st arg and an empty array as 2nd arg
+    - Inside the callback function, first get the product id from the URL and save it to a variable called productId
+    - Then call the loadSingleProduct() method and pass in the productId as argument
+    - In the Product component don't forget to accept 'props' as argument
+    ```javascript
+    useEffect(() => {
+      const productId = props.match.params.productId;
+      loadSingleProduct(productId);
+    }, []);
+    ```
+  - Next, write a loadSingleProduct method that loads the product from backend when the component mounts
+    - It takes productId as argument
+    - Leave the function body empty for now
+- In src/core/apiCore.js file:
+  - Write a read method that fetches a product based on a given product id from backend
+    - It takes productId as an argument
+    - Use fetch() method to make the request to this api: `${API}/product/${productId}`
+    - The method is a GET method
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const read = (productId) => {
+      return fetch(`${API}/product/${productId}`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- Back in Product.js file:
+  - Import the read method: `import { read } from './apiCore'`
+  - In the loadSingleProduct method,
+    - execute the read() method and pass in the productId as argument
+    - this is an async operation which we'll get back either the data or the error. Use .then() method to handle the data returned
+    - if error, set error state to data.error
+    - if success, set product state to data
+    - 
+    ```javascript
+    const loadSingleProduct = (productId) => {
+      read(productId).then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setProduct(data);
+        }
+      });
+    };
+    ```
+
 
 
 

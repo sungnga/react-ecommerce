@@ -1555,8 +1555,29 @@
   - In routes/products.js file, create a route that lists products based on search query params
   - In controllers/product.js file, write a listSearch method that finds products based on search query properties: search and category
 
-
-
+**4. Search message to users**
+- In Search.js file:
+  - In searchedProducts method, we display the products in Card component, but we also want to display a message to users
+    - Just above the products list, render the message by calling the searchMessage() method and pass in searched and results as the two arguments
+  - Write a searchMessage method
+    - it takes searched and results as two arguments
+    - write a condition to check if searched is true AND results.length array is greater than 0
+      - if true, return the message with that number of products from results found
+    - write a condition to check if searched is true AND results.length array is less than 1
+      - if true, return the message that no product is found
+    ```javascript
+    const searchMessage = (searched, results) => {
+      if (searched && results.length == 1) {
+        return `Found ${results.length} product`;
+      }
+      if (searched && results.length > 0) {
+        return `Found ${results.length} products`;
+      }
+      if (searched && results.length < 1) {
+        return `No products found`;
+      }
+    };
+    ```
 
 
 

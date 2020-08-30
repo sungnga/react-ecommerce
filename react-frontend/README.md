@@ -1750,8 +1750,68 @@
     ```
   - Lastly, add css style to product price, category name, and date added
 
-
-
+**4. Show related products on single product page**
+- We need to write a method that makes an api request to fetch related products from backend
+- In apiCore.js file:
+  - Write a listRelated method that fetches related products based on a given product id from backend
+    - It takes productId as an argument
+    - Use fetch() method to make the request to this api: `${API}/products/related/${productId}`
+    - The method is a GET method
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const listRelated = (productId) => {
+      return fetch(`${API}/products/related/${productId}`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - The way listRelated() method works is after the first product loads, it'll try to find related products based on the same category name. So if a product has React as its category, it will try to find products with React category as well
+- In Product.js file:
+  - Import the listRelated method: `import { listRelated } from './apiCore'`
+  - Create a state for related product and initialize it with an empty array
+    - `const [relatedProduct, setRelatedProduct] = useState([]);`
+  - In loadSingleProduct method, we first fetch a product with the product id and save that product in product state. After this we want to fetch related products with the product id
+  - In loadSingleProduct method,
+    - right after calling setProduct(), call the listRelated() method
+    - it takes data._id as argument
+    - this is an async operation which we'll get back either the data or the error. Use .then() method to handle the data returned
+    - if error, set error state to data.error
+    - if success, set relatedProduct state to data
+    - 
+    ```javascript
+    listRelated(data._id).then((data) => {
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setRelatedProduct(data);
+      }
+    });
+    ```
+  - Next, we want to display the related products in a 4-column grid next to the main product. The main product section is in an 8-column grid
+    - Loop through the relatedProduct state using map() method to get each product item and display it in a Card component
+    - Pass the product as props in the Card component
+    ```javascript
+    <div className='col-4'>
+      <h4>Related Products</h4>
+      {relatedProduct.map((p, i) => (
+        <div className='mb-3'>
+          <Card key={i} product={p} />
+        </div>
+      ))}
+    </div>
+    ```
+  - The problem we have on single product page is when the user clicks on "View Product" button on Related Products section, it doesn't take them to the detail product page. It only updates the URL with the product id, but not the page content. To solve this problem, use useEffect() to update/render the page content whenever the URL query parameter changes
+    - In useEffect() hook, pass in props array as 2nd argument
+    ```javascript
+    useEffect(() => {
+      const productId = props.match.params.productId;
+      loadSingleProduct(productId);
+    }, [props]);
+    ``
 
 
 # LIBRARIES USED

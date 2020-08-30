@@ -320,6 +320,7 @@ In routes/auth.js file:
 	- Write a productById method that..
 		- takes the parameters of req, res, next and id
 		- then it tries to find the product in the Product model using the findById() method
+		- then calls the populate() method to populate the category description
 		- then calls the exec() method to execute the callback function
 		- in this callback, we'll either get an error or the product as param
 			- if error or no product, return a response with status code of 400 and an error message

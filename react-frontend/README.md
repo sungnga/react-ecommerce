@@ -1716,6 +1716,40 @@
     ```
   - Call the showViewButton() method and pass in showViewProductButton as argument to render the "View Product" button: `{showViewButton(showViewProductButton)}`
 
+**3. Product detail on single product page**
+- In Card.js file:
+  - Start by adding more custom styling to the product description and price
+  - Add/show Category name
+  - Add/show when the product was added
+    - Use Moment library to generate the date format
+    - Install this library in the 'react-frontend' directory: `npm i moment`
+    - Import moment: `import moment from 'moment'`
+    - To use: `Added on {moment(product.createdAt).fromNow()}`
+  - Let's extract the "Add to cart" button into a separate function
+  - Write a showAddToCartButton method that renders the "Add to cart" button
+    ```javascript
+  	const showAddToCartButton = () => {
+      return (
+        <button className='btn btn-outline-warning mt-2 mb-2'>Add to cart</button>
+      );
+    };
+    ```
+  - Call the showAddToCartButton() to render the button: `{showAddToCartButton()}`
+  - Add/show the product stock. Write a function for this: `{showStock(product.quantity)}`
+  - Write a showStock method that shows either the product is in stock or product is out of stock
+    - this method takes quantity as argument
+    - write a condition that checks if quantity is greater than 0, then display the text "In Stock". Else display text "Out of Stock"
+    ```javascript
+    const showStock = (quantity) => {
+      return quantity > 0 ? (
+        <span className='badge badge-primary pill'>In Stock</span>
+      ) : (
+        <span className='badge badge-primary badge-pill'>Out of Stock</span>
+      );
+    };
+    ```
+  - Lastly, add css style to product price, category name, and date added
+
 
 
 
@@ -1724,6 +1758,7 @@
 - React router dom: `npm i react-router-dom`
 - Environment variable: `npm i dotenv`
 - Query params: `npm i query-string`
+- Date and time stamp: `npm in moment`
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

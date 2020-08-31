@@ -1822,7 +1822,7 @@
     - Create a cart variable and assign it to an empty array: `let cart = []`
     - Check to see if there's a window object (not undefined)
     - If there is a window object, check to see if we can get an item with the name 'cart' from the localStorage using the .getItem() method
-    - If there is, then we want to populate the item to the cart variable. But first convert it from json string format to object format using JSON.parse()
+    - If there is cart, then we want to populate the item to the cart variable. But first convert it from json string format to object format using JSON.parse()
     - This method receives 'item' as an argument. So we want to add this item to cart variable using the .push() method. When an item is added to cart, we also want to set count to 1
     ```javascript
     export const addItem = (item, next) => {
@@ -1915,6 +1915,28 @@
   - Call the shouldRedirect() method to render just above the ShowImage component
     - It takes redirect as an argument. SO THIS METHOD RENDERS ONLY IF THE REDIRECT STATE IS TRUE
     - In this case, when the "Add to cart" button is clicked, the addItem method is executed to add the product to localStorage and set the redirect state to true. Since redirect state is true, the shouldRedirect method runs and redirect to the cart page
+
+**2. Show cart items total in menu**
+- Add the cart link in the navigation and show the number of items in the cart
+- In cartHelpers.js file:
+  - Write an itemTotal method that returns the total items in the cart, the length of cart array
+    - This method doesn't take any arguments
+    - First, check to see if there's a window object (not undefined)
+    - If there is a window object, check to see if we can get an item with the name 'cart' from the localStorage using the .getItem() method
+    - If there is cart, then we want to return the total items, the length, of the cart. But first convert it from json string format to object format using JSON.parse()
+    - If there is no item in the cart, we want to return 0 by default
+- In core/Menu.js file:
+  - Import the itemTotal method: `import { itemTotal } from './cartHelpers'`
+  - Render a Cart nav link right after the Shop link
+    - Use Link component from react-router-dom to create the link and point the path to cart page
+  - Right next to the "Cart" text, execute the itemTotal() method and give it styling in style.css file
+  ```javascript
+  <li className='nav-item'>
+    <Link className='nav-link' style={isActive(history, '/cart')} to='/cart'>
+        Cart <sup><small className="cart-badge">{itemTotal()}</small></sup>
+    </Link>
+  </li>
+  ```
 
 
 

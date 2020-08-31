@@ -27,7 +27,16 @@ export const addItem = (item, next) => {
 			return cart.find((p) => p._id === id);
 		});
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-    next();
+		localStorage.setItem('cart', JSON.stringify(cart));
+		next();
 	}
+};
+
+export const itemTotal = () => {
+	if (typeof window !== 'undefined') {
+		if (localStorage.getItem('cart')) {
+			return JSON.parse(localStorage.getItem('cart')).length;
+		}
+	}
+	return 0;
 };

@@ -5,6 +5,17 @@
 	border-radius: 0px;
 }
 
+/* cart badge */
+.cart-badge, .cart-badge:hover {
+	margin-left: 1px;
+	border-radius: 50%;
+	padding: 2px 4px;
+	font-size: 10px;
+	color: blue;
+	font-weight: bold;
+	background: white;
+}
+
 /* single product page - product name */
 .name {
 	background: indigo;

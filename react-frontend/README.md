@@ -663,7 +663,7 @@
   - Import: `import Layout from '../core/Layout'`
   - Import: `import { isAuthenticated } from '../auth'`
   - Import: `import { createProduct} from './apiAdmin'`
-  - Write a AddProfuct functional component creates a new product
+  - Write an AddProduct functional component that creates a new product
     - Create state using useState hook
       ```javascript
       const [values, setValues] = useState({ object properties })
@@ -867,13 +867,13 @@
 - In src/core folder, create a component/file called Card.js
 - In Card.js file:
   - Write a Card component that displays a product
-    - takes product as an argument
+    - takes product as argument
     - displays product name, description, price, a link button to view product, and an add to cart button
 - In src/core/Home.js file:
   - Import the Card component: `import Card from './Card'`
   - In Layout component,
     - loop through productsBySell (contains all the products from backend) using map() method and render each product in the Card component
-    - pass in the product to Card component
+    - pass product as props in Card component
     - do the same thing for productsByArrival
     - note that both productsBySell and productsByArrival are arrays
     ```javascript
@@ -891,7 +891,7 @@
   - Import react: `import React from 'react'`
   - Import Link: `import { API } from '../config'`
   - Write a ShowImage component that displays the product image
-    - it takes in an item and a url
+    - it takes item and url as arguments
     - it renders an img element
     - the image source is: `src={`${API}/${url}/photo/${item._id}`}`
     - note that the route to get the photo is: `router.get('/product/photo/:productId', photo)`
@@ -1582,7 +1582,7 @@
     ```
 
 
-###REACT: PRODUCT PAGE WITH RELATED PRODUCTS
+### REACT: PRODUCT PAGE WITH RELATED PRODUCTS
 **1. Single product component**
 - When a user clicks on "View Product" button, it'll take them to a single product page to view the detail of that product
 - In src/core folder, create a component/file called Product.js
@@ -1781,7 +1781,6 @@
     - this is an async operation which we'll get back either the data or the error. Use .then() method to handle the data returned
     - if error, set error state to data.error
     - if success, set relatedProduct state to data
-    - 
     ```javascript
     listRelated(data._id).then((data) => {
       if (data.error) {
@@ -1812,6 +1811,120 @@
       loadSingleProduct(productId);
     }, [props]);
     ``
+
+### REACT: CART CRUD WITH LOCALSTORAGE
+**1. Implement 'Add to cart' functionality**
+- When the user clicks "Add to cart" button, we want to save the product in the localStorage and display the "Cart" item in the navigation bar 
+- In src/core folder, create a file called cartHelpers.js
+- In cartHelpers.js file:
+  - Write an addItem helper method that adds a product to localStorage
+    - This method receives item and next as arguments
+    - Create a cart variable and assign it to an empty array: `let cart = []`
+    - Check to see if there's a window object (not undefined)
+    - If there is a window object, check to see if we can get an item with the name 'cart' from the localStorage using the .getItem() method
+    - If there is, then we want to populate the item to the cart variable. But first convert it from json string format to object format using JSON.parse()
+    - This method receives 'item' as an argument. So we want to add this item to cart variable using the .push() method. When an item is added to cart, we also want to set count to 1
+    ```javascript
+    export const addItem = (item, next) => {
+      let cart = [];
+
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('cart')) {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        cart.push({
+          ...item,
+          count: 1
+        });
+      }
+    };
+    ```
+    - The problem we now have is that when the user clicks on the product again, it will add the same product, the same instance, twice to the cart array. If the product is the same, we want to update the product's quantity, not duplicating the product.
+    - For that, we need to run a function using the Array.from() method to create a new array and use `new Set()` method to remove duplicates (based on product id) in the array
+      ```javascript
+      // REMOVE DUPLICATES
+      // - build an Array from new Set and turn it back into array using Array.from
+      // - so that later we can re-map it
+      // - new Set will only allow unique values in it
+      // - so pass the ids of each object/product
+      // - if the loop tries to add the same value again, it'll get ignored
+      // - ...with the array of ids we got when first map() was used
+      // - run map() on it again and return the actual product from the cart
+      cart = Array.from(new Set(cart.map((p) => p._id))).map((id) => {
+        return cart.find((p) => p._id === id);
+      });
+      ```
+    - After all this is done, we can set the cart back in localStorage using the .setItem() method
+      - pass in the name 'cart' as 1st arg. This is the item name stored in the localStorage if we ever want to retrieve the item later
+      - the 2nd arg is the cart array. But first we need to convert the array object to json string format using JSON.stringify() method
+      - `localStorage.setItem('cart', JSON.stringify(cart));`
+    - Last thing, we need to execute the next() function
+    ```javascript
+    export const addItem = (item, next) => {
+      let cart = [];
+
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('cart')) {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        
+        cart.push({
+          ...item,
+          count: 1
+        });
+
+        cart = Array.from(new Set(cart.map((p) => p._id))).map((id) => {
+          return cart.find((p) => p._id === id);
+        });
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        next();
+      }
+    };
+    ```
+- In Card.js file:
+  - Import the addItem method: `import {addItem} from './cartHelpers'`
+  - Import Redirect component from react-router-dom: `import { Link, Redirect } from 'react-router-dom'`
+  - Create a state for redirect and initialize it to false
+    - `const [redirect, setRedirect] = useState(false)`
+  - In the showAddToCartButton method, add an onClick event so that it will execute the addToCart method when the "Add to cart" button is clicked: `onClick={addToCart}`
+  - Write an addToCart method that executes the addItem method, which adds the product to localStorage
+    - This method doesn't take any arguments
+    - Call the addItem() method
+    - The addItem() method takes 2 arguments: the product and a callback function
+    - So when we add the product to the localStorage, we want to set redirect state to true
+    - In the callback function, use setRedirect() and pass in true
+    ```javascript
+    const addToCart = () => {
+      addItem(product, () => {
+        setRedirect(true);
+      });
+    };
+    ```
+  - If redirect state is true, we want to write a function that redirects user to the cart page
+  - Write a shouldRedirect method that redirects to cart page
+    - It takes redirect as argument
+    - Write a condition that checks to see if redirect is true. If it is, the method returns with a Redirect component from react-router-dom and its path to the cart page
+    ```javascript
+    const shouldRedirect = (redirect) => {
+      if (redirect) {
+        return <Redirect to='/cart' />;
+      }
+    };
+    ```
+  - Call the shouldRedirect() method to render just above the ShowImage component
+    - It takes redirect as an argument. SO THIS METHOD RENDERS ONLY IF THE REDIRECT STATE IS TRUE
+    - In this case, when the "Add to cart" button is clicked, the addItem method is executed to add the product to localStorage and set the redirect state to true. Since redirect state is true, the shouldRedirect method runs and redirect to the cart page
+
+
+
+
+
+
+
+
+
+
 
 
 # LIBRARIES USED

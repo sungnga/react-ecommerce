@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import ShowImage from './ShowImage';
+import { addItem } from './cartHelpers';
 
 const Card = ({ product, showViewProductButton = true }) => {
+	const [redirect, setRedirect] = useState(false);
+
 	// Note that the "View Product" button and link only renders if showViewProductButton is true
 	const showViewButton = (showViewProductButton) => {
 		return (
@@ -17,9 +20,25 @@ const Card = ({ product, showViewProductButton = true }) => {
 		);
 	};
 
+	const addToCart = () => {
+		addItem(product, () => {
+			setRedirect(true);
+		});
+	};
+
+	// Note that this method executes only if the redirect state is true
+	// Redirect component comes from react-router-dom
+	const shouldRedirect = (redirect) => {
+		if (redirect) {
+			return <Redirect to='/cart' />;
+		}
+	};
+
 	const showAddToCartButton = () => {
 		return (
-			<button className='btn btn-outline-warning mt-2 mb-2'>Add to cart</button>
+			<button onClick={addToCart} className='btn btn-outline-warning mt-2 mb-2'>
+				Add to cart
+			</button>
 		);
 	};
 
@@ -35,6 +54,7 @@ const Card = ({ product, showViewProductButton = true }) => {
 		<div className='card'>
 			<div className='card-header name'>{product.name}</div>
 			<div className='card-body'>
+				{shouldRedirect(redirect)}
 				<ShowImage item={product} url='product' />
 				<p className='lead mt-2'>{product.description.substring(0, 100)}</p>
 				<p className='black-10'>${product.price}</p>
@@ -45,7 +65,7 @@ const Card = ({ product, showViewProductButton = true }) => {
 					Added on {moment(product.createdAt).fromNow()}
 				</p>
 				{showStock(product.quantity)}
-				<br/>
+				<br />
 				{showViewButton(showViewProductButton)}
 				{showAddToCartButton()}
 			</div>

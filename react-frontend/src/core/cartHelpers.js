@@ -51,3 +51,26 @@ export const getCart = () => {
 	}
 	return [];
 };
+
+// Update item count based on given product id and count
+export const updateItem = (productId, count) => {
+	let cart = [];
+
+	// Get items from cart in localStorage and put them in cart array
+	if (typeof window !== 'undefined') {
+		if (localStorage.getItem('cart')) {
+			cart = JSON.parse(localStorage.getItem('cart'));
+		}
+
+		// Update item count if the item id matches with the incoming productId
+		// Update item count with the incoming count
+		cart.map((product, i) => {
+			if (product._id === productId) {
+				cart[i].count = count;
+			}
+		});
+
+		// Set cart items back in localStorage
+		localStorage.setItem('cart', JSON.stringify(cart));
+	}
+};

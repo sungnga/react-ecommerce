@@ -1821,8 +1821,8 @@
     - This method receives item and next as arguments
     - Create a cart variable and assign it to an empty array: `let cart = []`
     - Check to see if there's a window object (not undefined)
-    - If there is a window object, check to see if we can get an item with the name 'cart' from the localStorage using the .getItem() method
-    - If there is cart, then we want to populate the item to the cart variable. But first convert it from json string format to object format using JSON.parse()
+    - If there is a window object, check to see if we can get items from the name 'cart' in the localStorage using the .getItem() method
+    - If there is cart, then we want to populate the items to the cart variable. But first convert it from json string format to object format using JSON.parse()
     - This method receives 'item' as an argument. So we want to add this item to cart variable using the .push() method. When an item is added to cart, we also want to set count to 1
     ```javascript
     export const addItem = (item, next) => {
@@ -1922,7 +1922,7 @@
   - Write an itemTotal method that returns the total items in the cart, the length of cart array
     - This method doesn't take any arguments
     - First, check to see if there's a window object (not undefined)
-    - If there is a window object, check to see if we can get item from the name 'cart' in localStorage using the .getItem() method
+    - If there is a window object, check to see if we can get items from the name 'cart' in localStorage using the .getItem() method
     - If there is cart, then we want to return the total items, the length, of the cart. But first convert it from json string format to object format using JSON.parse()
     - If there is no item in the cart, we want to return 0 by default
 - In core/Menu.js file:
@@ -1944,8 +1944,8 @@
   - Write a getCart method that gets items from 'cart' in localStorage
     - This method doesn't take any arguments
     - First, check to see if there's a window object (not undefined)
-    - If there is a window object, check to see if we can get item from the name 'cart' in localStorage using the .getItem() method
-    - If there is cart, then we want to return with the item. But first convert it from json string format to object format using JSON.parse()
+    - If there is a window object, check to see if we can get items from the name 'cart' in localStorage using the .getItem() method
+    - If there is cart, then we want to return with the items. But first convert it from json string format to object format using JSON.parse()
     - If there is no item in the cart, we want to return an empty array by default
     ```javascript
     export const getCart = () => {
@@ -2040,6 +2040,99 @@
     };
     ```
   - Lastly, in the render section of Card component, pass showAddToCartButton to the showAddToCart() method as an argument: `{showAddToCart(showAddToCartButton)}`
+
+**5. Implement product quantity update in cart**
+- Enable users to increment or decrement the product quantity in Cart page
+- In Cart.js file:
+  - Pass cartUpdate as props to Card component. Set its value to **true** by default
+    - `<Card key={i} product={product} showAddToCartButton={false} cartUpdate={true} />`
+- In Card.js file:
+  - In the Card component, accept cartUpdate as 4th arg and set its value to **false** by default
+  - This means wherever the Card component is instantiated, quantity update will NOT render by default
+  - Write a showCartUpdateOptions method that renders the product quantity update options only if cartUpdate is true
+    - It takes cartUpdate as argument
+    - Then check to see if cartUpdate is set to true. If it is, only then render the product quantity update
+    - Now let's implement the render the quantity update portion:
+      - Create a state for count and initialize the value to product.count. A product has a count property
+        - `const [count, setCount] = useState(product.count)`
+      - Inside a div tag, create an input field element with 
+        - type property set to 'number'
+        - value property set to 'count', which comes from count state
+        - on onChange event, execute the handleChange method that takes product._id as argument. We need to know the product id to update that product because the cart can have many products
+    ```javascript
+    const showCartUpdateOptions = (cartUpdate) => {
+      return (
+        cartUpdate && (
+          <div className='input-group mb-3'>
+            <div className='input-group-prepend'>
+              <span className='input-group-text'>Adjust Quantity</span>
+            </div>
+
+            <input
+              type='number'
+              className='form-control'
+              value={count}
+              onChange={handleChange(product._id)}
+            />
+          </div>
+        )
+      );
+    };
+    ```
+  - In the render section of Card component, call the showCartUpdateOptions() method and pass in cartUpdate as an argument: `{showCartUpdateOptions(cartUpdate)}`
+  - Write a handleChange HOF method that updates the count state and executes the updateItem method that updates the item count in localStorage based on the given product id and count
+    - This method takes productId and event.target.value as arguments and it returns a function
+    - First let's make sure that we don't update count state with negative values
+    - Check to see if the incoming value (event.target.value) is less than 1. If it is, set count state to 1, because that's the default value. If it's not less than 1, set count state to the incoming value
+    - `setCount(event.target.value < 1 ? 1 : event.target.value)`
+    - Next, write a condition that checks to see if the incoming value is greater or equal to 1. If it is, execute the updateItem() method that accepts productId and event.target.value as arguments
+    ```javascript
+    const handleChange = (productId) => (event) => {
+      setCount(event.target.value < 1 ? 1 : event.target.value);
+      if (event.target.value >= 1) {
+        updateItem(productId, event.target.value);
+      }
+    };
+    ```
+  - Don't forget to import the updateItem method: `import { updateItem } from './cartHelpers'`
+In cartHelpers.js file:
+  - Write an updateItem method that updates the count of the item based on the given product id and count
+    - This method accepts productId and count as arguments
+    - First create a cart variable and assign it to an empty array: `let cart = []`
+    - Next, check to see if there's a window object (not undefined)
+    - If there is a window object, check to see if we can get items from the name 'cart' in the localStorage using the .getItem() method
+    - If there is cart, get those items from cart and put them in the cart variable. But first convert it from json string format to object format using JSON.parse()
+      - `cart = JSON.parse(localStorage.getItem('cart'))`
+    - Then we map through each item in the cart array and try to match the item's id with the productId we received as argument
+    - If the id matches, we update that item's count with the count we received as argument
+    - After all this is done, we can set the items in cart back in localStorage using the .setItem() method
+      - pass in the name 'cart' as 1st arg. This is the item name stored in the localStorage if we ever want to retrieve the item later
+      - the 2nd arg is the cart array. But first we need to convert the array object to json string format using JSON.stringify() method
+      - `localStorage.setItem('cart', JSON.stringify(cart));`
+    ```javascript
+    export const updateItem = (productId, count) => {
+      let cart = [];
+
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('cart')) {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+
+        cart.map((product, i) => {
+          if (product._id === productId) {
+            cart[i].count = count;
+          }
+        });
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+    };
+    ```
+
+
+
+
+
 
 
 

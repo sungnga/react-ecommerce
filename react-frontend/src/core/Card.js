@@ -4,7 +4,11 @@ import { Link, Redirect } from 'react-router-dom';
 import ShowImage from './ShowImage';
 import { addItem } from './cartHelpers';
 
-const Card = ({ product, showViewProductButton = true }) => {
+const Card = ({
+	product,
+	showViewProductButton = true,
+	showAddToCartButton = true
+}) => {
 	const [redirect, setRedirect] = useState(false);
 
 	// Note that the "View Product" button and link only renders if showViewProductButton is true
@@ -34,11 +38,17 @@ const Card = ({ product, showViewProductButton = true }) => {
 		}
 	};
 
-	const showAddToCartButton = () => {
+	// Note that the "Add to cart" button only renders if showAddToCartButton is true
+	const showAddToCart = (showAddToCartButton) => {
 		return (
-			<button onClick={addToCart} className='btn btn-outline-warning mt-2 mb-2'>
-				Add to cart
-			</button>
+			showAddToCartButton && (
+				<button
+					onClick={addToCart}
+					className='btn btn-outline-warning mt-2 mb-2'
+				>
+					Add to cart
+				</button>
+			)
 		);
 	};
 
@@ -67,7 +77,7 @@ const Card = ({ product, showViewProductButton = true }) => {
 				{showStock(product.quantity)}
 				<br />
 				{showViewButton(showViewProductButton)}
-				{showAddToCartButton()}
+				{showAddToCart(showAddToCartButton)}
 			</div>
 		</div>
 	);

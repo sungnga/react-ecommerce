@@ -1726,15 +1726,15 @@
     - Import moment: `import moment from 'moment'`
     - To use: `Added on {moment(product.createdAt).fromNow()}`
   - Let's extract the "Add to cart" button into a separate function
-  - Write a showAddToCartButton method that renders the "Add to cart" button
+  - Write a showAddToCart method that renders the "Add to cart" button
     ```javascript
-  	const showAddToCartButton = () => {
+  	const showAddToCart = () => {
       return (
         <button className='btn btn-outline-warning mt-2 mb-2'>Add to cart</button>
       );
     };
     ```
-  - Call the showAddToCartButton() to render the button: `{showAddToCartButton()}`
+  - Call the showAddToCart() to render the button: `{showAddToCart()}`
   - Add/show the product stock. Write a function for this: `{showStock(product.quantity)}`
   - Write a showStock method that shows either the product is in stock or product is out of stock
     - this method takes quantity as argument
@@ -1887,7 +1887,7 @@
   - Import Redirect component from react-router-dom: `import { Link, Redirect } from 'react-router-dom'`
   - Create a state for redirect and initialize it to false
     - `const [redirect, setRedirect] = useState(false)`
-  - In the showAddToCartButton method, add an onClick event so that it will execute the addToCart method when the "Add to cart" button is clicked: `onClick={addToCart}`
+  - In the showAddToCart method, add an onClick event so that it will execute the addToCart method when the "Add to cart" button is clicked: `onClick={addToCart}`
   - Write an addToCart method that executes the addItem method, which adds the product to localStorage
     - This method doesn't take any arguments
     - Call the addItem() method
@@ -2013,9 +2013,33 @@
   - Add a cart route that has the Cart component. Now we can visit the Cart page
     - `<Route path='/cart' exact component={Cart} />`
 
-
-
-
+**4. Conditionally show/hide 'Add to cart' button**
+- In the Cart page, we want to hide the 'Add to cart' button
+- In Cart.js file:
+  - Pass showAddToCartButton as props to Card component. Set its value to false by default
+    - `<Card key={i} product={product} showAddToCartButton={false} />`
+  - Since we set showAddToCartButton to false in Cart component, this means the 'Add to cart' button won't render in Cart page
+- In Card.js file:
+  - In the Card component, accept showAddToCartButton as 3rd arg and set its value to true by default
+  - This means wherever the Card component is instantiated, the 'Add to cart' button will render by default
+  - In the showAddToCart method,
+    - pass in showAddToCartButton as an argument
+    - then write a condition that checks if showAddToCartButton is set to true. If it is, only then render the 'Add to cart' button
+    ```javascript
+    const showAddToCart = (showAddToCartButton) => {
+      return (
+        showAddToCartButton && (
+          <button
+            onClick={addToCart}
+            className='btn btn-outline-warning mt-2 mb-2'
+          >
+            Add to cart
+          </button>
+        )
+      );
+    };
+    ```
+  - Lastly, in the render section of Card component, pass showAddToCartButton to the showAddToCart() method as an argument: `{showAddToCart(showAddToCartButton)}`
 
 
 

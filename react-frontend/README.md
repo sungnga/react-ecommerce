@@ -1922,7 +1922,7 @@
   - Write an itemTotal method that returns the total items in the cart, the length of cart array
     - This method doesn't take any arguments
     - First, check to see if there's a window object (not undefined)
-    - If there is a window object, check to see if we can get an item with the name 'cart' from the localStorage using the .getItem() method
+    - If there is a window object, check to see if we can get item from the name 'cart' in localStorage using the .getItem() method
     - If there is cart, then we want to return the total items, the length, of the cart. But first convert it from json string format to object format using JSON.parse()
     - If there is no item in the cart, we want to return 0 by default
 - In core/Menu.js file:
@@ -1938,8 +1938,80 @@
   </li>
   ```
 
-
-
+**3. Show products in Cart page**
+- Get all the product items from cart in localStorage and populate them in Cart page
+- In cartHelpers.js file:
+  - Write a getCart method that gets items from 'cart' in localStorage
+    - This method doesn't take any arguments
+    - First, check to see if there's a window object (not undefined)
+    - If there is a window object, check to see if we can get item from the name 'cart' in localStorage using the .getItem() method
+    - If there is cart, then we want to return with the item. But first convert it from json string format to object format using JSON.parse()
+    - If there is no item in the cart, we want to return an empty array by default
+    ```javascript
+    export const getCart = () => {
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('cart')) {
+          return JSON.parse(localStorage.getItem('cart'));
+        }
+      }
+      return [];
+    };
+    ```
+- Next, create the Cart page
+- In src/core folder, create a component/file called Cart.js
+- In Cart.js file:
+  - Import react, useState, useEffect: `import React, { useState, useEffect } from 'react'`
+  - Import Link component from react-router-dom: `import { Link } from 'react-router-dom'`
+  - Import Layout component : `import Layout from './Layout'`
+  - Import getCart method: `import { getCart } from './cartHelpers'`
+  - Immport Card component: `import Card from './Card'`
+  - Write a Cart functional component that renders cart items from the localStorage
+    - Create a state for items and initialize it to an empty array
+      - `const [items, setItems] = useState([])`
+    - When the component mounts and first renders, we want to get cart items in localStorage by calling getCart() method and set it to items state. Use useEffect() hook to do this
+      - useEffect() method takes a callback function as 1st arg, and an empty array as 2nd arg
+      - In the callback function, call setItems() method and pass in the getCart() method to set items state with items coming from the localStorage
+      ```javascript
+      useEffect(() => {
+        setItems(getCart());
+      }, []);
+      ```
+  - Next, we want to display the list of items if there are items in shopping cart or display a message saying cart is empty if the items state has no items in it
+  - Write a showItems method that displays how many items is in the cart and renders the list of items onto the Cart page
+    - The method takes items as argument
+    - Loop over items using .map() method and render each product in a Card component
+    - Pass product as props in the Card component
+    ```javascript
+    const showItems = (items) => {
+      return (
+        <div>
+          <h2>Your cart has {`${items.length}`} items</h2>
+          <hr />
+          {items.map((product, i) => (
+            <Card key={i} product={product} />
+          ))}
+        </div>
+      );
+    };
+    ```
+  - Write a noItemsMessage method that displays cart is empty and include a link to Shop page
+    ```javascript
+    const noItemsMessage = () => (
+      <h2>
+        Your cart is empty. <br /> <Link to='/shop'>Continue shopping</Link>
+      </h2>
+    );
+    ```
+  - Write a condition that checks if items state is greater than 0. If it is, call the showItems() method and pass in items to render the products. If it isn't, call the noItemsMessage() method to render the message
+    ```javascript
+    <div className='col-6'>
+      {items.length > 0 ? showItems(items) : noItemsMessage()}
+    </div>
+    ```
+- In Routes.js file:
+  - Import the Cart component: `import Cart from './core/Cart'`
+  - Add a cart route that has the Cart component. Now we can visit the Cart page
+    - `<Route path='/cart' exact component={Cart} />`
 
 
 

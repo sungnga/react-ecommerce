@@ -1,7 +1,7 @@
 // JSON.parse() to convert json to object
 // JSON.stringify() to convert object to json
 
-// Add item to local storage
+// Add item to localStorage
 export const addItem = (item, next) => {
 	let cart = [];
 
@@ -32,6 +32,7 @@ export const addItem = (item, next) => {
 	}
 };
 
+// Get total items from cart, cart length, in localStorage
 export const itemTotal = () => {
 	if (typeof window !== 'undefined') {
 		if (localStorage.getItem('cart')) {
@@ -39,4 +40,14 @@ export const itemTotal = () => {
 		}
 	}
 	return 0;
+};
+
+// Get product items from cart in localStorage
+export const getCart = () => {
+	if (typeof window !== 'undefined') {
+		if (localStorage.getItem('cart')) {
+			return JSON.parse(localStorage.getItem('cart'));
+		}
+	}
+	return [];
 };

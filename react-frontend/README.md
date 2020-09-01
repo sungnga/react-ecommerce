@@ -1714,7 +1714,8 @@
       );
     };
     ```
-  - Call the showViewButton() method and pass in showViewProductButton as argument to render the "View Product" button: `{showViewButton(showViewProductButton)}`
+  - In the render section of Card component, call the showViewButton() method and pass in showViewProductButton as argument. This will show the "View Product" button if showViewProductButton is true
+    - `{showViewButton(showViewProductButton)}`
 
 **3. Product detail on single product page**
 - In Card.js file:
@@ -2039,10 +2040,11 @@
       );
     };
     ```
-  - Lastly, in the render section of Card component, pass showAddToCartButton to the showAddToCart() method as an argument: `{showAddToCart(showAddToCartButton)}`
+  - Lastly, in the render section of Card component, call the showAddToCart() method and pass it the showAddToCartButton as an argument. This will show the 'Add to cart' button if it is true
+    - `{showAddToCart(showAddToCartButton)}`
 
 **5. Implement product quantity update in cart**
-- Enable users to increment or decrement the product quantity in Cart page
+- Enable users to update the product quantity in Cart page
 - In Cart.js file:
   - Pass cartUpdate as props to Card component. Set its value to **true** by default
     - `<Card key={i} product={product} showAddToCartButton={false} cartUpdate={true} />`
@@ -2079,7 +2081,8 @@
       );
     };
     ```
-  - In the render section of Card component, call the showCartUpdateOptions() method and pass in cartUpdate as an argument: `{showCartUpdateOptions(cartUpdate)}`
+  - In the render section of Card component, call the showCartUpdateOptions() method and pass in cartUpdate as an argument. This will show the quantity update options if cartUpdate is true
+    - `{showCartUpdateOptions(cartUpdate)}`
   - Write a handleChange HOF method that updates the count state and executes the updateItem method that updates the item count in localStorage based on the given product id and count
     - This method takes productId and event.target.value as arguments and it returns a function
     - First let's make sure that we don't update count state with negative values
@@ -2128,6 +2131,96 @@ In cartHelpers.js file:
       }
     };
     ```
+
+**6. Implement remove product from cart**
+- In cartHelpers.js file:
+  - Write a removeItem method that removes item from cart in localStorage
+    - This method is very similar to the updateItem method. The difference is when we find a match of the item id with the given productId, we want to remove the item from cart using .splice() method
+    - In splice() method called on cart,
+      - 1st arg is the index of where to splice
+      - 2nd arg is how many to take out
+    - After setting cart items back in localStorage, we need to return the cart array itself
+    ```javascript
+    export const removeItem = (productId) => {
+      let cart = [];
+
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('cart')) {
+          cart = JSON.parse(localStorage.getItem('cart'));
+        }
+
+        cart.map((product, i) => {
+          if (product._id === productId) {
+            cart.splice(i, 1)
+          }
+        });
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+      return cart;
+    };
+    ```
+- In Cart.js file:
+  - Import the removeItem method: `import { getCart, removeItem } from './cartHelpers'`
+  - Pass showRemoveProductButton as props to Card component and set its value to true
+    - `<Card showRemoveProductButton={true} />`
+  - Since this is set to true in Cart page, the 'Remove Product' button will show up in Cart page. We don't want to show this button on every page
+- In Card.js file:
+  - Import the removeItem method: `import { addItem, updateItem, removeItem } from './cartHelpers'`
+  - In the Card component, accept showRemoveProductButton as 5th arg and set its value to **false** by default
+  - This means wherever the Card component is instantiated, the 'Remove Product' button will NOT render by default
+  - Write a showRemoveButton method that renders the 'Remove Product' button if showRemoveProductButton is true
+    - This method takes showRemoveProductButton as argument
+    - Check to see if showRemoveProductButton is true. If it is, render a 'Remove Product' button
+    - On onClick event, inside a callback function, exectute the removeItem() method and pass in the product._id
+    - This will remove the item in localStorage when the remove button is clicked
+    ```javascript
+    const showRemoveButton = (showRemoveProductButton) => {
+      return (
+        showRemoveProductButton && (
+          <button
+            onClick={() => removeItem(product._id)}
+            className='btn btn-outline-danger mt-2 mb-2'
+          >
+            Remove Product
+          </button>
+        )
+      );
+    };
+    ```
+  - Lastly, in the render section of Card component, call the showRemoveButton() method and pass it the showRemoveProductButton as an argument. This will show the 'Remove Product' button if showRemoveProductButton is true
+    - `{showRemoveButton(showRemoveProductButton)}`
+- The problem we have right now is after the product is removed, the content on Cart page doesn't update with the product being removed, even though it's removed in localStorage. Another problem occuring is an infinite loop MAX dept reached causing the browser to freeze
+- In this scenario, the product is being renedered in the Card component and Card component is instantiated in the Cart component. Thus, Cart is the parent component of Card component
+  - When the product is removed, Card component must inform the parent component/Cart to update its state
+  - When there's a change in items state in Cart component, we can call useEffect() to run which will cause the Cart component to rerender and update the content on Cart page
+  - This will remove the product from Cart page when the 'Remove' is clicked
+- Steps to solving this issue:
+  - In Cart.js file:
+    - Create a state for run and initialize it to false
+      - `const [run, setRun] = useState(false)`
+    - Then in useEffect(), pass in run so that useEffect() will only update component when run state changes
+      - `useEffect(() => {...}, [run])`
+    - Then pass the run and setRun as props to Card component
+      - `run={run}`
+      - `setRun={setRun}`
+  - In Card.js file:
+    - In Card component, accept the run and setRun props and set the default values
+      - `setRun = f => f, run = undefined`
+    - In handleChange method, call the setRun() method and pass in !run
+      - `setRun(!run)`
+    - In showRemoveButton method, in the onClick event, right after calling the removeItem() method, call setRun() and pass in !run
+      - `setRun(!run)`
+    - Use setRun() to change run state so that we can run useEffect() in parent Cart component. This will rerender that Cart page
+    - So now in Card whenever we increment/decrement or remove product, setRun() is called causing run state in parent Cart component to change. When run state changes in Cart component, the useEffect() runs to update the content in Cart page 
+
+
+
+
+
+
+
+
 
 
 

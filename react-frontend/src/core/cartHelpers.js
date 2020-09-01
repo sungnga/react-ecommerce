@@ -74,3 +74,28 @@ export const updateItem = (productId, count) => {
 		localStorage.setItem('cart', JSON.stringify(cart));
 	}
 };
+
+// Remove item count based on given product id and count
+export const removeItem = (productId) => {
+	let cart = [];
+
+	// Get items from cart in localStorage and put them in cart array
+	if (typeof window !== 'undefined') {
+		if (localStorage.getItem('cart')) {
+			cart = JSON.parse(localStorage.getItem('cart'));
+		}
+
+		// If id matches, remove item from cart using splice() method
+		cart.map((product, i) => {
+			if (product._id === productId) {
+				// 1st arg is the index of where to splice
+				// 2nd arg is how many to take out
+				cart.splice(i, 1);
+			}
+		});
+
+		// Set cart items back in localStorage
+		localStorage.setItem('cart', JSON.stringify(cart));
+	}
+	return cart;
+};

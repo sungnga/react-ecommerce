@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { Link, Redirect } from 'react-router-dom';
 import ShowImage from './ShowImage';
-import { addItem, updateItem } from './cartHelpers';
+import { addItem, updateItem, removeItem } from './cartHelpers';
 
 const Card = ({
 	product,
 	showViewProductButton = true,
 	showAddToCartButton = true,
-	cartUpdate = false
+	cartUpdate = false,
+	showRemoveProductButton = false,
+	setRun = f => f,  //default value of function
+	run = undefined   // default value of undefined
 }) => {
 	const [redirect, setRedirect] = useState(false);
 	const [count, setCount] = useState(product.count);
@@ -54,6 +57,23 @@ const Card = ({
 		);
 	};
 
+	// Note that the "Remove Product" button only renders if showRemoveProductButton is true
+	const showRemoveButton = (showRemoveProductButton) => {
+		return (
+			showRemoveProductButton && (
+				<button
+					onClick={() => {
+						removeItem(product._id)
+						setRun(!run);  // run useEffect() in parent Cart component
+					}}
+					className='btn btn-outline-danger mt-2 mb-2'
+				>
+					Remove Product
+				</button>
+			)
+		);
+	};
+
 	const showStock = (quantity) => {
 		return quantity > 0 ? (
 			<span className='badge badge-primary pill'>In Stock</span>
@@ -63,6 +83,7 @@ const Card = ({
 	};
 
 	const handleChange = (productId) => (event) => {
+		setRun(!run);  // run useEffect() in parent Cart component
 		setCount(event.target.value < 1 ? 1 : event.target.value);
 		if (event.target.value >= 1) {
 			updateItem(productId, event.target.value);
@@ -106,6 +127,7 @@ const Card = ({
 				<br />
 				{showViewButton(showViewProductButton)}
 				{showAddToCart(showAddToCartButton)}
+				{showRemoveButton(showRemoveProductButton)}
 				{showCartUpdateOptions(cartUpdate)}
 			</div>
 		</div>

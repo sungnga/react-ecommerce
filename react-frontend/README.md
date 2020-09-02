@@ -2266,9 +2266,18 @@ In cartHelpers.js file:
   - In the render section, call the showCheckout() method to show one of the two buttons: `{showCheckout()}`
 
 
-
-
-
+### PAYMENT GATEWAY (CREDIT CARD AND PAYPAL) WITH BRAINTREE
+**1. Signup to Braintree sandbox**
+- Webpage: https://www.braintreepayments.com/sandbox
+- You'll be given the Merchant ID, public key, and private key after signing up
+- Login to the account, then click on the setting icon on the upper right corner of window
+- Scroll to the 'API Keys' section to get the public key, private key, and merchant id
+- Go to nodejs-backend folder directory. In .env file:
+  - Create environment variables for Braintree merchant id, public and private keys and paste in the values for each
+  - `BRAINTREE_MERCHANT_ID= ...`
+  - `BRAINTREE_PUBLIC_KEY= ...`
+  - `BRAINTREE_PRIVATE_KEY= ...`
+- Next thing we need to do is generating a Braintree token. In the backend, we need to create a route to get the token. In the frontend, when the Checkout component mounts, we will make a request to the backend on that route and the route will be responsible for generating the token and give it to frontend
 
 
 

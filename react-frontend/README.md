@@ -2214,9 +2214,56 @@ In cartHelpers.js file:
     - Use setRun() to change run state so that we can run useEffect() in parent Cart component. This will rerender that Cart page
     - So now in Card whenever we increment/decrement or remove product, setRun() is called causing run state in parent Cart component to change. When run state changes in Cart component, the useEffect() runs to update the content in Cart page 
 
-
-
-
+**7. Checkout component and implement total price in Cart**
+- In src/core folder, create a component/file called Checkout.js
+- In Checkout.js file:
+  - Import react, useState, useEffect: `import React, { useState, useEffect } from 'react'`
+  - Write a Checkout functional component that calculates the products total cost in Cart component
+    - The component accepts products as props from Cart component. Destructure products
+    - Render this just to see the list of products: `<div>{JSON.stringify(products)}</div>`
+- In Cart.js file:
+  - Import the Checkout component: `import Checkout from './Checkout`
+  - In the render section, instantiate the Checkout component and pass products as props and set its value to items
+    - `<Checkout products={items} />`
+- In Checkout.js file:
+  - Write a getTotal method that calculates the price total of the products. Use the reduce() method to do this
+    - Call the reduce() method on products
+    - The reduce() method takes 2 arguments
+      - 1st arg is a callback function
+      - 2nd arg is the index of where you want to start. We want to start at 0 index
+      - The callback takes 2 arguments. The first is the currentValue and the second is the nextValue
+      - The currentValue is the current sum total up to the current index. reduce() method keeps track of this total value as it moves down the index
+      - The nextValue is the next index in the products array
+      - The reduce() method returns the total value by multiplying the count by the price of the next index item and add that to the currentValue
+    ```javascript
+    const getTotal = () => {
+      return products.reduce((currentValue, nextValue) => {
+        return currentValue + nextValue.count * nextValue.price;
+      }, 0);
+    };
+    ```
+  -In the render section, call the getTotal() method to display the total price: `<h2>Total: ${getTotal()}</h2>`
+- The last thing is check to see if the user is signin to the account. If the user is signed in, we want to show a checkout button. If not, show a signin to checkout button that directs the user to sign in
+- In Checkout.js file:
+  - Import isAuthenticated method from auth folder: `import { isAuthenticated } from '../auth'`
+  - Import Link component: `import { Link } from 'react-router-dom'`
+  - Write a showCheckout method that either renders a 'Checkout' button or a 'Sign in to checkout' button based on whether the user is authenticated or not
+    - First, check to see if the user is authenticated
+    - Write an if statement that checks to see if the user is authenticated
+      - Call the isAuthenticated() method
+      - If user is authenticated, render a 'Checkout' button
+      - If not, render a 'Sign in to checkout' button. Have the button inside a Link component and set the link path to signin page
+    ```javascript
+    const showCheckout = () =>
+      isAuthenticated() ? (
+        <button className='btn btn-success'>Checkout</button>
+      ) : (
+        <Link to='/signin'>
+          <button className='btn btn-primary'>Sign in to checkout</button>
+        </Link>
+      );
+    ```
+  - In the render section, call the showCheckout() method to show one of the two buttons: `{showCheckout()}`
 
 
 

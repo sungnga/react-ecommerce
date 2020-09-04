@@ -217,7 +217,7 @@
 
 **3. User signup success and error handling**
 - In Signup.js file:
-  - When form submit button is clicked, we send the data to backend to create a new user using the signup() method
+  - When form submit button is clicked, we send the data to backend to cr               eate a new user using the signup() method
   - This is an async operation. The data we get back is either an error or a success
   - If it's an error, set error property state to the data.error we get back and set success state to false
   - If it's a success, clear the form input fields and set success state to true
@@ -2347,8 +2347,112 @@ In cartHelpers.js file:
     - Key: Content-Type  Value: application/json
   - It should send back the clientToken. This token will then be sent to the frontend
 
+**3. Braintree setup frontend**
+- In react-frontend directory:
+  - Braintree Web Drop-in React package is a pre-made payments UI for accepting cards and alternative payments in the browser
+  - Install: `npm i braintree-web-drop-in-react`
+- In the frontend, first thing we need to do is create a method that makes a request to the backend to get the token
+- In apiCore.js file
+  - Write a getBraintreeClientToken method that makes a request to backend to get a Braintree clientToken
+  - It takes userId and token as argument. Because this is for authenticated users only
+  - Use fetch() method to make the request to this api: `${API}/braintree/getToken/${userId}`
+  - This api is the 1st argument that fetch() method takes
+  - 2nd arg it takes is an object that contains method and headers properties
+    - method is a GET method
+    - in headers property, we need to provide the bearer token value to Authorization
+  - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+  ```javascript
+  export const getBraintreeClientToken = (userId, token) => {
+    return fetch(`${API}/braintree/getToken/${userId}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .catch((err) => console.log(err));
+  };
+  ```
+- In Checkout.js file:
+  - Import the getBraintreeClientToken method: `import { getBraintreeClientToken } from './apiCore'`
+  - Import isAuthenticated method: `import { isAuthenticated } from '../auth'`
+  - Import useState and useEffect: `import React, { useState, useEffect } from 'react'`
+  - Create a state for data. Data is an object
+    ```javascript
+    const [data, setData] = useState({
+      success: false,
+      clientToken: null,
+      error: '',
+      instance: {},
+      address: ''
+    });
+    ```
+  - Next, we need to get the user id 
+    - Call the isAuthenticated() method to check if the user is authenticated. If they are, get the user id. Store this in a userId variable
+    - `const userId = isAuthenticated() && isAuthenticated().user._id`
+  - Then get the user token
+    - Call the isAuthenticated() method to check if the user is authenticated. If they are, get their token. Store this in a token variable
+    - `const token = isAuthenticated() && isAuthenticated().token`
+  - Write a getToken method that gets the token from backend when the component mounts
+    - It takes userId and token as arguments
+  - In useEffect() method,
+    - It takes a callback function and an empty array as arguments respectively
+    - In the callback, call the getToken() method and pass in userId and token as arguments
+    - When the Checkout component first mounts, getToken() method will run to get the Braintree clientToken based on the given user id and token
+    ```javascript
+    useEffect(() => {
+      getToken(userId, token);
+    }, []);
+    ```
+  - Back to the getToken() method,
+    - Make the request to get the token from backend by calling the getBraintreeClientToken() method and pass in userId and token as arguments respectively
+    - This is an async operation. We'll get back either an error or the data. Use .then() method to handle both
+    - If error, set the data error state to data.error using the setData() method
+    - If success, set the data clientToken state to data.clientToken using the setData() method
+    ```javascript
+    const getToken = (userId, token) => {
+      getBraintreeClientToken(userId, token).then((data) => {
+        if (data.error) {
+          setData({ ...data, error: data.error });
+        } else {
+          setData({ ...data, clientToken: data.clientToken });
+        }
+      });
+    };
+    ```
+  - Now that we have the clientToken, let's create the Braintree web drop-in UI
+  - Import the DropIn component from braintree: `import DropIn from 'braintree-web-drop-in-react'`
+  - Write a showDropIn method that renders the drop-in
+    - First check to make sure that clientToken in data state is not null and products.length is greater than 0. If those 2 conditions are true, only then we will show the drop-in to start the payment process. Else, set to null
+    - Instantiate the DropIn component and pass in options and onInstance
+    - Last thing is render a 'Checkout' button right after the DropIn component
+    ```javascript
+    const showDropIn = () => (
+      <div>
+        {data.clientToken !== null && products.length > 0 ? (
+          <div>
+            <DropIn
+              options={{
+                authorization: data.clientToken
+              }}
+              onInstance={(instance) => (data.instance = instance)}
+            />
+            <button className='btn btn-success'>Checkout</button>
+          </div>
+        ) : null}
+      </div>
+    );
+    ```
+  - We need to make a small change to the showCheckout() method
+    - If the user is authenticated, call the showDropIn() method. This means that if the user is authenticated, show the DropIn UI and the checkout button
+    - If they're not authenticated, they will see the 'Sign in to checkout' button instead
 
 
+**4. Handling payment frontend**
 
 
 

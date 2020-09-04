@@ -2279,6 +2279,79 @@ In cartHelpers.js file:
   - `BRAINTREE_PRIVATE_KEY= ...`
 - Next thing we need to do is generating a Braintree token. In the backend, we need to create a route to get the token. In the frontend, when the Checkout component mounts, we will make a request to the backend on that route and the route will be responsible for generating the token and give it to frontend
 
+**2. Braintree setup backend**
+- In nodejs-backend directory:
+  - Install braintree: `npm i braintree`
+- In nodejs-backend directory, in routes folder, create a file called braintree.js. This file contains all the routes related to Braintree payment processing
+- In routes/braintree.js file:
+  - Require in express: `const express = require('express')`
+  - Require in express router: `const router = express.Router()`
+  - Export the router: `module.exports = router`
+  - Create a route that gets a token based on the userId
+    - So the user must sign in and must be authenticated. We need to apply middlewares to the route for that
+      - Require in both middlewares from auth controllers: `const { requireSignin, isAuth } = require('../controllers/auth')`
+    - Last thing we need in the route is a controller method(called generateToken) that generates the token when there is a request to this route
+      - Require in the controller method: `const { generateToken } = require('../controllers/braintree')`
+		- Use **get()** method
+    - 1st arg is the route path: `'/braintree/getToken/:userId'`
+    - 2nd & 3rd args are middlewares: requireSignin and isAuth
+    - 4th arg is a controller method to generate the token: generateToken
+    - `router.get('/braintree/getToken/:userId', requireSignin, isAuth, generateToken)`
+  - We also need to create a route parameter. Anytime there is a 'userId' in the URL param, we want to run the userById controller method
+    - `router.param('userId', userById)`
+    - Require in userById controller method: `const { userById } = require('../controllers/user')`
+- In nodejs-backend/app.js file:
+  - Import the braintree route:  `const braintreeRoutes = require('./routes/braintree')`
+  - Use the braintree route: `app.use('/api', braintreeRoutes)`
+- In nodejs-backend/controllers folder, create a file called braintree.js
+- In braintree.js file:
+  - Import the User model: `const User = require('../models/user')`
+  - Import the braintree package: `const braintree = require('braintree')`
+  - Import dotenv so we can use the environment variables: `require('dotenv').config()`
+  - Write a generateToken method that generates the token based on user id
+  - But first we need to connect to braintree
+    - Call connect() method on braintree
+    - To connect to braintree, we need to pass in as an object, the credentials that we created in the .env file
+    - Save this connection to braintree in a variable called gateway
+    ```javascript
+    const gateway = braintree.connect({
+      environment: braintree.Environment.Sandbox,
+      merchantId: process.env.BRAINTREE_MERCHANT_ID,
+      publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+      privateKey: process.env.BRAINTREE_PRIVATE_KEY
+    });
+    ```
+  - In the generateToken method,
+    - It takes request and response as arguments
+    - Use the gateway variable and call .generate() method on it
+    - generate() method takes in 2 arguments. 1st arg is an empty object. 2nd arg is a function
+    - In the function, we get back either an error or a response. We need to handle both
+    - If error, response with the status code and send the error message
+    - If success, send the response
+    ```javascript
+    exports.generateToken = (req, res) => {
+      gateway.clientToken.generate({}, function (err, response) {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          res.send(response);
+        }
+      });
+    };
+    ```
+- Test using Postman to get the token:
+	- Use **get** request with this url: `http://localhost:8000/api/braintree/getToken/:userId`
+  - Make sure the user is signed in. Then grab the user's id and token 
+  - In the Headers tab,
+    - Key: Authorization  Value: Bearer <user's token>
+    - Key: Content-Type  Value: application/json
+  - It should send back the clientToken. This token will then be sent to the frontend
+
+
+
+
+
+
 
 
 
@@ -2292,6 +2365,8 @@ In cartHelpers.js file:
 - Environment variable: `npm i dotenv`
 - Query params: `npm i query-string`
 - Date and time stamp: `npm in moment`
+- Braintree: `npm i braintree`
+
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

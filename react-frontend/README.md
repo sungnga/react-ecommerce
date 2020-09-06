@@ -2429,7 +2429,7 @@ In cartHelpers.js file:
   - Write a showDropIn method that renders the drop-in
     - First check to make sure that clientToken in data state is not null and products.length is greater than 0. If those 2 conditions are true, only then we will show the drop-in to start the payment process. Else, set to null
     - Instantiate the DropIn component and pass in options and onInstance
-    - Last thing is render a 'Checkout' button right after the DropIn component
+    - Last thing is render a 'Pay' button right after the DropIn component
     ```javascript
     const showDropIn = () => (
       <div>
@@ -2441,23 +2441,64 @@ In cartHelpers.js file:
               }}
               onInstance={(instance) => (data.instance = instance)}
             />
-            <button className='btn btn-success'>Checkout</button>
+            <button className='btn btn-success'>Pay</button>
           </div>
         ) : null}
       </div>
     );
     ```
   - We need to make a small change to the showCheckout() method
-    - If the user is authenticated, call the showDropIn() method. This means that if the user is authenticated, show the DropIn UI and the checkout button
+    - If the user is authenticated, call the showDropIn() method. This means that if the user is authenticated, show the DropIn UI and the 'Pay' button
     - If they're not authenticated, they will see the 'Sign in to checkout' button instead
 
-
 **4. Handling payment frontend**
-
-
-
-
-
+- In the Checkout.js file:
+  - In the showDropIn() method,
+    - When the 'Pay' button is clicked, on onClick event, the buy method is invoked: `onClick={buy}`
+  - Write a buy method that process the payment with the given payment type and total amount
+    - Nonce = data.instance.requestPaymentMethod()
+    - What we need to do is send the nonce(the payment method) to server
+    - Create a variable with no value called nonce: `let nonce`
+    - Create another variable call getNonce and set it to data.instance. This is coming from instance data state: `let getNonce = data.instance`
+    - On this instance, call the requestPaymentMethod() method on it to get the payment type (i.e credit card, paypal, etc)
+      - This is an async operation. The data we'll get back is either the data or the error. Use .then() and .catch() methods to handle each case
+      - If success, set nonce variable to data.nonce: `nonce = data.nonce`
+    - Once we have nonce (card type, card number), send nonce as 'paymentMethodNonce'. Also, the total to be charged. We get the total price by calling the getTotal() method and pass in products as argument
+      - Console log to see the nonce and total: `console.log('send nonce and total to process: ', nonce, getTotal(products))`
+    - If error, set the error data state to error.message
+      - Console log to see the error: `console.log('dropin error: ', error)`
+    ```javascript
+    const buy = () => {
+      let nonce;
+      let getNonce = data.instance
+        .requestPaymentMethod()
+        .then((data) => {
+          console.log(data);
+          nonce = data.nonce;
+          // Once you have nonce (card type, card number), send nonce as 'paymentMethodNonce'. And also total to be charged
+          console.log('send nonce and total to process: ', nonce, getTotal(products));
+        })
+        .catch((error) => {
+          console.log('dropin error: ', error);
+          setData({ ...data, error: error.message });
+        });
+    };
+    ```
+  - Show the error message on the page. Earlier in the buy() method, we tried to process the payment. If it's not successful, we set the error to the data state. The error state starts out as empty. Now we just need to check the error data state to see there's error in it. Show the error if there is
+  - Write a showError method that shows the error message
+    - This method takes error as argument
+    - Check to see if there is an error. Display the error message if there is. Else, no display
+    - Show the error from data state: `{error}`
+    ```javascript
+    const showError = (error) => (
+      <div className='alert alert-danger' style={{display: error ? '' : 'none'}}> {error} </div>
+    );
+    ```
+  - In the render section, call the showError() method and pass in data.error from the state as argument. Call it just above the showCheckout() method
+    - `{showError(data.error)}`
+  - Last thing is, whenever the user starts clicking anywhere on the pay, run a function to empty the error value in the state. Use onBlur() to do this
+    - In showDropIn method,
+      - use onBlur() event and call setData() method to empty the error state
 
 
 
@@ -2470,6 +2511,7 @@ In cartHelpers.js file:
 - Query params: `npm i query-string`
 - Date and time stamp: `npm in moment`
 - Braintree: `npm i braintree`
+- Braintree Web Drop-in React: `npm i braintree-web-drop-in-react`
 
 
 

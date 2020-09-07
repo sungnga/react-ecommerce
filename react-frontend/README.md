@@ -2496,11 +2496,60 @@ In cartHelpers.js file:
     ```
   - In the render section, call the showError() method and pass in data.error from the state as argument. Call it just above the showCheckout() method
     - `{showError(data.error)}`
-  - Last thing is, whenever the user starts clicking anywhere on the pay, run a function to empty the error value in the state. Use onBlur() to do this
+  - Last thing, whenever the user starts clicking anywhere on the page after the error message appeared, run a function to empty the error value in the state. Use onBlur() to do this
     - In showDropIn method,
-      - use onBlur() event and call setData() method to empty the error state
+      - use onBlur() event at the root of the div element and call the setData() method to empty the error state
+      - `<div onBlur={() => setData({...data, error: ''})}> ... </div>`
+      - So when the user clicks somewhere, onBlur() is fired and the error message disappears 
 
-
+**5. Processing payment backend**
+- Process the payment with Braintree
+- In routes/braintree.js file:
+  - Create a route that process the braintree payment based on the userId
+    - So the user must sign in and must be authenticated. We need to apply middlewares to the route for that
+    - Last thing we need in the route is a controller method(called processPayment) that process the payment when there is a request to this route
+      - Require in the controller method: `const { processPayment } = require('../controllers/braintree')`
+		- Use **post()** method
+    - 1st arg is the route path: `'/braintree/payment/:userId'`
+    - 2nd & 3rd args are middlewares: requireSignin and isAuth
+    - 4th arg is a controller method to process the payment: processPayment
+    - `router.post('/braintree/payment/:userId', requireSignin, isAuth, processPayment)`
+- In controllers/braintree.js file:
+  - Write a processPayment method that process the payment
+    - We need the payment metod and total amount from the client side
+    - Get the nonce from client side: `let nonceFromTheClient = req.body.paymentMethodNonce;`
+    - Get the amount from client side: `let amountFromTheClient = req.body.amountFromTheClient;`
+    - After we have the information, we can now make the transaction by connecting to the braintree using gateway and call .transaction.sale() method on gateway
+    - In the .sale() method,
+      - 1st arg is an object that contains the amount, paymentMethodNonce, and options properties
+      - this is an async operation. So we'll get back either an error or a result. We handle what's coming back in a callback function
+      - 2nd arg is a callback function that takes error and result as arguments respectively. Use an if statement to handle both the error and result
+      - if error, send the status code and the error in json format
+      - if success, send the result in json format
+    ```javascript
+    exports.processPayment = (req, res) => {
+      // We need the payment metod and total amount that comes from the client side
+      let nonceFromTheClient = req.body.paymentMethodNonce;
+      let amountFromTheClient = req.body.amountFromTheClient;
+      // Charge
+      let newTransaction = gateway.transaction.sale(
+        {
+          amount: amountFromTheClient,
+          paymentMethodNonce: nonceFromTheClient,
+          options: {
+            submitForSettlement: true
+          }
+        },
+        (error, result) => {
+          if (error) {
+            res.status(500).json(error);
+          } else {
+            res.json(result);
+          }
+        }
+      );
+    };
+    ```
 
 
 

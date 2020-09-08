@@ -2268,7 +2268,7 @@ In cartHelpers.js file:
   - In the render section, call the showCheckout() method to show one of the two buttons: `{showCheckout()}`
 
 
-### PAYMENT GATEWAY (CREDIT CARD AND PAYPAL) WITH BRAINTREE
+## PAYMENT GATEWAY (CREDIT CARD AND PAYPAL) WITH BRAINTREE
 **1. Signup to Braintree sandbox**
 - Webpage: https://www.braintreepayments.com/sandbox
 - You'll be given the Merchant ID, public key, and private key after signing up
@@ -2655,15 +2655,46 @@ In cartHelpers.js file:
     });
     ``
 
-
-
-
-
-
-
-
-
-
+**8. Activate PayPal payment**
+- Show the PayPal button option in the DropIn UI to enable users to pay with PayPal
+- In Checkout.js file:
+  - In the showDropIn() method, and in the DropIn component, add a paypal property to the options property
+    ```javascript
+    options={{
+      authorization: data.clientToken,
+      paypal: {
+        flow: 'vault'
+      }
+    }}
+    ```
+  - Go to Braintree Sandbox webpage, make sure PayPay payment method is enabled. Find this under Processing Options in settings
+  - Next, while the payment is processing, we want to show some kind of loading to the user
+    - Create a loading state, and initalize its value to false by default
+      - `const [data, setData] = useState({ loading: false })`
+    - In the buy() method, 
+      - when the 'Pay' button is clicked, set the loading state to true
+      - `setData({ loading: true });`
+    - In the emptyCart() method callback function,
+      - after the cart is emptied, set the loading state back to false again
+      - `setData({ loading: false });`
+    - In the processPayment() method,
+      - if we encounter an error when processing the payment, set the loading state to false
+      ```javascript
+      .catch((error) => {
+        console.log(error);
+        setData({ loading: false });
+      }
+      ```
+  - Write a showLoading method that displays a loading text if loading state is true
+    - It takes loading as argument
+    - Check to see if loading state is set to true. If it is, display a text 'Loading...' in h2 element
+    ```javascript
+    const showLoading = (loading) => (
+      loading && <h2>Loading...</h2>
+    );
+    ```
+  - In the render section, call the showLoading() method and pass in data.loading from the state as argument. Call it just above the showSuccess() method
+    - `{showLoading(data.loading)}` 
 
 
 

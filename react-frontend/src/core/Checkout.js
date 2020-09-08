@@ -7,6 +7,7 @@ import DropIn from 'braintree-web-drop-in-react';
 
 const Checkout = ({ products }) => {
 	const [data, setData] = useState({
+		loading: false,
 		success: false,
 		clientToken: null,
 		error: '',
@@ -49,6 +50,7 @@ const Checkout = ({ products }) => {
 		);
 
 	const buy = () => {
+		setData({ loading: true });
 		// Send the nonce(the payment method) to your server
 		// Nonce = data.instance.requestPaymentMethod()
 		let nonce;
@@ -76,10 +78,14 @@ const Checkout = ({ products }) => {
 						// Empty cart
 						emptyCart(() => {
 							console.log('payment success and empty cart');
+							setData({ loading: false });
 						});
 						// Create order
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => {
+						console.log(error);
+						setData({ loading: false });
+					});
 			})
 			.catch((error) => {
 				// console.log('dropin error: ', error);
@@ -93,7 +99,10 @@ const Checkout = ({ products }) => {
 				<div>
 					<DropIn
 						options={{
-							authorization: data.clientToken
+							authorization: data.clientToken,
+							paypal: {
+								flow: 'vault'
+							}
 						}}
 						onInstance={(instance) => (data.instance = instance)}
 					/>
@@ -122,6 +131,8 @@ const Checkout = ({ products }) => {
 			Thanks! Your payment was successful!
 		</div>
 	);
+
+	const showLoading = (loading) => loading && <h2>Loading...</h2>;
 
 	return (
 		<div>

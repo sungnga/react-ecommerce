@@ -2696,6 +2696,31 @@ In cartHelpers.js file:
   - In the render section, call the showLoading() method and pass in data.loading from the state as argument. Call it just above the showSuccess() method
     - `{showLoading(data.loading)}` 
 
+**9. Steps to create PayPal Sandbox test account**
+- Website: https://developer.paypal.com/
+- Log into Dashboard. Need to log into the actual paypal account with email and password
+- We need to create a PayPal Sandbox test accounts
+  - In PayPal dashboard page, under Sandbox menu, select 'Accounts'
+  - Click on the 'Create Account' button to create a test account
+  - Fill out the account info
+    - Country
+    - Account Type (buyer or seller)
+    - Email address
+    - Password
+    - Paypal Balance
+  - Create a buyer and a seller test accounts
+- Next, we need to create a Paypal app to get the credentials
+  - In the My Apps & Credentials nav menu, click the 'Create App' button to create an app
+    - Give the name of app: TEST_ECOM
+    - Give the buyer or seller email address for SandBox Business Account: email address
+    - Then we'll get the Sandbox test account email address, the Client ID, and the Secret
+- Now, go to the Braintree Sandbox dashboard page, and go to the PayPal Processing Options section
+  - Turn on the paypal payment method
+  - Enter in the three paypal credentials
+- Test the paypal sandbox account in Checkout page
+  - When we click on the Paypal payment method, a paypal window pops up and asks for email and password
+  - Enter the test email address and password
+
 
 
 

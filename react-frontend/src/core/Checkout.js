@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Layout from './Layout';
 import Card from './Card';
 import { isAuthenticated } from '../auth';
-import { getBraintreeClientToken } from './apiCore';
+import { getBraintreeClientToken, processPayment } from './apiCore';
 import DropIn from 'braintree-web-drop-in-react';
 
 const Checkout = ({ products }) => {
@@ -23,7 +23,7 @@ const Checkout = ({ products }) => {
 			if (data.error) {
 				setData({ ...data, error: data.error });
 			} else {
-				setData({ ...data, clientToken: data.clientToken });
+				setData({ clientToken: data.clientToken });
 			}
 		});
 	};
@@ -63,6 +63,19 @@ const Checkout = ({ products }) => {
 					nonce,
 					getTotal(products)
 				);
+				const paymentData = {
+					paymentMethodNonce: nonce,
+					amount: getTotal(products)
+				};
+
+				processPayment(userId, token, paymentData)
+					.then((response) => {
+						console.log(response);
+						setData({ ...data, success: response.success });
+						// Empty cart
+						//Create order
+					})
+					.catch((error) => console.log(error));
 			})
 			.catch((error) => {
 				console.log('dropin error: ', error);
@@ -71,7 +84,7 @@ const Checkout = ({ products }) => {
 	};
 
 	const showDropIn = () => (
-		<div onBlur={() => setData({...data, error: ''})}>
+		<div onBlur={() => setData({ ...data, error: '' })}>
 			{data.clientToken !== null && products.length > 0 ? (
 				<div>
 					<DropIn
@@ -80,7 +93,7 @@ const Checkout = ({ products }) => {
 						}}
 						onInstance={(instance) => (data.instance = instance)}
 					/>
-					<button onClick={buy} className='btn btn-success'>
+					<button onClick={buy} className='btn btn-success btn-block'>
 						Pay
 					</button>
 				</div>
@@ -89,12 +102,27 @@ const Checkout = ({ products }) => {
 	);
 
 	const showError = (error) => (
-		<div className='alert alert-danger' style={{display: error ? '' : 'none'}}> {error} </div>
+		<div
+			className='alert alert-danger'
+			style={{ display: error ? '' : 'none' }}
+		>
+			{error}
+		</div>
+	);
+
+	const showSuccess = (success) => (
+		<div
+			className='alert alert-info'
+			style={{ display: success ? '' : 'none' }}
+		>
+			Thanks! Your payment was successful!
+		</div>
 	);
 
 	return (
 		<div>
 			<h2>Total: ${getTotal()}</h2>
+			{showSuccess(data.success)}
 			{showError(data.error)}
 			{showCheckout()}
 		</div>

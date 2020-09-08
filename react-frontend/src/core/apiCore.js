@@ -85,8 +85,27 @@ export const getBraintreeClientToken = (userId, token) => {
 		headers: {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`
+			Authorization: `Bearer ${token}`
 		}
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+// Process payment
+// paymentData contains the payment method and total amount
+export const processPayment = (userId, token, paymentData) => {
+	return fetch(`${API}/braintree/payment/${userId}`, {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		// Send the payment data
+		body: JSON.stringify(paymentData)
 	})
 		.then((response) => {
 			return response.json();

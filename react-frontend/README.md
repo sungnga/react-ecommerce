@@ -1246,13 +1246,15 @@
 - In Shop.js file:
   - Import the getFilteredProducts method: `import { getFilteredProducts } from './apiCore'`
   - Create state for skip, limit, and filteredResults and initialize them
-    - `const [limit, setLimit] = useState(6);`
-	  - `const [skip, setSkip] = useState(0);`
-    - `const [filteredResults, setFilteredResults] = useState([]);`
+    ```javascript
+    const [limit, setLimit] = useState(6);
+	  const [skip, setSkip] = useState(0);
+    const [filteredResults, setFilteredResults] = useState([]);
+    ```
   - In the loadFilteredProducts() method, 
     - call the getFilteredProducts() method and pass in skip, limit, and newFilters
-      - This is an async operation. We'll get back either the data or the error
-      - Use .then() method to handle the data returned
+      - this is an async operation. We'll get back either the data or the error
+      - use .then() method to handle the data returned
       - if it's an error, set error state to data.error
       - if it's a success, set filteredResults state to data
     ```javascript
@@ -2354,29 +2356,29 @@ In cartHelpers.js file:
 - In the frontend, first thing we need to do is create a method that makes a request to the backend to get the token
 - In apiCore.js file
   - Write a getBraintreeClientToken method that makes a request to backend to get a Braintree clientToken
-  - It takes userId and token as argument. Because this is for authenticated users only
-  - Use fetch() method to make the request to this api: `${API}/braintree/getToken/${userId}`
-  - This api is the 1st argument that fetch() method takes
-  - 2nd arg it takes is an object that contains method and headers properties
-    - method is a GET method
-    - in headers property, we need to provide the bearer token value to Authorization
-  - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
-  ```javascript
-  export const getBraintreeClientToken = (userId, token) => {
-    return fetch(`${API}/braintree/getToken/${userId}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then((response) => {
-        return response.json();
+    - It takes userId and token as arguments. Because this is for authenticated users only
+    - Use fetch() method to make the request to this api: `${API}/braintree/getToken/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a GET method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const getBraintreeClientToken = (userId, token) => {
+      return fetch(`${API}/braintree/getToken/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       })
-      .catch((err) => console.log(err));
-  };
-  ```
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
 - In Checkout.js file:
   - Import the getBraintreeClientToken method: `import { getBraintreeClientToken } from './apiCore'`
   - Import isAuthenticated method: `import { isAuthenticated } from '../auth'`
@@ -2503,7 +2505,7 @@ In cartHelpers.js file:
       - So when the user clicks somewhere, onBlur() is fired and the error message disappears 
 
 **5. Processing payment backend**
-- Process the payment with Braintree
+- Implement processing payment with Braintree in backend
 - In routes/braintree.js file:
   - Create a route that process the braintree payment based on the userId
     - So the user must sign in and must be authenticated. We need to apply middlewares to the route for that
@@ -2550,6 +2552,82 @@ In cartHelpers.js file:
       );
     };
     ```
+
+**6. Successful transaction frontend**
+- Implement process payment frontend
+- In apiCore.js file:
+  - Write a processPayment method that makes an api request to finalize the payment
+    - It takes userId, token, and paymentData as arguments respectively. paymentDta contains the payment method and total amount
+    - Use the fetch() method to make the request to this api: `${API}/braintree/payment/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a POST method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - 3rd arg it takes is the body property. There, we send the payment data in json string format
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const processPayment = (userId, token, paymentData) => {
+      return fetch(`${API}/braintree/payment/${userId}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        // Send the payment data
+        body: JSON.stringify(paymentData)
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+  ```
+- In Checkout.js file:
+  - Import the processPayment method: `import { processPayment } from './apiCore'`
+  - When the user clicks the 'Buy' button, we can send the paymentData to the backend
+  - In the buy() method and inside the .requestPaymentMethod() method callback function, 
+    - let's first create the paymentData object. This object has
+      - the paymentMethodNonce property with the value of nonce, which comes from nonce data state
+      - the amount property. Get the amount value by calling the getTotal() method and pass in products as argument
+      ```javascript
+      const paymentData = {
+        paymentMethodNonce: nonce,
+        amount: getTotal(products)
+      };
+      ```
+    - then call the processPayment method to make the api request to send the paymentData along with the userId and token to the backend
+    - call the processPayment() method and pass in userId, token, and paymentData as arguments
+      - this is an async operation. We'll either get a response or an error. Use the .then() and .catch() methods to handle both. For now, console log the response and error to see what we get back
+      - if success, set the success data state to 
+      ```javascript
+      processPayment(userId, token, paymentData)
+        .then((response) => {
+          console.log(response)
+          setData({ ...data, success: response.success });
+        })
+        .catch((error) => console.log(error));
+      ```
+  - If the process payment is successful, we should get back as a response, the details of the transaction
+  - Lastly, we need to write a method to display a message that the payment has successfully made
+  - Write a showSuccess method that displays a success message that the payment is successful
+    - This method takes success as argument
+    - Check to see if success state is set to true. Display the success message if it is. Else, no display
+    - Show a text message like: `Thanks! Your payment was successful!`
+    ```javascript
+    const showSuccess = (success) => (
+      <div
+        className='alert alert-info'
+        style={{ display: success ? '' : 'none' }}
+      >
+        Thanks! Your payment was successful!
+      </div>
+    );
+    ```
+  - In the render section, call the showSuccess() method and pass in data.success from the state as argument. Call it just above the showError() method
+    - `{showSuccess(data.success)}`
+
+
 
 
 

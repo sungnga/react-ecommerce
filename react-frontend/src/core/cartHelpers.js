@@ -99,3 +99,12 @@ export const removeItem = (productId) => {
 	}
 	return cart;
 };
+
+// Remove items from cart in localStorage
+// next is a callback function
+export const emptyCart = (next) => {
+	if (typeof window !== 'undefined') {
+		localStorage.removeItem('cart');
+		next();
+	}
+};

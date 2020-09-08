@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from './Layout';
-import Card from './Card';
 import { isAuthenticated } from '../auth';
 import { getBraintreeClientToken, processPayment } from './apiCore';
+import { emptyCart } from './cartHelpers';
 import DropIn from 'braintree-web-drop-in-react';
 
 const Checkout = ({ products }) => {
@@ -21,8 +20,10 @@ const Checkout = ({ products }) => {
 	const getToken = (userId, token) => {
 		getBraintreeClientToken(userId, token).then((data) => {
 			if (data.error) {
+				// console.log(data.error)
 				setData({ ...data, error: data.error });
 			} else {
+				// console.log(data)
 				setData({ clientToken: data.clientToken });
 			}
 		});
@@ -54,15 +55,15 @@ const Checkout = ({ products }) => {
 		let getNonce = data.instance
 			.requestPaymentMethod()
 			.then((data) => {
-				console.log(data);
+				// console.log(data);
 				nonce = data.nonce;
 				// Once you have nonce (card type, card number), send nonce as 'paymentMethodNonce'
 				// and also total to be charged
-				console.log(
-					'send nonce and total to process: ',
-					nonce,
-					getTotal(products)
-				);
+				// console.log(
+				// 	'send nonce and total to process: ',
+				// 	nonce,
+				// 	getTotal(products)
+				// );
 				const paymentData = {
 					paymentMethodNonce: nonce,
 					amount: getTotal(products)
@@ -70,15 +71,18 @@ const Checkout = ({ products }) => {
 
 				processPayment(userId, token, paymentData)
 					.then((response) => {
-						console.log(response);
+						// console.log(response);
 						setData({ ...data, success: response.success });
 						// Empty cart
-						//Create order
+						emptyCart(() => {
+							console.log('payment success and empty cart');
+						});
+						// Create order
 					})
 					.catch((error) => console.log(error));
 			})
 			.catch((error) => {
-				console.log('dropin error: ', error);
+				// console.log('dropin error: ', error);
 				setData({ ...data, error: error.message });
 			});
 	};

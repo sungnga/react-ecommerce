@@ -2627,6 +2627,46 @@ In cartHelpers.js file:
   - In the render section, call the showSuccess() method and pass in data.success from the state as argument. Call it just above the showError() method
     - `{showSuccess(data.success)}`
 
+**7. Empty cart after successful purchase**
+- After the user paid for the product, we need to empty the cart from the localStorage
+- In core/cartHelpers.js file:
+  - Write an emptyCart method that clears out the items from the localStorage
+    - This method takes next as argument
+    - Check to see if there's a window object (not undefined)
+    - If there is a window object, remove items from 'cart' in the localStorage using the .removeItem() method: `localStorage.removeItem('cart')`
+    - Once this is done, execute the next() callback function to move forward
+    ```javascript
+    export const emptyCart = (next) => {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('cart');
+        next();
+      }
+    };
+    ```
+- In Checkout.js file:
+  - Import the emptyCart method: `import {emptyCart} from './cartHelpers'`
+  - We want to execute emptyCart() method when we received successful payment
+  - In the buy() method, and inside the processPayment() method, after the payment is successful (we get a response back), execute the emptyCart() method
+    - This method takes a callback function
+    - In the callback, console log the message 'payment success and empty cart' for now
+    ```javascript
+    emptyCart(() => {
+      console.log('payment success and empty cart');
+    });
+    ``
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

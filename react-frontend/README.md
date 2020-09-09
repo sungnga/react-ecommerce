@@ -2557,7 +2557,7 @@ In cartHelpers.js file:
 - Implement process payment frontend
 - In apiCore.js file:
   - Write a processPayment method that makes an api request to finalize the payment
-    - It takes userId, token, and paymentData as arguments respectively. paymentDta contains the payment method and total amount
+    - It takes userId, token, and paymentData as arguments respectively. paymentData contains the payment method and total amount
     - Use the fetch() method to make the request to this api: `${API}/braintree/payment/${userId}`
     - This api is the 1st argument that fetch() method takes
     - 2nd arg it takes is an object that contains method and headers properties
@@ -2683,7 +2683,7 @@ In cartHelpers.js file:
       .catch((error) => {
         console.log(error);
         setData({ loading: false });
-      }
+      });
       ```
   - Write a showLoading method that displays a loading text if loading state is true
     - It takes loading as argument
@@ -2750,13 +2750,99 @@ In cartHelpers.js file:
   - Write a create method that creates an order based on user id
     - This method takes req and res as arguments respectively
     - For now, console log to see what we get from the request body: `console.log('CREATE ORDER: ', req.body);`
+    ```javascript
+    exports.create = (req, res) => {
+      console.log('CREATE ORDER: ', req.body);
+    };
+    ```
 
+**2. Create order - frontend**
+- Next step is we need to send the products that the user is buying to the backend to create the order. Create a method that makes a request to the backend to do this
+- In src/core/apiCore.js file:
+  - Write a createOrder method that makes an api request to the backend with the provided userId, token, and order data to create an order
+    - It takes userId, token, and createOrderData as arguments respectively. createOrderData contains the products information the user purchased
+    - Use the fetch() method to make the request to this api: `${API}/order/create/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a POST method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - 3rd arg it takes is the body property. There, we send the createOrderData value to the order object in json string format
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const createOrder = (userId, token, createOrderData) => {
+      return fetch(`${API}/order/create/${userId}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        // Send the order data
+        body: JSON.stringify({ order: createOrderData })
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+  ```
+- We can use this createOrder method in the checkout process to create the new order, before we empty the cart from the localStorage
+- In core/Checkout.js file:
+  - Import the createOrder method: `import { createOrder } from './apiCore'`
+  - In the buy() method, and inside the processPayment() method callback function,
+    - when we get the response back (which means that the payment is successful), and before we call the emptyCart() method to empty the cart, we want to create the order
+    - in this callback, let's first create the createOrderData object. This object has products, transaction_id, amount, and address properties
+      ```javascript
+      const createOrderData = {
+        products: products,
+        transaction_id: response.transaction_id,
+        amount: response.transaction.amount,
+        address: data.address
+      };
+      ```
+    - right after, call the createOrder() method and pass in userId, token, and createOrderData as arguments
+      - this is an async operation. We'll either get a response or an error. Use the .then() and .catch() methods to handle both. For now, console log the response and error to see what we get back
+      - if success, leave it empty for now...
+      - if error, set the loading data state to false 
+      ```javascript
+      createOrder(userId, token, createOrderData)
+        .then((response) => {
+          //
+        })
+        .catch((error) => {
+          console.log(error);
+          setData({ loading: false });
+        });
+      ```
 
-
-
-
-
-
+**2A. Delivery address**
+- Create a delivery address text input field so the user can provide the delivery address
+- In Checkout.js file:
+  - Create an address state and initialize its value to an empty string
+    - `const [data, setData] = useState({ address: '' })`
+  - In the showDropIn() method, 
+    - just above the DropIn component, render a text input field for the delivery address
+    - the value property is from the address data state
+    - on onChange event, the handleAddress() method is executed
+    ```javascript
+    <div className='gorm-group mb-3'>
+      <label className='text-muted'>Delivery address:</label>
+      <textarea
+        onChange={handleAddress}
+        className='form-control'
+        value={data.address}
+        placeholder='Enter your delivery address'
+      />
+    </div>
+    ```
+  - Next, write a handleAddress method that sets the address data state to the incoming value that the user types in the delivery address text field
+    - it takes event as argument
+    - set the address data state to event.target.value
+    ```javascript
+    const handleAddress = (event) => {
+      setData({ ...data, address: event.target.value });
+    };
+    ```
 
 
 

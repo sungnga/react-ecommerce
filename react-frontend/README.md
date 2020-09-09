@@ -1,6 +1,6 @@
 # STEPS TO BUILDING THE FRONTEND PORTION OF THIS ECOMMERCE APP WITH REACT
 
-### REACT: REACT APP WITH PAGES AND LAYOUTS
+## REACT: REACT APP WITH PAGES AND LAYOUTS
 **1. Create react app**
 - At the root of project directory, run: `npx create-react-app react-frontend --use-npm`
 - This will create a react application. Add the switch flag to ensure that it's using the npm package manager
@@ -148,7 +148,7 @@
   - Import the API: `import {API} from '../config'`
 
 
-### REACT: USER SIGNUP AND SIGNIN
+## REACT: USER SIGNUP AND SIGNIN
 **1. Create Signup form and handle change**
 - In Signup.js file:
   - Inside the Signup component, write a signUpForm function that renders the signup form
@@ -402,7 +402,7 @@
     - `{isAuthenticated() && ( <render signout link> )}`
 
 
-### REACT: PRIVATE AND ADMIN ROUTE WITH USER DASHBOARD
+## REACT: PRIVATE AND ADMIN ROUTE WITH USER DASHBOARD
 **1. Private route for authenticated users only**
 - In src/user folder, create a file called UserDashboard.js
 - In UserDashboard.js file:
@@ -542,7 +542,7 @@
   ```
 
 
-### REACT: CATEGORIES AND PRODUCTS
+## REACT: CATEGORIES AND PRODUCTS
 **1. AddCategory component**
 - In src folder, create a folder called admin
 - In admin folder, create a component/file called AddCategory.js
@@ -1172,7 +1172,7 @@
     - first, accept event as an argument
     - next, call the handleFilters() method and pass in the event.target.value as argument. This will send the event.target.value to the parent component
     - and lastly, update the value state by calling the setValue() method and pass in the event.target.value
-  - Unlike 'filter by categories' where multiple categories can be selected, only on price range can be selected for 'filter by price range'
+  - Unlike 'filter by categories' where multiple categories can be selected, only one price range can be selected for 'filter by price range'
     - In the input field for price, add name property and set its value to price: `name={price}`. This ensures that only one price range is selected and only one item is added to the price array state
   - However, we currently are only grabbing the key out of the prices array(fixedprices.js). We want to get the 'array' value out of the key 
     - We can handle this in the handleFilters() method in the Shop component
@@ -1360,7 +1360,7 @@
     ```
 
 
-### REACT: PRODUCTS SEARCH IN HOME PAGE
+## REACT: PRODUCTS SEARCH IN HOME PAGE
 **1. Search component**
 - In src/core folder, create a new component/file called Search.js
 - In Search.js file:
@@ -1584,7 +1584,7 @@
     ```
 
 
-### REACT: PRODUCT PAGE WITH RELATED PRODUCTS
+## REACT: PRODUCT PAGE WITH RELATED PRODUCTS
 **1. Single product component**
 - When a user clicks on "View Product" button, it'll take them to a single product page to view the detail of that product
 - In src/core folder, create a component/file called Product.js
@@ -1815,7 +1815,7 @@
     }, [props]);
     ``
 
-### REACT: CART CRUD WITH LOCALSTORAGE
+## REACT: CART CRUD WITH LOCALSTORAGE
 **1. Implement 'Add to cart' functionality**
 - When the user clicks "Add to cart" button, we want to save the product in the localStorage and display the "Cart" item in the navigation bar 
 - In src/core folder, create a file called cartHelpers.js
@@ -2720,6 +2720,41 @@ In cartHelpers.js file:
 - Test the paypal sandbox account in Checkout page
   - When we click on the Paypal payment method, a paypal window pops up and asks for email and password
   - Enter the test email address and password
+
+
+## ORDERS
+**1. Order routes and controllers setup - backend**
+- In nodejs-backend directory, in routes folder, create a file called order.js
+- In routes/order.js file:
+  - Require in express: `const express = require('express')`
+  - Require in express router: `const router = express.Router()`
+  - Export the router: `module.exports = router`
+  - Create a route that creates an order based on the userId
+    - So the user must sign in and must be authenticated. We need to apply middlewares to the route for that
+      - Require in both middlewares from auth controllers: `const { requireSignin, isAuth } = require('../controllers/auth')`
+    - Last thing we need in the route is a controller method(called create) that creates the order when there is a request to this route
+      - Require in the controller method: `const { create } = require('../controllers/create')`
+		- Use **post()** method
+    - 1st arg is the route path: `'/order/create/:userId'`
+    - 2nd & 3rd args are middlewares: requireSignin and isAuth
+    - 4th arg is the controller method name to create the order: create
+    - `router.post('/order/create/:userId', requireSignin, isAuth, create)`
+  - We also need to create a route parameter. Anytime there is a 'userId' in the URL param, we want to run the userById controller method
+    - `router.param('userId', userById)`
+    - Require in userById controller method: `const { userById } = require('../controllers/user')`
+- In nodejs-backend/app.js file:
+  - Import the order route:  `const orderRoutes = require('./routes/order')`
+  - Use the order route: `app.use('/api', orderRoutes)`
+- In nodejs-backend/controllers folder, create a file called order.js
+- In order.js file:
+  - Write a create method that creates an order based on user id
+    - This method takes req and res as arguments respectively
+    - For now, console log to see what we get from the request body: `console.log('CREATE ORDER: ', req.body);`
+
+
+
+
+
 
 
 

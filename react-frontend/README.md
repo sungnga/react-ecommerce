@@ -2934,6 +2934,21 @@ In cartHelpers.js file:
     };
     ```
 
+**4. Save delivery address of orders**
+- Right now our code has some naming conflict as to where the address data is coming from when we create an order. We want the address to come from data state. To solve this issue, we can store the address state in a different variable and we can refer to that when we create an order
+- In Checkout.js file:
+  - Create a deliveryAddress variable that stores the address data state: `let deliveryAddress = data.address` 
+  - In the createOrderData() method, assign the address property with the value of deliveryAddress: `address: deliveryAddress`
+
+
+
+
+
+
+
+
+
+
 
 
 

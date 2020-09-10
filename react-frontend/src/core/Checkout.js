@@ -57,6 +57,8 @@ const Checkout = ({ products }) => {
 			</Link>
 		);
 
+	let deliveryAddress = data.address;
+
 	const buy = () => {
 		setData({ loading: true });
 		// Send the nonce(the payment method) to your server
@@ -87,7 +89,7 @@ const Checkout = ({ products }) => {
 							products: products,
 							transaction_id: response.transaction_id,
 							amount: response.transaction.amount,
-							address: data.address
+							address: deliveryAddress
 						};
 
 						// Create order

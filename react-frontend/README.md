@@ -2934,18 +2934,71 @@ In cartHelpers.js file:
     };
     ```
 
-**4. Save delivery address of orders**
+**4. Save delivery address of orders - frontend**
 - Right now our code has some naming conflict as to where the address data is coming from when we create an order. We want the address to come from data state. To solve this issue, we can store the address state in a different variable and we can refer to that when we create an order
 - In Checkout.js file:
   - Create a deliveryAddress variable that stores the address data state: `let deliveryAddress = data.address` 
   - In the createOrderData() method, assign the address property with the value of deliveryAddress: `address: deliveryAddress`
 
-
-
-
-
-
-
+**5. Push orders to user's purchase history - backend**
+- When we create a new order, we want to save the order to user's purchase history. To do that, we need to create a middleware and use it in create order route
+- In the routes/order.js file:
+  - Create a middleware method from user controller and let's call it addOrderToUserHistory
+  - Import the addOrderToUserHistory method from user controller:
+    - `const { addOrderToUserHistory } = require('../controllers/user');`
+  - Pass the addOrderToUserHistory method to the create order route as 4th arg
+    - `router.post('/order/create/:userId', requireSignin, isAuth, addOrderToUserHistory, create);`
+- In controllers/user.js file:
+  - Write an addOrderToUserHistory middleware method that adds the order to the user purchase history
+    - This middleware performs the following tasks:
+      - Starts out with an empty history
+      - Finds all the products from the order and adds them to history
+      - Finds the user from the User model by its id and updates that User object with the purchase history
+      - Sends back a response whether this operation is successful or not
+    - This method takes req, res, and next as arguments
+    - Start with an empty history array. This is the user purchase history: `let history = []`
+    - Get all the products from the order and push it to the history array
+      - Use req.body.order.products to get the products
+      - Then call the .forEach() method on the products to loop through each item
+      - Push each item to history using the .push() method on history
+      - What we pass in to history is an object which contains the detail description of each item
+      ```javascript
+      req.body.order.products.forEach((item) => {
+        history.push({
+          _id: item._id,
+          name: item.name,
+          description: item.description,
+          category: item.count,
+          transaction_id: req.body.order.transaction_id,
+          amount: req.body.order.amount
+        });
+      });
+      ```
+    - Next, get the user id from the User model and push it to history array. Use OneAndUpdate() method to get  by its id and updates that User object with the purchase history
+    - Sends back a response whether this operation is successful or notthis done
+      - In the findOneAndUpdate() method,
+        - 1st arg is find the user id from req.profile._id and assign it to the _id property of the User model object
+        - 2nd arg is push the history array as a history property to the User model object. This will create a new history property in the User model schema
+        - 3rd arg is retrieve this updated user information and send back as a json respond
+        - 4th arg is a callback function. In the callback we can handle the error or the data we get back
+        - if error, return the status code and an error message in json format
+        - if success, since this is a middleware, execute next() so we can create the order
+        ```javascript
+        User.findOneAndUpdate(
+          { _id: req.profile._id },
+          { $push: { history: history } },
+          { new: true },
+          (error, data) => {
+            if (error) {
+              return res.status(400).json({
+                error: 'Could not update user purchase history'
+              });
+            }
+            next();
+          }
+        );
+        ```
+- Now when a user made a purchase, an order is created and added to their purchase history. Each order contains detail information on the products they purchased. Later we can use this history data in this particular user dashboard to display a list of orders they've made
 
 
 

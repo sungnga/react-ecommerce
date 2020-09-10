@@ -2844,6 +2844,95 @@ In cartHelpers.js file:
     };
     ```
 
+**3. Save orders in the database - backend**
+- In order to save the orders in the datebase, we need to create two schemas, two models. One is an order schema and the other is a cart item schema to create a product
+- In nodejs-backend/models folder, create a model/file called order.js
+- In order.js file:
+  - Import mongoose: `const mongoose = require("mongoose");`
+  - Import Schema: `const Schema = mongoose.Schema;`
+  - Import ObjectId: `const { ObjectId } = mongoose.Schema;`  
+  - Create an OrderSchema schema by using the `new mongoose.Schema()` to define the order schema
+    - We provide to mongoose schema an object which contains these properties,
+      - products, which is an array of CartItemSchema, defined in the cart item schema
+      - amount, in Number type
+      - address, in String type
+      - status, which is an object
+      - updated, the Date
+      - user, which is an object with a ref to the User model
+      - timestamps
+    ```javascript
+    const OrderSchema = new mongoose.Schema(
+      {
+        products: [CartItemSchema],
+        transaction_id: {},
+        amount: { type: Number },
+        address: String,
+        status: {
+          type: String,
+          default: 'Not processed',
+          enum: ['Not processed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] // enum means string objects
+        },
+        updated: Date,
+        user: { type: ObjectId, ref: 'User' }
+      },
+      { timestamps: true }
+    );
+    ```
+  - Create a CartItem model based on the CartItemSchema
+    - Use mongoose.model() to create the model
+    - `const CartItem = mongoose.model('CartItem', CartItemSchema);`
+  - Create a CartItemSchema schema by using the `new mongoose.Schema()` to define the cart item schema
+    - We provide to mongoose schema an object which contains these properties,
+      - product, which is an object with a ref to the Product model
+      - name, in String type
+      - price, in Number type
+      - count, in Number type
+    ```javascript
+    const CartItemSchema = new mongoose.Schema(
+      {
+        product: { type: ObjectId, ref: 'Product' },
+        name: String,
+        price: Number,
+        count: Number
+      },
+      { timestamps: true }
+    );
+    ```
+  - Create an Order model based on the OrderSchema
+    - Use mongoose.model() to create the model
+    - `const Order = mongoose.model('Order', OrderSchema);`
+  - Export both the Order and CartItem models: `module.exports = { Order, CartItem };`
+- In controllers/order.js file:
+  - Import the Order and CartItem models: `const { Order, CartItem } = require('../models/order');`
+  - Import the errorHandler method: `const { errorHandler } = require('../helpers/dbErrorHandler');`
+  - In the create() method,
+    - We need to get the user from the frontend and assign it to the value `req.profile`. Because each order is associated with the user
+      - `req.body.order.user = req.profile;`
+    - Now lets create a new order by using the `new Order()` method
+      - This method takes req.body.order as argument
+      - `const order = new Order(req.body.order);`
+    - Then save the order to the mongoose database by calling the .save() method
+      - The save() method takes a callback that we can use to handle the data or error being returned
+      - If error, return with the status code and call the errorHandler() method to handle the error
+      - If success, return the data in json format
+    ```javascript
+    const { Order, CartItem } = require('../models/order');
+    const { errorHandler } = require('../helpers/dbErrorHandler');
+
+    exports.create = (req, res) => {
+      // console.log('CREATE ORDER: ', req.body);
+      req.body.order.user = req.profile;
+      const order = new Order(req.body.order);
+      order.save((error, data) => {
+        if (error) {
+          return res.status(400).json({
+            error: errorHandler(error)
+          });
+        }
+        res.json(data);
+      });
+    };
+    ```
 
 
 

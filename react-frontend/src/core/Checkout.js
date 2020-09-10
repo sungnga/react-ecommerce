@@ -93,19 +93,16 @@ const Checkout = ({ products }) => {
 						// Create order
 						createOrder(userId, token, createOrderData)
 							.then((response) => {
-								//
+								// Empty cart
+								emptyCart(() => {
+									console.log('payment success and empty cart');
+									setData({ loading: false, success: true });
+								});
 							})
 							.catch((error) => {
 								console.log(error);
 								setData({ loading: false });
 							});
-
-						// setData({ ...data, success: response.success });
-						// // Empty cart
-						// emptyCart(() => {
-						// 	console.log('payment success and empty cart');
-						// 	setData({ loading: false, success: response.success });
-						// });
 					})
 					.catch((error) => {
 						console.log(error);

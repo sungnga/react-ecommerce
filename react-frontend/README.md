@@ -2953,7 +2953,7 @@ In cartHelpers.js file:
     - This middleware performs the following tasks:
       - Starts out with an empty history
       - Finds all the products from the order and adds them to history
-      - Finds the user from the User model by its id and updates that User object with the purchase history
+      - Finds the user from the User model by its id and updates purchase history for that User model object
       - Sends back a response whether this operation is successful or not
     - This method takes req, res, and next as arguments
     - Start with an empty history array. This is the user purchase history: `let history = []`
@@ -2974,8 +2974,7 @@ In cartHelpers.js file:
         });
       });
       ```
-    - Next, get the user id from the User model and push it to history array. Use OneAndUpdate() method to get  by its id and updates that User object with the purchase history
-    - Sends back a response whether this operation is successful or notthis done
+    - Next, find the user id in the User model and push the history array to this particular User model object to update its history property. Use .findOneAndUpdate() method on the User model to find the user id and update the purchase history
       - In the findOneAndUpdate() method,
         - 1st arg is find the user id from req.profile._id and assign it to the _id property of the User model object
         - 2nd arg is push the history array as a history property to the User model object. This will create a new history property in the User model schema
@@ -2999,6 +2998,64 @@ In cartHelpers.js file:
         );
         ```
 - Now when a user made a purchase, an order is created and added to their purchase history. Each order contains detail information on the products they purchased. Later we can use this history data in this particular user dashboard to display a list of orders they've made
+
+**6. Update sold products quantity**
+- When a product is sold, we want to update the sold and quantity properties of the product. We can write a middleware and apply it to the create order route
+- In the routes/order.js file:
+  - Create a middleware method from product controller and let's call it decreaseQuantity
+  - Import the decreaseQuantity method from product controller:
+    - `const { decreaseQuantity } = require('../controllers/product');`
+  - Pass the decreaseQuantity method to the create order route as 5th arg
+    - `router.post('/order/create/:userId', requireSignin, isAuth, addOrderToUserHistory, decreaseQuantity, create);`
+  - So when there's a request made to `/order/create/:userId` route, this route is responsible these tasks:
+    - first, check to see if the user is logged in (middleware)
+    - then check to see if the user is authenticated (middleware)
+    - then add the order to user purchase history (middleware)
+    - next, update the quantity and sold of the product (middleware)
+    - last thing, create the order
+- In controllers/product.js file:
+  - Write a decreaseQuantity middleware method that decreases the quantity property and increases the sold property of the product
+    - Lets create a variable called bulkOps. This variable will hold the updated version of the item in the order products array
+      - First, get the products from order using `req.body.order.products`. Use .map() method to loops through the products array
+      - map() method takes a function
+      - In this function, pass in item as it represents each item in products 
+        - We can use updateOne and update properties that come with mongoose to update the item based on its id
+        - We want to update the quantity and sold properties
+    - After this, we can update the product in the Product model by calling the .bulkWrite() method on it. bulkWrite() method comes with mongoose
+      - In bulkWrite() method,
+        - 1st arg it takes is the bulkOps item
+        - 2nd arg is an empty object
+        - 3rd arg is the callback function. This callback will handle what's being returned. We'll get back either an error or the products
+        - If error, return with the status code and an error message in json format
+        - If success, we get the products and execute next() to move forward
+    ```javascript
+    exports.decreaseQuantity = (req, res, next) => {
+      let bulkOps = req.body.order.products.map((item) => {
+        return {
+          updateOne: {
+            filter: { _id: item._id },
+            update: { $inc: { quantity: -item.count, sold: +item.count } }
+          }
+        };
+      });
+
+      Product.bulkWrite(bulkOps, {}, (error, products) => {
+        if (error) {
+          return res.status(400).json({
+            error: 'Could not update product'
+          });
+        }
+        next();
+      });
+    };
+    ```
+
+
+
+
+
+
+
 
 
 

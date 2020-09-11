@@ -8,14 +8,14 @@ exports.productById = (req, res, next, id) => {
 	Product.findById(id)
 		.populate('category')
 		.exec((err, product) => {
-		if (err || !product) {
-			return res.status(400).json({
-				error: 'Product not found'
-			});
-		}
-		req.product = product;
-		next();
-	});
+			if (err || !product) {
+				return res.status(400).json({
+					error: 'Product not found'
+				});
+			}
+			req.product = product;
+			next();
+		});
 };
 
 exports.read = (req, res) => {
@@ -275,4 +275,25 @@ exports.listSearch = (req, res) => {
 			res.json(products);
 		}).select('-photo');
 	}
+};
+
+// Middleware that decreases the quantity in product
+exports.decreaseQuantity = (req, res, next) => {
+	let bulkOps = req.body.order.products.map((item) => {
+		return {
+			updateOne: {
+				filter: { _id: item._id },
+				update: { $inc: { quantity: -item.count, sold: +item.count } }
+			}
+		};
+	});
+
+	Product.bulkWrite(bulkOps, {}, (error, products) => {
+		if (error) {
+			return res.status(400).json({
+				error: 'Could not update product'
+			});
+		}
+		next();
+	});
 };

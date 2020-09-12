@@ -3089,6 +3089,115 @@ In cartHelpers.js file:
     };
     ```
 
+**8. Fetch all orders for admin - frontend**
+- We want the admin to be able to see all the orders. For that, we need to create a method that makes a request to the backend to get the orders
+- In src/admin/apiAdmin.js file:
+  - Write a listOrders method that makes a request to backend to get the orders
+    - It takes userId and token as arguments
+    - Use fetch() method to make the request to this api: `${API}/order/list/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a GET method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const listOrders = (userId, token) => {
+      return fetch(`${API}/order/list/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- Before we can use the listOrders method, we need to create an Orders component in admin
+- In src/admin folder, create a component/file called Orders.js
+- In Orders.js file:
+  - Import these following:
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    import { Link } from 'react-router-dom';
+    import Layout from '../core/Layout';
+    import { isAuthenticated } from '../auth';
+    import { listOrders } from './apiAdmin';
+    ```
+  - Write a functional Orders component that displays the orders for admin users
+    - First, we need to get the orders from backend using the listOrders() method
+    - Create an orders state and initialize it to an empty array
+    - Destructure user and token from the isAuthenticated() method: `const { user, token } = isAuthenticated();`
+    - Write a loadOrders method that executes the listOrders() method. It loads the orders when the component mounts
+      - In the listOrders() method,
+        - It takes user._id and token as arguments
+        - This is an async operation. Use the .then() method to handle the data returned. What we'll get back is either an error or the data. 
+        - If successful, set the data to the orders state using setOrders() method
+      ```javascript
+      const loadOrders = () => {
+        listOrders(user._id, token).then((data) => {
+          if (data.error) {
+            console.log(data.error);
+          } else {
+            setOrders(data);
+          }
+        });
+      };
+      ```
+    - Next, use the useEffect() hook to execute the loadOrders() method. This will load the orders onto the page when the component first mounts
+      - useEffect() takes a function as 1st argument and an empty array as 2nd argument
+      - Execute the loadOrders() method in the function
+      ```javascript
+      useEffect(() => {
+        loadOrders();
+      }, []);
+      ```
+    - Write a noOrders method that displays a "No Orders" text to the user if there's no orders
+      - This method takes orders from state as argument
+      - Use a condition to check if the length of the orders array is less than 1
+      - If it is, display the "No Orders" text
+      ```javascript
+      const noOrders = (orders) => {
+        return orders.length < 1 ? <h4>No orders</h4> : null;
+      };
+      ```
+    - Lastly, use Layout component to render the noOrders() method and display the orders in json string format for now
+      ```javascript
+      <Layout
+        title='Orders'
+        description={`Hello ${user.name}, you can manage all the orders here`}
+      >
+        <div className='row'>
+          <div className='col-md-8 offset-md-2'>
+            {noOrders(orders)}
+            {JSON.stringify(orders)}
+          </div>
+        </div>
+      </Layout>
+      ```
+- Create a 'View Orders' link in the admin dashboard that takes the admin user to the Orders page
+- In src/user/AdminDashboard.js file:
+  - In adminLinks() method, create a link that takes user to the Orders page
+    ```javascript
+    <li className='list-group-item'>
+    <Link className='nav-link' to='/admin/orders'>
+      View Orders
+    </Link>
+    ```
+- In src/Routes.js file:
+  - Import the Order component: `import Orders from './admin/Orders';`
+  - Create an admin route that takes admin users to the Orders page
+  - Note that it's in AdminRoute since this route is for admin users only
+  - `<AdminRoute path='/admin/orders' exact component={Orders} />`
+
+
+
+
+
+
+
 
 
 

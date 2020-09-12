@@ -14,3 +14,18 @@ exports.create = (req, res) => {
 		res.json(data);
 	});
 };
+
+// Get orders from backend
+exports.listOrders = (req, res) => {
+	Order.find()
+		.populate('user', '_id name address')
+		.sort('-created')
+		.exec((err, orders) => {
+			if (err) {
+				return res.status(400).json({
+					error: errorHandler(err)
+				});
+			}
+			res.json(orders);
+		});
+};

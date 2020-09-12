@@ -3050,13 +3050,44 @@ In cartHelpers.js file:
     };
     ```
 
-
-
-
-
-
-
-
+**7. List all orders for admin - backend**
+- Next thing we want to do is get all the orders from backend and give it to the frontend admin. We need to create a route and frontend can make a request to this route to get the orders from backend
+- In routes/order.js file:
+  - Import requireSignin, isAuth, and isAdmin from auth controllers: `const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');`
+  - Create a route that gets the orders from backend and give it to frontend
+		- Use **get()** method
+    - 1st arg is the route path: `'/order/list/:userId'`
+    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 5th arg is the control method to get the orders from backend: listOrders
+    - `router.get('/order/list/:userId', requireSignin, isAuth, isAdmin, listOrders);`
+  - Import the listOrders method from the order controllers: `const { create, listOrders } = require('../controllers/order');`
+- In controllers/order.js file:
+  - Write a listOrders method that gets the orders from backend
+    - This method takes req and res as arguments
+    - First, we find the orders using .find() method on Order model
+    - Then we want to populate the user, because we want to know the order was placed by which user. Call the .populate() method on Order model
+      - The populate() method takes 'user' keyword as 1st argument, and the fields/properties from the user as 2nd argument
+      - In this case, we only want the user's id, name, and address
+    - Then call .sort() method on Order model. Pass in '-created' keyword to the method. This will list the orders by when they were created
+    - Lastly, call the .exec() method on Order model and pass in a callback function
+    - The callback will return either an error or the orders
+      - If error, return with the status code and an error message in json format. Use errorHandler() method to handle the error
+      - If success, return the orders in json format
+    ```javascript
+    exports.listOrders = (req, res) => {
+      Order.find()
+        .populate('user', '_id name address')
+        .sort('-created')
+        .exec((err, orders) => {
+          if (err) {
+            return res.status(400).json({
+              error: errorHandler(err)
+            });
+          }
+          res.json(orders);
+        });
+    };
+    ```
 
 
 

@@ -2293,7 +2293,7 @@ In cartHelpers.js file:
     - So the user must sign in and must be authenticated. We need to apply middlewares to the route for that
       - Require in both middlewares from auth controllers: `const { requireSignin, isAuth } = require('../controllers/auth')`
     - Last thing we need in the route is a controller method(called generateToken) that generates the token when there is a request to this route
-      - Require in the controller method: `const { generateToken } = require('../controllers/braintree')`
+      - Require in the controller method: `const { generateToken } = require('../controllers/braintree');`
 		- Use **get()** method
     - 1st arg is the route path: `'/braintree/getToken/:userId'`
     - 2nd & 3rd args are middlewares: requireSignin and isAuth
@@ -2795,7 +2795,7 @@ In cartHelpers.js file:
       ```javascript
       const createOrderData = {
         products: products,
-        transaction_id: response.transaction_id,
+        transaction_id: response.transaction.id,
         amount: response.transaction.amount,
         address: data.address
       };
@@ -3154,16 +3154,23 @@ In cartHelpers.js file:
         loadOrders();
       }, []);
       ```
-    - Write a noOrders method that displays a "No Orders" text to the user if there's no orders
-      - This method takes orders from state as argument
-      - Use a condition to check if the length of the orders array is less than 1
-      - If it is, display the "No Orders" text
+    - Write a showOrdersLength method that displays total orders based on the current orders state when the component mounts
+      - This method takes no argument
+      - Write an if statement to check if orders.length is greater than 0
+      - If it is, display the total orders from orders.length
+      - If it isn't, display the text "No Orders"
       ```javascript
-      const noOrders = (orders) => {
-        return orders.length < 1 ? <h4>No orders</h4> : null;
+      const showOrdersLength = () => {
+        if (orders.length > 0) {
+          return (
+            <h1 className='text-danger display-2'>Total orders: {orders.length}</h1>
+          );
+        } else {
+          return <h1 className='text-danger'>No orders</h1>;
+        }
       };
       ```
-    - Lastly, use Layout component to render the noOrders() method and display the orders in json string format for now
+    - Lastly, use Layout component to render the showOrdersLength() method and display all the orders in json string format for now
       ```javascript
       <Layout
         title='Orders'
@@ -3171,7 +3178,7 @@ In cartHelpers.js file:
       >
         <div className='row'>
           <div className='col-md-8 offset-md-2'>
-            {noOrders(orders)}
+            {showOrdersLength()}
             {JSON.stringify(orders)}
           </div>
         </div>
@@ -3187,14 +3194,18 @@ In cartHelpers.js file:
     </Link>
     ```
 - In src/Routes.js file:
-  - Import the Order component: `import Orders from './admin/Orders';`
+  - Import the Orders component: `import Orders from './admin/Orders';`
   - Create an admin route that takes admin users to the Orders page
   - Note that it's in AdminRoute since this route is for admin users only
   - `<AdminRoute path='/admin/orders' exact component={Orders} />`
 
-
-
-
+**9. Loop through orders and display on Orders page**
+- Let's loop through the orders array in state and display them on the Orders page
+- In admin/Orders.js file:
+  - In the render section, use .map() method on orders to loop through the orders list
+    - map() method takes a function as argument
+    - In this function, we get the order and the order index
+    - For each order, we want to display order information
 
 
 

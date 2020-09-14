@@ -27,13 +27,22 @@ const Orders = () => {
 	const showOrdersLength = () => {
 		if (orders.length > 0) {
 			return (
-				<h1 className='text-danger display-2'>Total orders: {orders.length}</h1>
+				<h1 className='text-danger display-4'>Total orders: {orders.length}</h1>
 			);
 		} else {
-			return <h1 className='text-danger'>No orders</h1>;
+			return <h1 className='text-danger display-4'>No orders</h1>;
 		}
 	};
-	console.log(orders);
+
+	const showInput = (key, value) => (
+		<div className='input-group mb-2 mr-sm-2'>
+			<div className='input-group-prepend'>
+				<div className='input-group-text'>{key}</div>
+			</div>
+			<input type='text' value={value} className='form-control' readOnly />
+		</div>
+	);
+
 	return (
 		<Layout
 			title='Orders'
@@ -42,16 +51,15 @@ const Orders = () => {
 			<div className='row'>
 				<div className='col-md-8 offset-md-2'>
 					{showOrdersLength()}
-					{JSON.stringify(orders)}
 					{orders.map((o, oIndex) => (
 						<div
 							key={oIndex}
 							className='mt-5'
 							style={{ borderBottom: '2px solid grey' }}
 						>
-							<h2 className='mb-5'>
+							<h4 className='mb-4'>
 								<span>Order ID: {o._id}</span>
-							</h2>
+							</h4>
 
 							<ul className='list-group mb-2'>
 								<li className='list-group-item'>
@@ -61,16 +69,29 @@ const Orders = () => {
 								<li className='list-group-item'>Amount: ${o.amount}</li>
 								<li className='list-group-item'>Order by: {o.user.name}</li>
 								<li className='list-group-item'>
-									Ordered on: {moment(o.createedAt).fromNow()}
+									Ordered on: {moment(o.createdAt).fromNow()}
 								</li>
 								<li className='list-group-item'>
 									Delivery Address: {o.address}
 								</li>
 							</ul>
 
-							<h3 className='mt-4 mb-4 font-italic'>
+							<h4 className='mt-4 mb-4 font-italic'>
 								Total products in the order: {o.products.length}
-							</h3>
+							</h4>
+
+							{o.products.map((p, pIndex) => (
+								<div
+									key={pIndex}
+									className='mb-4'
+									style={{ padding: '20px', border: '1px solid grey' }}
+								>
+									{showInput('Product name', p.name)}
+									{showInput('Product price', p.price)}
+									{showInput('Product total', p.count)}
+									{showInput('Product Id', p._id)}
+								</div>
+							))}
 						</div>
 					))}
 				</div>

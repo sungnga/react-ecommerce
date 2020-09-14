@@ -2999,7 +2999,7 @@ In cartHelpers.js file:
         ```
 - Now when a user made a purchase, an order is created and added to their purchase history. Each order contains detail information on the products they purchased. Later we can use this history data in this particular user dashboard to display a list of orders they've made
 
-**6. Update sold products quantity**
+**6. Update sold products quantity - backend**
 - When a product is sold, we want to update the sold and quantity properties of the product. We can write a middleware and apply it to the create order route
 - In the routes/order.js file:
   - Create a middleware method from product controller and let's call it decreaseQuantity
@@ -3199,17 +3199,89 @@ In cartHelpers.js file:
   - Note that it's in AdminRoute since this route is for admin users only
   - `<AdminRoute path='/admin/orders' exact component={Orders} />`
 
-**9. Loop through orders and display on Orders page**
+**9. Loop through orders and display on Orders page - frontend**
 - Let's loop through the orders array in state and display them on the Orders page
 - In admin/Orders.js file:
+  - Import moment library: `import moment from 'moment';`
   - In the render section, use .map() method on orders to loop through the orders list
-    - map() method takes a function as argument
+    - The map() method takes a function as argument
     - In this function, we get the order and the order index
-    - For each order, we want to display order information
+    - For each order, we want to display the order information
+    - For when the order was created, we want to use Moment to display human readable date
+    ```javascript
+    {orders.map((o, oIndex) => (
+      <div
+        key={oIndex}
+        className='mt-5'
+        style={{ borderBottom: '2px solid grey' }}
+      >
+        <h2 className='mb-5'>
+          <span>Order ID: {o._id}</span>
+        </h2>
 
+        <ul className='list-group mb-2'>
+          <li className='list-group-item'>
+            Transaction ID: {o.transaction_id}
+          </li>
+          <li className='list-group-item'>{o.status}</li>
+          <li className='list-group-item'>Amount: ${o.amount}</li>
+          <li className='list-group-item'>Order by: {o.user.name}</li>
+          <li className='list-group-item'>
+            Ordered on: {moment(o.createdAt).fromNow()}
+          </li>
+          <li className='list-group-item'>
+            Delivery Address: {o.address}
+          </li>
+        </ul>
 
+        <h3 className='mt-4 mb-4 font-italic'>
+          Total products in the order: {o.products.length}
+        </h3>
+      </div>
+    ))}
+    ```
 
-
+**10. Show product details of each order - frontend**
+- Next, we want to display on the order page the product details for each order
+- In admin/Orders.js file:
+  - In the render section, right after displaying the total products in an order, display the product details by using the .map() method on o.products
+    - The map() method takes a function as argument
+    - In this function, we get the product and the product index
+    - The product information we want to show are product name, price, count, and id
+    - For each product, we want to display the product information in a read-only input field
+    - And instead of writing out all the input fields for each product properties, we can write a reusable function that takes key value pair to display the product information
+  - Write a showInput method that renders the product information in a read-only input field
+    - This method takes key and value as arguments
+    - The input text is the key
+    - The input value is the value the method gets
+    - Also, add 'readOnly' property to the input element
+    ```javascript
+    const showInput = (key, value) => (
+      <div className='input-group mb-2 mr-sm-2'>
+        <div className='input-group-prepend'>
+          <div className='input-group-text'>{key}</div>
+        </div>
+        <input type='text' value={value} className='form-control' readOnly />
+      </div>
+    );
+    ```
+  - Back to the .map() function,
+    - Call the showInput() method 4 times to render the product name, product price, product total, and product id
+    - Pass in the key and value for each
+    ```javascript
+    {o.products.map((p, pIndex) => (
+      <div
+        key={pIndex}
+        className='mb-4'
+        style={{ padding: '20px', border: '1px solid grey' }}
+      >
+        {showInput('Product name', p.name)}
+        {showInput('Product price', p.price)}
+        {showInput('Product total', p.count)}
+        {showInput('Product Id', p._id)}
+      </div>
+    ))}
+    ```
 
 
 

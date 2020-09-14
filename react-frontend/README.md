@@ -3283,6 +3283,125 @@ In cartHelpers.js file:
     ))}
     ```
 
+**11. enum status values of each order - frontend and backend**
+- We want to be able to update the order status to some other predefined enum status value. These enum status values (in string array object) were defined in the the Order schema. We want make an api request to the backend to get these status values and display them on the admin user's Orders page. Render the status values in the select element so the user can pick one to update the order status. We also need to handle this change to reflect the change in the backend
+- First step is write a method that returns the enum status values to the frontend client. To do that we need to create a route and a control method
+- **BACKEND**
+- In routes/order.js file:
+  - Create a route that gets the enum status values from backend
+		- Use **get()** method
+    - 1st arg is the route path: `'/order/status-values/:userId'`
+    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 5th arg is the control method to get the enum status values from backend: getStatusValues
+    - `router.get('/order/status-values/:userId', requireSignin, isAuth, isAdmin, getStatusValues);`
+  - Import the getStatusValues method from the order controllers: `const { getStatusValues } = require('../controllers/order');`
+- In controllers/order.js file:
+  - Write a getStatusValues method that gets the enum status values from backend
+    - This method takes req and res as arguments
+    - Return the response with json and to return those enums, we access the Order model and grab the 'status' property and call .enumValues
+    ```javascript
+    exports.getStatusValues = (req, res) => {
+      res.json(Order.schema.path('status').enumValues);
+    };
+    ```
+- **FRONTEND**
+- In src/admin/apiAdmin.js file:
+  - Write a getStatusValues method that makes a request to backend to get the enum status values
+    - It takes userId and token as arguments
+    - Use fetch() method to make the request to this api: `${API}/order/status-values/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a GET method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const getStatusValues = (userId, token) => {
+      return fetch(`${API}/order/status-values/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- In admin/Orders.js file:
+  - Import the getStatusValues method: `import { getStatusValues } from './apiAdmin';`
+  - Create a statusValues state and initialize its value to an empty array
+    - `const [statusValues, setStatusValues] = useState([]);`
+  - Write a loadStatusValues method that executes the getStatusValues() method. It loads the status values when the component mounts
+    - In the listOrders() method,
+      - It takes user._id and token as arguments
+      - This is an async operation. Use the .then() method to handle the data returned. What we'll get back is either an error or the data. 
+      - If successful, set the data to the statusValues state using setStatusValues() method
+    ```javascript
+    const loadStatusValues = () => {
+      getStatusValues(user._id, token).then((data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          setStatusValues(data);
+        }
+      });
+    };
+    ```
+  - Next, execute the loadStatusValues() method in useEffect() hook. This will load the status values onto the page when the component first mounts
+    ```javascript
+    useEffect(() => {
+      loadOrders();
+      loadStatusValues();
+    }, []);
+    ```
+  - Now that we have the status values available in the statusValues state, we can loop through the statusValues state and show as an option in the select element, so the admin can update the order status. Write a function to do this
+  - Write a showStatus method that renders the status values in a select element
+    - It takes order as an argument
+    - Render a text that shows the current status: `<h3 className="mark mb-4">Status: {o.status}</h3>`
+    - Create a select element. The handleStatusChange() method will execute when the onChange event is triggered
+    - Inside the select element, iterate through the statusValues array using .map() method
+      - The map() method takes a function as argument
+      - In this function, we get the status and the index
+      - Display each status in an option element and set its value property to status. Then show the status text itself in the option element
+    ```javascript
+    const showStatus = (o) => (
+      <div className='form-group'>
+        <h3 className='mark mb-4'>Status: {o.status}</h3>
+        <select
+          onChange={(e) => handleStatusChange(e, o._id)}
+          className='form-control'
+        >
+          <option>Update Status</option>
+          {statusValues.map((status, index) => (
+            <option key={index} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+    ```
+  - Write a handleStatusChange method that makes a request to the backend and updates the order status based on the order id and the event value
+    - This method takes the event value and orderId as arguments
+    - We'll work on the rest later, but for now, console log 'update order status'
+    ```javascript
+    const handleStatusChange = (e, orderId) => {
+      console.log('update order status');
+    };
+    ```
+  - Now we can show the status order dynamically in the render section
+    - In the status list item, call the showStatus() method and pass in the order as argument
+    - `<li className='list-group-item'>{showStatus(o)}</li>`
+
+
+
+
+
+
+
+
 
 
 

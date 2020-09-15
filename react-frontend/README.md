@@ -3506,6 +3506,107 @@ In cartHelpers.js file:
     ```
 
 
+## USER PROFILE
+**1. User profile update methods - frontend**
+- Allow a user to update their profile
+- In react-frontend/user folder, create a component/file called Profile.js
+- In Profile.js file:
+  - Write a functional Profile component,
+    - Display a 'Profile' text for now
+- In Routes.js file:
+  - Import the Profile component: `import Profile from './user/Profile'`
+  - Use the component inside the PrivateRoute component
+    - `<PrivateRoute path='/profile/:userId' exact component={Profile} />`
+- In UserDashboard.js file:
+  - In the userLinks method, update the link path to include the user id
+  ```javascript
+  <Link className='nav-link' to={`/profile/${_id}`}>
+    Update Profile
+  </Link>
+  ```
+- Now the URL of the Profile component contains the userId (/profile/userId), we can use this userId to make a request to the backend to fetch the information of this particular user. We do this in the Profile component
+- Before doing anything else, we need to write two methods. We need to read the user information from the backend and we need to be able to update the user information. For that, we need to have the routes to make the api requests. Now in the backend, we've already created the routes to read and to update the user info in the nodejs-backend/routes/user.js file. And we've already created the controller methods, read and update, in the nodejs-backend/controllers/user.js file. We are done with the backend. We only need to write the two methods on the client side to make the requests to read and to update
+- In the react-frontend/src/user folder, create a file that will contain all the methods to make requests to the backend. Call this file apiUser.js
+- In apiUser.js file:
+  - Import the API: `import { API } from '../config';`
+  - Write a read method makes request to backend to read the user information based on the given userId and token
+    - This method takes userId and token as arguments
+    - Use fetch() method to make the request to this api: `${API}/user/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a **GET** method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const read = (userId, token) => {
+      return fetch(`${API}/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - Write an update method that makes request to backend to update user profile based on the given userId, token, and user data
+    - This method takes userId, token, and user as arguments
+    - Use fetch() method to make the request to this api: `${API}/user/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object we send that contains method, headers properties, and the body/content
+      - method is a **PUT** method
+      - in headers property, we need to provide the application/jason to Content-Type and the bearer token value to Authorization
+      - in the body property, we send the user data in json string format
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const createOrder = (userId, token, user) => {
+      return fetch(`${API}/user/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        // Send the user data
+        body: JSON.stringify(user)
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - After updating the user information in the backend, we also need to update the user information saved in the localStorage. Otherwise, when the user signs out and signs back in again, they will not see the change. And even if they don't signout, they will immediately be able to see the change
+  - Write an updateUser method that updates the user info in the localStorage with the user data provided from the Profile component
+    - This method takes user data and next callback as arguments
+    - First, check to see if there's a window object (not undefined)
+    - If there is a window object, check to see if we have the 'jwt' key in the localStorage using the .getItem() method
+    - If there is jwt, get the item from jwt and store it in the auth variable. But first convert it from json string format to object format using JSON.parse()
+      - `let auth = JSON.parse(localStorage.getItem('jwt'))`
+    - Now we can update the user info, auth.user, with the user data coming from the Profile component: `auth.user = user`
+    - After this is done, we can set the updated user info, stored in variable auth, back in the localStorage using the .setItem() method
+      - pass in the key name 'jwt' as 1st arg. This is the item name stored in the localStorage if we ever want to retrieve the item later
+      - the 2nd arg is the auth object. But first we need to convert the auth object to json string format using JSON.stringify() method
+      - `localStorage.setItem('jwt', JSON.stringify(auth));`
+    - Lastly, execute the next() callback method
+    ```javascript
+    export const updateUser = (user, next) => {
+      if (typeof window !== 'undefined') {
+        if (localStorage.getItem('jwt')) {
+          let auth = localStorage.getItem('jwt');
+          auth.user = user;
+          localStorage.setItem('jwt', JSON.stringify(auth));
+          next();
+        }
+      }
+    };
+    ```
+
+
 
 
 

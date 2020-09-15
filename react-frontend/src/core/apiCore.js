@@ -94,7 +94,7 @@ export const getBraintreeClientToken = (userId, token) => {
 		.catch((err) => console.log(err));
 };
 
-// Process payment
+// Process payment in backend
 // paymentData contains the payment method and total amount
 export const processPayment = (userId, token, paymentData) => {
 	return fetch(`${API}/braintree/payment/${userId}`, {
@@ -113,7 +113,7 @@ export const processPayment = (userId, token, paymentData) => {
 		.catch((err) => console.log(err));
 };
 
-// Create order
+// Create order in backend
 export const createOrder = (userId, token, createOrderData) => {
 	return fetch(`${API}/order/create/${userId}`, {
 		method: 'POST',

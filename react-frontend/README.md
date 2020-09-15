@@ -3606,9 +3606,58 @@ In cartHelpers.js file:
     };
     ```
 
-
-
-
+**2. Get user info for profile update - frontend**
+- To make a profile update, we need to get the user info from the backend. Execute the read() method to make a request to get the user info
+- In Profile.js file:
+  - Import the read, update, updateUser methods: `import { read, update, updateUser } from './apiUser';`
+  - Import useState and useEffect hooks: `import React, { useState, useEffect } from 'react';`
+  - Import isAuthenticated method: `import { isAuthenticated } from '../auth';`
+  - Create a values state. And values is an object
+    ```javascript
+    const [values, setValues] = useState({
+      name: '',
+      email: '',
+      password: '',
+      error: false,
+      success: false
+    });
+    ```
+  - Destructure the values state: `const { name, email, password, error, success } = values;`
+  - Destructure token from isAuthenticated method: `const { token } = isAuthenticated();`
+  - Write an init method that takes a userId to make a request to the backend to get the user info using the read() method. This init() method executes when the Profile component mounts
+    - It takes userId as argument. This userId comes from the Profile's route param
+    - Console log the userId to see the user id that this method is getting
+    - Execute the read() method
+      - The read() method takes userId and token as arguments
+      - Use the .then() method to handle the data we get back
+      - If error, set the error values state to true
+      - If success, set the name and email values state to data.name and data.email. And set success values state to true
+    ```javascript
+    const init = (userId) => {
+      console.log(userId);
+      read(userId, token).then((data) => {
+        if (data.error) {
+          setValues({ ...values, error: true });
+        } else {
+          setValues({ ...values, name: data.name, email: data.email, success: true });
+        }
+      });
+    };
+    ```
+  - Use useEffect() hook to load the user info when the component mounts
+    - useEffect() hook takes a function as first argument
+    - In this function, execute the init() method to get the user info from backend. The init() method requires the userId as argument
+    - Remember that the Profile component's route parameter contains the userId. We can grab that userId from the route param and pass it to the init() method
+    - Getting the userId from the route param: `props.match.params.userId`
+    - Don't forget to pass props to the Profile component
+    ```javascript
+    useEffect(() => {
+      init(props.match.params.userId);
+    }, []);
+    ```
+  - Now we can view the user info in the values state by using values in the render section
+    - `{JSON.stringify(values)}` 
+    - We can use this values state in a form, so the user can update their profile info
 
 
 

@@ -3286,7 +3286,7 @@ In cartHelpers.js file:
 **11. enum status values of each order - frontend and backend**
 - We want to be able to update the order status to some other predefined enum status value. These enum status values (in string array object) were defined in the the Order schema. We want make an api request to the backend to get these status values and display them on the admin user's Orders page. Render the status values in the select element so the user can pick one to update the order status. We also need to handle this change to reflect the change in the backend
 - First step is write a method that returns the enum status values to the frontend client. To do that we need to create a route and a control method
-- **BACKEND**
+- **- BACKEND -**
 - In routes/order.js file:
   - Create a route that gets the enum status values from backend
 		- Use **get()** method
@@ -3304,7 +3304,7 @@ In cartHelpers.js file:
       res.json(Order.schema.path('status').enumValues);
     };
     ```
-- **FRONTEND**
+- **- FRONTEND -**
 - In src/admin/apiAdmin.js file:
   - Write a getStatusValues method that makes a request to backend to get the enum status values
     - It takes userId and token as arguments
@@ -3394,6 +3394,71 @@ In cartHelpers.js file:
   - Now we can show the status order dynamically in the render section
     - In the status list item, call the showStatus() method and pass in the order as argument
     - `<li className='list-group-item'>{showStatus(o)}</li>`
+
+**12. Find order by id and update order status - backend**
+- Next we need to make an api request to the backend to update the order status based on the order id. To do this, we need to create a route to make the api request, a route param to handle the orderId route param, and a control method to update the order status in the backend  
+- In routes/order.js file:
+  - Create a route that updates the order status in the backend
+		- Use **put()** method cause we're updating the data in backend
+    - 1st arg is the route path. Note that this route is looking for the order id and the user id: `'/order/:orderId/status/:userId'`
+    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 5th arg is the control method that updates the order status in the backend: updateOrderStatus
+    - `router.get('/order/:orderId/status/:userId', requireSignin, isAuth, isAdmin, updateOrderStatus);`
+  - Lastly, because the route path is looking for an order by id `:orderId`, we need to create a route param and a middleware method that will give us the order by that id
+    - Create a route parameter using .param() method that, anytime there's an 'orderId' in the route parameter, fire the orderById() method to find that order
+    - The .param() method takes as 1st argument the param name 'orderId' found in the route param
+    - 2nd argument is the orderById middleware method that will execute if the router sees the matching param name
+    - `router.param('orderId', orderById)`
+  - Import both the updateOrderStatus and orderById methods from the order controllers: `const { updateOrderStatus, orderById } = require('../controllers/order');`
+- In controllers/order.js file:
+  - Write an orderById middleware method that finds an order by id in the Order model and returns order's product name and price to the request object 
+    - This method receives the id from the route parameter as an argument
+    - Use .findById() method on Order model and pass in the id
+    - If it finds the order, pouplate the product name and price. Note that the order may contain multiple products in the products array. Use `products.product` to access each product
+    - Then use the .exec() method to handle the callback
+    - In the callback, we'll get back either an error or the order
+    - If we get back the order, make the order available in the request object
+    - Since this is a middleware, call the next() method to move forward
+    ```javascript
+    exports.orderById = (req, res, next, id) => {
+      Order.findById(id)
+        .populate('products.product', 'name price')
+        .exec((err, order) => {
+          if (err || !order) {
+            return res.status(400).json({
+              error: errorHandler(err)
+            });
+          }
+          // If we have the order, make the order available in the req object
+          req.order = order;
+          next();
+        });
+    };
+    ```
+  - Write an updateOrderStatus method that updates the order status in the backend
+    - Use the .update() method on Order to access and update the Order model
+    - In the .update() method,
+      - 1st arg is the order id that we send and this order id is from the frontend client: `{ _id: req.body.orderId }`
+      - 2nd arg is the status that we send using the set method that came with mongoose to set the status to req.body.status. This status comes from the frontend client
+      - 3rd arg is a callback function that handles the error or the order being returned. If success, send the json response of the order 
+    ```javascript
+    exports.updateOrderStatus = (req, res) => {
+      Order.update(
+        { _id: req.body.orderId },
+        { $set: { status: req.body.status } },
+        (err, order) => {
+          if (err) {
+            return res.status(400).json({
+              error: errorHandler(err)
+            });
+          }
+          res.json(order);
+        }
+      );
+    };
+    ```
+
+
 
 
 

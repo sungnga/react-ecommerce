@@ -3458,10 +3458,52 @@ In cartHelpers.js file:
     };
     ```
 
-
-
-
-
+**13. Update order status by admin - frontend**
+- In admin/apiAdmin.js file:
+  - Write an updateOrderStatus method to send the put request to the backend so we can update the order status
+    - This method takes userId, token, orderId, and status as arguments
+    - Use fetch() method to make the request to this api: `${API}/order/${orderId}/status/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object we send that contains method, headers properties, and the body/content
+      - method is a **PUT** method
+      - in headers property, we need to provide the application/jason to Content-Type and the bearer token value to Authorization
+      - in the body property, we send the status and orderId object in json string format
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const updateOrderStatus = (userId, token, orderId, status) => {
+      return fetch(`${API}/order/${orderId}/status/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status, orderId })
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- In admin/Orders.js file:
+  - Import the updateOrderStatus method: `import { updateOrderStatus } from './apiAdmin';`
+  - In the handleStatusChange() method,
+    - Call the updateOrderStatus() method and pass in the user._id, token, orderId, and e.target.value
+    - This is an async operation. Use the .then() method to handle the data being returned
+    - If success, call the loadOrders() method. This way, whenever the status changes, we get the orders reloaded in the component. And this time, the updated order status will be reflected in the Orders component. We'll be able to see the updated status immediately
+    ```javascript
+    const handleStatusChange = (e, orderId) => {
+      // console.log('update order status');
+      updateOrderStatus(user._id, token, orderId, e.target.value).then((data) => {
+        if (data.error) {
+          console.log('Status update failed');
+        } else {
+          loadOrders();
+        }
+      });
+    };
+    ```
 
 
 

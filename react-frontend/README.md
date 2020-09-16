@@ -3057,7 +3057,7 @@ In cartHelpers.js file:
   - Create a route that gets the orders from backend and give it to frontend
 		- Use **get()** method
     - 1st arg is the route path: `'/order/list/:userId'`
-    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 2nd, 3rd, and 4th args are middlewares: requireSignin, isAuth, isAdmin
     - 5th arg is the control method to get the orders from backend: listOrders
     - `router.get('/order/list/:userId', requireSignin, isAuth, isAdmin, listOrders);`
   - Import the listOrders method from the order controllers: `const { create, listOrders } = require('../controllers/order');`
@@ -3291,7 +3291,7 @@ In cartHelpers.js file:
   - Create a route that gets the enum status values from backend
 		- Use **get()** method
     - 1st arg is the route path: `'/order/status-values/:userId'`
-    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 2nd, 3rd, and 4th args are middlewares: requireSignin, isAuth, isAdmin
     - 5th arg is the control method to get the enum status values from backend: getStatusValues
     - `router.get('/order/status-values/:userId', requireSignin, isAuth, isAdmin, getStatusValues);`
   - Import the getStatusValues method from the order controllers: `const { getStatusValues } = require('../controllers/order');`
@@ -3401,7 +3401,7 @@ In cartHelpers.js file:
   - Create a route that updates the order status in the backend
 		- Use **put()** method cause we're updating the data in backend
     - 1st arg is the route path. Note that this route is looking for the order id and the user id: `'/order/:orderId/status/:userId'`
-    - 2nd, 3rd, and 4th args are middlewares: requireSigni, isAuth, isAdmin
+    - 2nd, 3rd, and 4th args are middlewares: requireSignin, isAuth, isAdmin
     - 5th arg is the control method that updates the order status in the backend: updateOrderStatus
     - `router.get('/order/:orderId/status/:userId', requireSignin, isAuth, isAdmin, updateOrderStatus);`
   - Lastly, because the route path is looking for an order by id `:orderId`, we need to create a route param and a middleware method that will give us the order by that id
@@ -3764,9 +3764,42 @@ In cartHelpers.js file:
   - In the render section, call the redirectUser() method and pass in success as an argument
     - `{redirectUser(success)}`
 
-
-
-
+**4. User purchase history - backend**
+- Let's work on the purchase history section in the user dashboard. We want to show purchase history if they have purchased anything. So create a route and a control method to make an api request to backend to get the orders in the Order model by user id
+- In routes/user.js file:
+  - Create a route that gets orders by a user id from the backend
+		- Use **get()** method
+    - 1st arg is the route path: `'/orders/by/user/:userId'`
+    - 2nd and 3rd args are middlewares: requireSignin, isAuth
+    - 4th arg is the control method to get the orders by user from backend: purchaseHistory
+    - `router.get('/orders/by/user/:userId', requireSignin, isAuth, purchaseHistory);`
+  - Import the purchaseHistory method from the user controllers: `const { purchaseHistory } = require('../controllers/user');`
+- In controllers/user.js file:
+  - Import the errorHandler method: `const { errorHandler } = require('../helpers/dbErrorHandler');`
+  - Write a purchaseHistory method that gets the orders by a user from backend
+    - We find the orders in the Order model by calling the .find() method on Order
+    - The Order model has a user property which refers to the User model
+    - So we find the orders by the user id: `Order.find({user: req.profile._id})`
+    - Then call the .exec() method on Order to handle the orders we get back in a callback
+    - The callback function receives an error or the orders
+    - If error, return a json response of the status code and the error message
+    - If success, return a json response of the orders
+    ```javascript
+    exports.purchaseHistory = (req, res) => {
+      // Find order based on user id
+      Order.find({ user: req.profile._id })
+        .populate('user', '_id name')
+        .sort('-created')
+        .exec((err, orders) => {
+          if (err) {
+            return res.status(400).json({
+              error: errorHandler(err)
+            });
+          }
+          res.json(orders);
+        });
+    };
+    ```
 
 
 

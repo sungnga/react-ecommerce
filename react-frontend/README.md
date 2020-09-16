@@ -171,8 +171,8 @@
     ```javascript
     // handleChange is a HOF that returns another function
     // The value we pass in for name is either name, email, or password
-    // On handleChange, we want to set the value state
-    // The value for [name] is dynamically generated depending on where it's coming from
+    // On handleChange, we want to set the values state
+    // The values for [name] is dynamically generated depending on where it's coming from
     const handleChange = name => event => {
       setValues({...values, error: false, [name]: event.target.value})
     }
@@ -3563,7 +3563,7 @@ In cartHelpers.js file:
       - in the body property, we send the user data in json string format
     - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
     ```javascript
-    export const createOrder = (userId, token, user) => {
+    export const update = (userId, token, user) => {
       return fetch(`${API}/user/${userId}`, {
         method: 'PUT',
         headers: {
@@ -3586,8 +3586,8 @@ In cartHelpers.js file:
     - First, check to see if there's a window object (not undefined)
     - If there is a window object, check to see if we have the 'jwt' key in the localStorage using the .getItem() method
     - If there is jwt, get the item from jwt and store it in the auth variable. But first convert it from json string format to object format using JSON.parse()
-      - `let auth = JSON.parse(localStorage.getItem('jwt'))`
-    - Now we can update the user info, auth.user, with the user data coming from the Profile component: `auth.user = user`
+      - `let auth = JSON.parse(localStorage.getItem('jwt'));`
+    - Now we can update the user info, auth.user, with the user data coming from the Profile component: `auth.user = user;`
     - After this is done, we can set the updated user info, stored in variable auth, back in the localStorage using the .setItem() method
       - pass in the key name 'jwt' as 1st arg. This is the item name stored in the localStorage if we ever want to retrieve the item later
       - the 2nd arg is the auth object. But first we need to convert the auth object to json string format using JSON.stringify() method
@@ -3597,7 +3597,7 @@ In cartHelpers.js file:
     export const updateUser = (user, next) => {
       if (typeof window !== 'undefined') {
         if (localStorage.getItem('jwt')) {
-          let auth = localStorage.getItem('jwt');
+          let auth = JSON.parse(localStorage.getItem('jwt'));
           auth.user = user;
           localStorage.setItem('jwt', JSON.stringify(auth));
           next();
@@ -3607,7 +3607,7 @@ In cartHelpers.js file:
     ```
 
 **2. Get user info for profile update - frontend**
-- To make a profile update, we need to get the user info from the backend. Execute the read() method to make a request to get the user info
+- To make a profile update, we need to get the user info from the backend. Execute the read() method to make a request to get the user info. This user info will load when the Profile component mounts and first renders
 - In Profile.js file:
   - Import the read, update, updateUser methods: `import { read, update, updateUser } from './apiUser';`
   - Import useState and useEffect hooks: `import React, { useState, useEffect } from 'react';`
@@ -3639,7 +3639,7 @@ In cartHelpers.js file:
         if (data.error) {
           setValues({ ...values, error: true });
         } else {
-          setValues({ ...values, name: data.name, email: data.email, success: true });
+          setValues({ ...values, name: data.name, email: data.email });
         }
       });
     };
@@ -3655,9 +3655,117 @@ In cartHelpers.js file:
       init(props.match.params.userId);
     }, []);
     ```
-  - Now we can view the user info in the values state by using values in the render section
+  - Now we can view the user info in the values state by using values in the Layout component in render section
     - `{JSON.stringify(values)}` 
     - We can use this values state in a form, so the user can update their profile info
+
+**3. User profile update - frontend**
+- Create a form with prepopulated information about the user so the user can update their profile. To populate the user info, we need to get the user info from the backend using the read() method with the given userId. Once the user updates their profile, we can use the update() method to make an api request to update the user info in the backend. Also use the updateUser() method to update the user info in the localStorage so the user can see the updated changes. After they have successfully updated the profile, we can redirect them to the cart page
+- In Profile.js file:
+  - Import Redirect component from react-router-dom: `import { Link, Redirect } from 'react-router-dom';`
+  - Write a profileUpdate method that renders a form with prepopulated user info coming from the values states
+    - This method takes name, email, and password as arguments
+    - The form has input fields for name, email, and password, and a submit button
+    - The handleChange method will be executed when the input field value changes
+    - The clickSubmit method will be executed when the Submit button is clicked
+    ```javascript
+    const profileUpdate = (name, email, password) => (
+      <form>
+        <div className='form-group'>
+          <label className='text-muted'>Name</label>
+          <input
+            type='text'
+            onChange={handleChange('name')}
+            value={name}
+            className='form-control'
+          />
+        </div>
+
+        <div className='form-group'>
+          <label className='text-muted'>Email</label>
+          <input
+            type='text'
+            onChange={handleChange('email')}
+            value={email}
+            className='form-control'
+          />
+        </div>
+
+        <div className='form-group'>
+          <label className='text-muted'>Password</label>
+          <input
+            type='text'
+            onChange={handleChange('password')}
+            value={password}
+            className='form-control'
+          />
+        </div>
+
+        <button onClick={clickSubmit} className='btn btn-primary'>
+          Submit
+        </button>
+      </form>
+    );
+    ```
+  - In the render section, call the profileUpdate() method and pass in the name, email, and password from the values state
+    - `{profileUpdate(name, email, password)}` 
+  - Write a handleChange HOF method that updates the values state when the input field value changes
+    - handleChange is a HOF that returns another function
+    - The value we pass in for name is either name, email, or password
+    - On handleChange, we want to update the values state with the values the user enters
+    - The value for [name] is dynamically generated depending on which input field it's coming from
+    - For example, if the [name] is 'email', handleChange() will update the email values state with the event value
+    ```javascript
+    const handleChange = name => e => {
+      setValues({...values, error: false, [name]: event.target.value})
+    }
+    ```
+  - Write a clickSubmit method that executes the update() method to update the user info in the backend and executes the updateUser() method to update the user info in the localStorage
+    - Call the .preventDefault() method on the event to prevent default page reload when the form is submit
+    - Call the update() method. It takes 3 arguments
+      - 1st arg is the userId. Get the userId from `props.match.params.userId`
+      - 2nd arg is the token
+      - 3rd arg is an object which contains the updated user data
+      - This is an async operation. Use the .then() method to handle the data being returned
+      - If success, we want to call the updateUser() method to update the user info in the localStorage
+      - The updateUser() method takes the data and a callback function as arguments
+      - In the callback function, we can update the values state using the setValues() method. Set the success values state to true
+    ```javascript
+    const clickSubmit = (e) => {
+      e.preventDefault();
+      update(props.match.params.userId, token, { name, email, password }).then(
+        (data) => {
+          if (data.error) {
+            console.log(data.error);
+          } else {
+            updateUser(data, () => {
+              setValues({
+                ...values,
+                name: data.name,
+                email: data.email,
+                success: true
+              });
+            });
+          }
+        }
+      );
+    };
+    ```
+  - If the localStorage is updated successfully, meaning if the success state is true, we want to redirect the user to cart page
+  - Write a redirectUser method that redirects user to cart page
+    - Use the Redirect component to redirect
+    ```javascript
+    const redirectUser = (success) => {
+      if (success) {
+        return <Redirect to='/cart' />;
+      }
+    };
+    ```
+  - In the render section, call the redirectUser() method and pass in success as an argument
+    - `{redirectUser(success)}`
+
+
+
 
 
 

@@ -16,8 +16,8 @@ export const read = (userId, token) => {
 		.catch((err) => console.log(err));
 };
 
-// Update user profile in backend
-export const createOrder = (userId, token, user) => {
+// Update user info in backend
+export const update = (userId, token, user) => {
 	return fetch(`${API}/user/${userId}`, {
 		method: 'PUT',
 		headers: {
@@ -39,7 +39,7 @@ export const createOrder = (userId, token, user) => {
 export const updateUser = (user, next) => {
 	if (typeof window !== 'undefined') {
 		if (localStorage.getItem('jwt')) {
-      let auth = localStorage.getItem('jwt');
+      let auth = JSON.parse(localStorage.getItem('jwt'));
       // Update the user info
       auth.user = user;
       // Set the user info (auth) back in the localStorage in the key 'jwt'

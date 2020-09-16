@@ -3775,6 +3775,7 @@ In cartHelpers.js file:
     - `router.get('/orders/by/user/:userId', requireSignin, isAuth, purchaseHistory);`
   - Import the purchaseHistory method from the user controllers: `const { purchaseHistory } = require('../controllers/user');`
 - In controllers/user.js file:
+  - Import Order model: `const { Order } = require('../models/order');`
   - Import the errorHandler method: `const { errorHandler } = require('../helpers/dbErrorHandler');`
   - Write a purchaseHistory method that gets the orders by a user from backend
     - We find the orders in the Order model by calling the .find() method on Order
@@ -3800,6 +3801,122 @@ In cartHelpers.js file:
         });
     };
     ```
+
+**5. Display user purchase history - frontend**
+- To display the purchase history on the user dashboard, we need to write a method that makes a request to backend to get purchase history for that user. For each order history, we can display all the products that were purchased
+- In user/apiUser.js file:
+  - Write a getPurchaseHistory method that gets purchase history from backend based on the userId and token
+    - This method takes userId and token as arguments
+    - Use fetch() method to make the request to this api: `${API}/orders/by/user/${userId}`
+    - This api is the 1st argument that fetch() method takes
+    - 2nd arg it takes is an object that contains method and headers properties
+      - method is a **GET** method
+      - in headers property, we need to provide the bearer token value to Authorization
+    - This is an async operation. We'll get back either a response or an error. Handle both using the .then() and .catch() methods
+    ```javascript
+    export const getPurchaseHistory = (userId, token) => {
+      return fetch(`${API}/orders/by/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+- In UserDashboard.js file:
+  - Import useState and useEffect hooks: `import React, { useState, useEffect } from 'react';`
+  - Import the getPurchaseHistory method: `import { getPurchaseHistory } from './apiUser';`
+  - Import moment library: `import moment from 'moment';`
+  - Create a history state that holds the history of the user's purchase. Initialize it to an empty array
+    - `const [history, setHistory] = useState([]);`
+  - Destructure user id and token from isAuthenticated() method
+    ```javascript
+    const {
+      user: { _id, name, email, role }
+    } = isAuthenticated();
+    const token = isAuthenticated().token;
+    ```
+  - Write an init method that takes a userId and token to make a request to backend to get a user's purchase history using the getPurchaseHistory() method. This init() method executes when the UserDashboard component mounts
+    - It takes userId and token as arguments
+    - Execute the getPurchaseHistory() method
+      - The getPurchaseHistory() method takes userId and token as arguments
+      - Use the .then() method to handle the data we get back
+      - If error, console log data.error
+      - If success, set the history state to data
+    ```javascript
+    const init = (userId, token) => {
+      getPurchaseHistory(userId, token).then((data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          setHistory(data);
+        }
+      });
+    };
+    ```
+  - In useEffect() hook, execute the init() method. This will load the user's purchase history when the component mounts
+    - useEffect() hook takes a function as first argument
+    - In this function, execute the init() method to get the user's purchase history from backend. The init() method requires the user id and token as arguments
+      - Here, we get the user id from the isAuthenticated() method. Destructure user id from it
+      - And we get the token from isAuthentication().token
+    ```javascript
+    useEffect(() => {
+      init(_id, token);
+    }, []);
+    ```
+  - Now that we get the purchase history from backend, we want to display the orders list on user dashboard. The purchase history is now stored in the history state
+  - Another thing to note is history is an array which contains a list of orders
+    - Each order is an object and it contains a products array
+    - We need to loop through the products array to get to each product
+    - So we need to loop through the history array to get each history item and loop through the products array to get each product item
+  - In the purchaseHistory() method,
+    - First thing, pass in history as an argument. Do this in the render section as well
+    - Inside the li element, see what we are getting in history by using: `{JSON.stringify(history)}`
+    - Now, inside the li element, 
+      - loop through the history array to each history item using the .map() method
+      - access the products array of each history item using h.products notation
+      - inside the history.map() method, call another .map() method on the h.products array to get each product item
+      - and for each product, we want to display the product name, product price, and purchased date using moment format
+    ```javascript
+    const purchaseHistory = (history) => (
+      <div className='card mb-5'>
+        <h3 className='card-header'>Purchase history</h3>
+        <ul className='list-group'>
+          <li className='list-group-item'>
+            {history.map((h, i) => (
+              <div key={i}>
+                {h.products.map((p, i) => (
+                  <div key={i}>
+                    <h6>Product name: {p.name}</h6>
+                    <h6>Product price: {p.price}</h6>
+                    <h6>Purchased date: {moment(p.createdAt).fromNow()}</h6>
+                    <hr />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </li>
+        </ul>
+      </div>
+    );
+    ```
+
+
+
+
+
+
+
+
+
+
+
 
 
 

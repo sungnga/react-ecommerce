@@ -3871,7 +3871,7 @@ In cartHelpers.js file:
     }, []);
     ```
   - Now that we get the purchase history from backend, we want to display the orders list on user dashboard. The purchase history is now stored in the history state
-  - Another thing to note is history is an array which contains a list of orders
+  - Another thing to note is that history is an array which contains a list of orders
     - Each order is an object and it contains a products array
     - We need to loop through the products array to get to each product
     - So we need to loop through the history array to get each history item and loop through the products array to get each product item
@@ -3908,10 +3908,34 @@ In cartHelpers.js file:
     ```
 
 
-
-
-
-
+## MANAGE ORDERS AND PRODUCTS BY ADMIN
+**1. ManageProducts component for admin - frontend**
+- We want admin users to be able to update and delete products. So far they can only create category and product
+- In user/AdminDashboard file:
+  - In the render section, add a 'Manage Products' menu link
+    ```javascript
+    <li className='list-group-item'>
+      <Link className='nav-link' to='/admin/products'>
+        Manage Products
+      </Link>
+    </li>
+    ```
+- In src/admin folder, create a component/file called ManageProducts.js
+- In the ManageProducts.js file:
+  - Import the following:
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    import { Link } from 'react-router-dom';
+    import Layout from '../core/Layout';
+    import { isAuthenticated } from '../auth';
+    ```
+  - Write a function ManageProducts component that lets admin user performs CRUD operation on products
+    - Render the Layout component with page title and description for now
+- In Routes.js file:
+  - Import the ManageProducts component: `import ManageProducts from './admin/ManageProducts';`
+  - Create an admin route that takes admin user to the ManageProducts page
+  - Note that it's in AdminRoute since this route is for admin users only
+  - `<AdminRoute path='/admin/products' exact component={ManageProducts} />`
 
 
 

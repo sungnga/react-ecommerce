@@ -3922,13 +3922,8 @@ In cartHelpers.js file:
     ```
 - In src/admin folder, create a component/file called ManageProducts.js
 - In the ManageProducts.js file:
-  - Import the following:
-    ```javascript
-    import React, { useState, useEffect } from 'react';
-    import { Link } from 'react-router-dom';
-    import Layout from '../core/Layout';
-    import { isAuthenticated } from '../auth';
-    ```
+  - Import React: `import React from 'react';`
+  - Import the Layout component: `import Layout from '../core/Layout';`
   - Write a function ManageProducts component that lets admin user performs CRUD operation on products
     - Render the Layout component with page title and description for now
 - In Routes.js file:
@@ -4004,6 +3999,97 @@ In cartHelpers.js file:
         .catch((err) => console.log(err));
     };
     ```
+
+**3. Products list and delete single product - frontend**
+- When the ManageProducts component mounts, the first thing we want to do is get and load all the products
+- In ManageProducts.js file:
+  - Import useState and useEffect hooks: `import React, { useState, useEffect } from 'react';`
+  - Import the Link component: `import { Link } from 'react-router-dom';`
+  - Import the isAuthenticated method: `import { isAuthenticated } from '../auth';`
+  - Import the getProducts and deleteProduct methods: `import { getProducts, deleteProduct } from './apiAdmin';`
+  - Create a products state and initialize its value to an empty array
+      - `const [products, setProducts] = useState([]);`
+  - Destructure user and token from isAuthenticated() method
+    - `const { user, token } = isAuthenticated();`
+  - Write a loadProducts method that executes the getProducts() method to get the products from backend. This method runs when the component mounts
+    - This method doesn't take any arguments
+    - Call the getProducts method,
+      - this is an async operation. We'll get back either an error or the data. Use the .then() method to handle both in a callback
+      - if error, console log the data.error
+      - if success, set the products state to data 
+    ```javascript
+    const loadProducts = () => {
+      getProducts().then((data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          setProducts(data);
+        }
+      });
+    };
+    ```
+  - Use useEffect() hook to execute the loadProducts() method when the component mounts
+    - useEffect() takes a function as first argument
+    - In this function, call the loadProducts() method
+    ```javascript
+    useEffect(() => {
+      loadProducts();
+    }, []);
+    ```
+  - Write a destroy method that deletes a product in backend using the deleteProducts() method
+    - This method takes productId as argument
+    - Execute the deleteProducts() method
+      - This method takes productId, user._id, and token as arguments. The user._id comes from the isAuthenticated() user object
+      - This is an async operation. We'll get back either an error or the data. Use the .then() method to handle both in a callback
+      - If error, console log the data.error
+      - If success, execute the loadProducts(). This will cause the component to rerender and this time the deleted product will not show up
+    ```javascript
+    const destroy = (productId) => {
+      deleteProduct(productId, user._id, token).then((data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          loadProducts();
+        }
+      });
+    };
+    ```
+  - Next, we want to display the list of products and create a delete button to delete a product
+  - In the render section,
+    - Loop through the products array using .map() method
+    - The .map() method takes a function as argument. This function receives product and index
+    - Display each product in an li element of the product name, an Update button, and a Delete button
+    - The Update button is a link that will take the user to the product update page. Use the Link component
+    - For the Delete button, call the destroy() method and pass in the product id in an arrow function when the onClick event is triggered
+    ```javascript
+    <Layout
+			title='Manage Products'
+			description='Perform CRUD on products'
+			className='container-fluid'
+		>
+			<div className='row'>
+				<div className='col-12'>
+					<ul className='list-group'>
+						{products.map((p, i) => (
+							<li
+								key={i}
+								className='list-group-item d-flex justify-content-between align-items-center '
+							>
+								<strong>{p.name}</strong>
+								<Link to={`/admin/product/update/${p._id}`}>
+									<span className='badge badge-warning badge-pill'>Update</span>
+								</Link>
+								<div className='badge badge-danger badge-pill'>Delete</div>
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+		</Layout>
+    ```
+
+
+
 
 
 

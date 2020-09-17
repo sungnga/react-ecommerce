@@ -106,7 +106,7 @@ export const updateOrderStatus = (userId, token, orderId, status) => {
 
 // Get products from backend
 export const getProducts = () => {
-	return fetch(`${API}/products`, {
+	return fetch(`${API}/products?limit='undefined'`, {
 		method: 'GET'
 	})
 		.then((response) => {

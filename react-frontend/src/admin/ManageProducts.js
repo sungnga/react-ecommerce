@@ -42,6 +42,8 @@ const ManageProducts = () => {
 		>
 			<div className='row'>
 				<div className='col-12'>
+					<h2 className='text-center'>Total {products.length} products</h2>
+					<hr />
 					<ul className='list-group'>
 						{products.map((p, i) => (
 							<li
@@ -52,7 +54,12 @@ const ManageProducts = () => {
 								<Link to={`/admin/product/update/${p._id}`}>
 									<span className='badge badge-warning badge-pill'>Update</span>
 								</Link>
-								<div className='badge badge-danger badge-pill'>Delete</div>
+								<span
+									onClick={() => destroy(p._id)}
+									className='badge badge-danger badge-pill'
+								>
+									Delete
+								</span>
 							</li>
 						))}
 					</ul>

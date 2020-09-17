@@ -4062,7 +4062,7 @@ In cartHelpers.js file:
     - The Update button is a link that will take the user to the product update page. Use the Link component
     - For the Delete button, call the destroy() method and pass in the product id in an arrow function when the onClick event is triggered
     ```javascript
-    <Layout
+		<Layout
 			title='Manage Products'
 			description='Perform CRUD on products'
 			className='container-fluid'
@@ -4079,7 +4079,12 @@ In cartHelpers.js file:
 								<Link to={`/admin/product/update/${p._id}`}>
 									<span className='badge badge-warning badge-pill'>Update</span>
 								</Link>
-								<div className='badge badge-danger badge-pill'>Delete</div>
+								<span
+									onClick={() => destroy(p._id)}
+									className='badge badge-danger badge-pill'
+								>
+									Delete
+								</span>
 							</li>
 						))}
 					</ul>
@@ -4088,9 +4093,19 @@ In cartHelpers.js file:
 		</Layout>
     ```
 
+**4. Get all products for admin CRUD - frontend**
+- At the moment, we are only getting 6 products at a time fron backend. This is set by default with limit param. We want to display all the products. Fix this issue and we also want to display the total products on the page
+- In ManageProducts.js file:
+  - In the render section, display the total products in an h2 element. Do this just above the ul element
+    - `<h2 className='text-center'>Total {products.length} products</h2>`
+- Next, send all products from backend instead of sending only 6 products. Change the limit param in the getProduct() method
+- In admin/apiAdmin.js file:
+  - In the getProducts() method, set the api limit param to 'undefined'
+  - `fetch(`${API}/products?limit='undefined'`, { ... })`
 
 
 
+  
 
 
 

@@ -95,3 +95,65 @@ export const updateOrderStatus = (userId, token, orderId, status) => {
 		})
 		.catch((err) => console.log(err));
 };
+
+/**
+ * To perform CRUD on product
+ * - get all products
+ * - get a single product
+ * - update a single product
+ * - delete a single product
+ */
+
+// Get products from backend
+export const getProducts = () => {
+	return fetch(`${API}/products`, {
+		method: 'GET'
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+// Delete a product in backend
+export const deleteProduct = (productId, userId, token) => {
+	return fetch(`${API}/product/${productId}/${userId}`, {
+		method: 'DELETE',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		}
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+// Get a single product from backend
+export const getProduct = (productId) => {
+	return fetch(`${API}/product/${productId}`, {
+		method: 'GET'
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+// Update a single product in backend
+export const updateProduct = (productId, userId, token, product) => {
+	return fetch(`${API}/product/${productId}/${userId}`, {
+		method: 'PUT',
+		headers: {
+			Accept: 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: product
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};

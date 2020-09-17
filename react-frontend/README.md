@@ -3910,7 +3910,7 @@ In cartHelpers.js file:
 
 ## MANAGE ORDERS AND PRODUCTS BY ADMIN
 **1. ManageProducts component for admin - frontend**
-- We want admin users to be able to update and delete products. So far they can only create category and product
+- We want admin users to be able to update and delete a product. So far they can only create category and product
 - In user/AdminDashboard file:
   - In the render section, add a 'Manage Products' menu link
     ```javascript
@@ -3937,9 +3937,73 @@ In cartHelpers.js file:
   - Note that it's in AdminRoute since this route is for admin users only
   - `<AdminRoute path='/admin/products' exact component={ManageProducts} />`
 
-
-
-
+**2. Product CRUD requests - frontend**
+- In the backend, we've already created the routes we need to get all the products, get a single product, update a product, and delete a product. So all we need to do is write methods on the client side to communicate with backend. We need to write 4 methods: to get all products, to get a single product, to update a single product, and to delete a single product
+- In admin/apiAdmin.js file:
+  - Write 4 methods to make requests to backend in order to perform CRUD operation on a product
+  - Write a getProducts method to get products from backend
+    - Use **GET** method
+    ```javascript
+    export const getProducts = () => {
+      return fetch(`${API}/products`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - Write a deleteProduct method to delete a single product in backend
+    - Use **DELETE** method
+    ```javascript
+    export const deleteProduct = (productId, userId, token) => {
+      return fetch(`${API}/product/${productId}/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - Write a getProduct method to get a single product from backend
+    - Use **GET** method
+    ```javascript
+    export const getProduct = (productId) => {
+      return fetch(`${API}/product/${productId}`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
+  - Write an updateProduct method to update a single product in backend
+    - Use **PUT** method
+    - Send the body with the product data to be updated
+    ```javascript
+    export const updateProduct = (productId, userId, token, product) => {
+      return fetch(`${API}/product/${productId}/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: product
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => console.log(err));
+    };
+    ```
 
 
 

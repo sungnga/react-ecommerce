@@ -4103,9 +4103,151 @@ In cartHelpers.js file:
   - In the getProducts() method, set the api limit param to 'undefined'
   - `fetch(`${API}/products?limit='undefined'`, { ... })`
 
+**5. Product update - frontend**
+- Let's implement the update product functionality. We need to create a route that takes user to the UpdateProduct page. Then create an UpdateProduct component loads the product information and categories from the backend onto a form so the admin user can update the product information. Once they submit the update, we want to update the product in the backend and redirect the user to homepage
+- In admin folder, create a component/file called UpdateProduct.js
+- In the UpdateProduct.js file:
+  - Create an UpdateProduct functional component that updates a product
+    - This component is very similar to the AddProduct.js component. So copy and paste everything as a starting point
+- In Routes.js file:
+  - Import the UpdateProduct component: `import UpdateProduct from './admin/UpdateProduct';`
+  - Create an admin route that takes admin users to the UpdateProduct page
+  - Note that it's in AdminRoute since this route is for admin users only
+  - `<AdminRoute path='/admin/product/update/:productId' exact component={UpdateProduct} />`
+- When the 'Update' product button is clicked, it directs the user to the UpdateProduct page. The route parameter to this page also contains the product id. We can grab this product id in the URL to make a request to backend to get this product info and then prepopulate it in the update product form so the user can update the product. We want all this to happen when the UpdateProduct component/page mounts
+- In the UpdateProduct.js file:
+  - Import the following:
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    import Layout from '../core/Layout';
+    import { isAuthenticated } from '../auth';
+    import { getProduct, getCategories, updateProduct } from './apiAdmin';
+    ```
+  - Create a categories state and initialize its value to an empty array
+    - `const [categories, setCategories] = useState([]);`
+  - Write an initCategories method that executes the getCategories() method to get categories from backend. This method executes only if we successful get a product by id from backend first
+    - Execute the getCategories() method
+      - This is an async operation. What we get back is either an error or the data. Use the .then() method to handle both in a callback
+      - If error, set the error values state to data.error
+      - If success, set the categories state to the data
+    - NOTE: When we load categories, we don't want to set values in the state. We only want to set the categories state to the data we received from backend
+    ```javascript
+    const initCategories = () => {
+      getCategories().then((data) => {
+        if (data.error) {
+          setValues({ ...values, error: data.error });
+        } else {
+          setCategories(data);
+        }
+      });
+    };
+    ```
+  - We need to get that single product from backend based on the product id we get in the route parameter
+  - First thing, we need to pass in props to the UpdateProduct component so that we have access to the route param using props.match.params. And then we can get the prodoct id in the route param
+  - Write an init method that executes the getProduct() method to get the product from backend based on the given productId. This init() method will execute when the UpdateProduct component mounts
+    - This init method accepts productId as an argument. This productId comes from the route param
+    - Call the getProduct() method and pass in the productId as argument
+      - This is an async operation. We'll get back either an error or the data. Use the .then() method to handle both in a callback
+      - If error, set the error values state to data.error
+      - If success, we want to populate the values state with the data. Also execute the initCategories() method to load the categories
+    ```javascript
+    const init = (productId) => {
+      getProduct(productId).then((data) => {
+        if (data.error) {
+          setValues({ ...values, error: data.error });
+        } else {
+          // populate the state
+          setValues({
+            ...values,
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            category: data.category._id,
+            shipping: data.shipping,
+            quantity: data.quantity,
+            formData: new FormData()
+          });
+          // load categories
+          initCategories();
+        }
+      });
+    };
+    ```
+  - In the useEffect() hook, execute the init() method and pass in the productId which we get from the route parameter. So the product information (from the init method) and the categories (from the initCategories method) we get from backend will load to the page when the component mounts 
+    ```javascript
+    useEffect(() => {
+      init(props.match.params.productId);
+    }, []);
+    ```
+  - Next, let's update the product in backend
+  - In the clickSubmit() method:
+    - Execute the updateProduct() method
+      - This method takes props.match.params.productId, user._id, token, and formData as arguments
+      - This is an async operation. What we'll get back is either an error or the data. Use the .then() method to handle both in a callback
+    ```javascript
+    const clickSubmit = (e) => {
+      e.preventDefault();
+      setValues({ ...values, error: '', loading: true });
+
+      UpdateProduct(props.match.params.productId, user._id, token, formData).then(
+        (data) => {
+          if (data.error) {
+            setValues({ ...values, error: data.error });
+          } else {
+            setValues({
+              ...values,
+              name: '',
+              description: '',
+              photo: '',
+              price: '',
+              quantity: '',
+              loading: false,
+              createdProduct: data.name
+            });
+          }
+        }
+      );
+    };
+    ```
+  - Once the product is updated, we can redirect the user to homepage
+  - Write a redirectUser method that redirects user to hompepage
+    - Check to see if redirectToProfile state is true. If it is, check to see if error state is false. If both conditions are true, redirect using Redirect component to home page
+    ```javascript
+    const redirectUser = () => {
+      if (redirectToProfile) {
+        if (!error) {
+          return <Redirect to='/' />;
+        }
+      }
+    };
+    ```
+  - In the render section, execute the redirectUser() method: `{redirectUser()}`
+- We need to make one change to our product update() control method in the backend. When the user updates the product fields, we don't need to check to see that all fields are update. Because it doesn't make sense that the user must update all fields. They may want to update just one field. So we can comment out the check-all-fields conditional logic
+- In nodejs-backend/controllers/products.js file:
+  - In the update() method, comment out the conditional logic that checks to see if user updates all fields
+  ```javascript
+  // Check all fields
+  // const { name, description, price, category, quantity, shipping } = fields;
+  // if (
+  // 	!name ||
+  // 	!description ||
+  // 	!price ||
+  // 	!category ||
+  // 	!quantity ||
+  // 	!shipping
+  // ) {
+  // 	return res.status(400).json({
+  // 		error: 'All fields are required'
+  // 	});
+  // }
+  ```
 
 
-  
+
+
+
+
+
 
 
 

@@ -1,9 +1,10 @@
-# STEPS TO BUILDING THIS ECOMMERCE APPLICATION
+# STEPS TO BUILDING THIS E-COMMERCE APPLICATION WITH NODE.JS
 
 ### NODE: PROJECT SETUP
 **1. Setup the project**
 - Initialize npm and create package.json file: `npm init -y`
-- Install: `npm i express dotenv nodemon`
+- Install express, dotenv, and nodemon modules:
+	- Install: `npm i express dotenv nodemon`
 - In package.json file, write a script to run nodemon: `"start": "nodemon app.js"`
 - Create a .gitignore file and include `node_module` and `.env`
 
@@ -96,7 +97,7 @@ app.listen(port, () => {
 	- Create a signup method to sign up a new user
 		- Save the new user or error in json format
 - In routes/auth.js file:
-	- Import the signup method from constrollers/auth.js
+	- Import the signup method from controllers/auth.js
 	- Create a user signup route using post() method: `router.get('/signup', signup)`
 		- The 2nd argument is the signup method coming from controllers/auth.js
 
@@ -110,7 +111,7 @@ app.listen(port, () => {
 - Create a folder called helpers
 - Inside helpers, create a file called dbErrorHandler.js
 - Write an errorHandler method that takes in the error response code to create a unique message
-- Import the errorHanderler method in controllers/auth.js file
+- Import the errorHandler method in controllers/auth.js file
 	- Call the method in the error handling code block
 
 **5. Write a helper method that validates the data for user signup process**
@@ -172,7 +173,7 @@ In routes/auth.js file:
 **3. Create user by id middleware**
 - Inside routes folder, create a file called user.js. And in this file:
 	- Import express and create router from express
-	- Create a route that, whenever there's a 'userId' in the route paramenter, call the userById method: `router.param('userId', userById)`
+	- Create a route that, whenever there's a 'userId' in the route parameter, call the userById method: `router.param('userId', userById)`
 	- Import userById method from controllers/user.js
 - Inside controller folder, create a file called user.js. And in this file:
   - Import User model from models/user.js
@@ -221,7 +222,7 @@ In routes/auth.js file:
 ### NODE: PRODUCT AND CATEGORIES
 **1. Create category model, route, and controller**
 - In models folder, create a file called category.js. In this file:
-	- Import mongoose: `const mongoose = requir('mongoose')`
+	- Import mongoose: `const mongoose = require('mongoose')`
 	- Create a categorySchema using mongoose schema
 		- Define name and timestamps properties
 	- Export the module: `module.exports = mongoose.model('Category', categorySchema)`
@@ -286,7 +287,7 @@ In routes/auth.js file:
 			- Assign the fields to product
 			- Accept the incoming photo file using fs library
 			- Import fs filesystem built-in library
-	- Save the prodduct either with a result or an error
+	- Save the product either with a result or an error
 		- Handle the error using errorHandler helper function
 		- Import errorHandler helper method
 		- Or send the result in json response
@@ -299,7 +300,7 @@ In routes/auth.js file:
 - **Under the Headers tab: delete ContentType and only Authorization key is provided**
 - Under Body tab, select form-data to fill out product information
 	- Under key column, enter all the product properties that were defined in product schema
-	- For category property, the value for ObjectId is the id of the category created earrlier
+	- For category property, the value for ObjectId is the id of the category created earlier
 	- For photo property, select 'file' instead of 'text'. And then upload a photo
 
 **5. Create product validation**
@@ -320,7 +321,6 @@ In routes/auth.js file:
 	- Write a productById method that..
 		- takes the parameters of req, res, next and id
 		- then it tries to find the product in the Product model using the findById() method
-		- then calls the populate() method to populate the category description
 		- then calls the exec() method to execute the callback function
 		- in this callback, we'll either get an error or the product as param
 			- if error or no product, return a response with status code of 400 and an error message
@@ -383,7 +383,7 @@ In routes/auth.js file:
 
 **9. Create categoryById middleware and read a categoryById**
 - In routes/category.js file:
-	- Create a route that, whenever there's a 'categoryId' in the route paramenter, call the categoryById middleware method: `router.param('categoryId', categoryById)`
+	- Create a route that, whenever there's a 'categoryId' in the route parameter, call the categoryById middleware method: `router.param('categoryId', categoryById)`
 	- Import categoryById method from controllers/category.js
 - In controllers/product.js file:
 	- Write a categoryById method that..
@@ -479,7 +479,7 @@ In routes/auth.js file:
 	- Create a route that fetch related products based on the product id
 		- `router.get('/products/related/:productId', listRelated)`
 		- Use **get()** method
-	- Import listRelated method from controllers/product
+	- Import listRelated method from controllers/products
 - In controllers/product.js file:
 	- Write a listRelated method that
 		- finds the products based on the req product category
@@ -523,9 +523,9 @@ In routes/auth.js file:
 **4. List products by search**
 - In routes/products.js file:
 	- Create a route that lists products based on search requirements
-		- `router.post('/products/by/search', listBySearch)`
-		- Use **post()** method
-	- Import listBySearch method from controllers/product
+	- `router.post('/products/by/search', listBySearch)`
+	- Use **post()** method
+	- Import listBySearch method from controllers/products
 - In controllers/product.js file:
 	- We will implement product search in react frontend
 	- We will show categories in checkbox and price range in radio buttons
@@ -544,7 +544,7 @@ In routes/auth.js file:
 	- Create a route that displays product photo based on product id
 	- `router.get('/poduct/photo/:productId', photo)`
 	- Use **get()** method
-	- Import photo method from controllers/product
+	- Import photo method from controllers/products
 - In controllers/product.js file:
 	- Write a photo method that sends product photo
 		- This method acts as middleware
@@ -610,75 +610,68 @@ In routes/auth.js file:
 
 **7. Install CORS**
 - CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS for various options
-- This way our application will be able to handle requests coming from different routes/ports
-- Install: npm install cors
+- This way, our application will be able to handle requests coming from different routes/ports
+- Install: `npm i cors`
 - Import cors in app.js file: `const cors = require('cors')`
 - Use the middleware: `app.use(cors())`
 
-**8. List products by search query params**
-- In routes/products.js file:
-	- Create a route that lists products based on search query params
-	  - `router.get('/products/search', listSearch);`
-	  - Use **get()** method
-	- Import listSearch method from controllers/product
-    - `const { listSearch } = require('../controllers/product');`
-- In controllers/product.js file:
-	- Write a listSearch method that lists the products based on search query params
-		- First, create query object to hold search value and category value. Start out as an empty object
-			- `const query = {};`
-		- Then check to see if search query value is provided 
-			- If true, assign search value to query.name using regex
-		- Next, check to see a category has been selected AND that not all of the categories are selected
-			- If true, assign category value to query.category
-		- Then find the product based on query object with 2 properties: search and category
-			- In Product model, use find() method to find products based on the query object. Pass query as 1st arg
-			- Pass a 2nd arg, a callback function that has either the error or the products
-			- If error, return a status code and a json response of the error message
-			- If success, send json response with the products
-			- We also want to leave out the photo when search
-	```javascript
-	exports.listSearch = (req, res) => {
-		// Create query object to hold search value and category value
-		const query = {};
-		// Assign search value to query.name
-		if (req.query.search) {
-			query.name = { $regex: req.query.search, $options: 'i' };
-			// Assign category value to query.category
-			if (req.query.category && req.query.category != 'All') {
-				query.category = req.query.category;
-			}
-			// Find the product based on query object with 2 properties
-			// search and category
-			Product.find(query, (err, products) => {
-				if (err) {
-					return res.status(400).json({
-						error: errorHandler(err)
-					});
-				}
-				res.json(products);
-			}).select('-photo');
-		}
-	};
-	```
+
+### REACT: REACT APP WITH PAGES AND LAYOUTS
+**1. Create react app**
+- At the root of project directory, run: `npx create-react-app react-frontend --use-npm`
+- This will create a react application. Add the switch flag to ensure that it's using the npm package manager
+- Go to the project directory: `cd react-frontend`
+- Start the project: `npm start`
+
 
 
 
 # LIBRARIES USED
-- express
-- dotenv
-- nodemon
+- express, dotenv, nodemon
+	- Install: `npm i express dotenv nodemon`
+	- In package.json file, create a start script to use nodemon
+		```
+		"scripts": {
+			"start": "nodemon app.js"
+		}
+		```
+	- Import express in app.js file: `const express = require('express');`
 - mongoose
-- crypto
-- uuid
-- body-parser
-- cookie-parser
-- morgan
-- express-validator
-- express-jwt
-- jsonwebtoken
-- formidable
-- lodash
+	- Install: `npm install mongoose`
+	- Import mongoose in app.js, models/ser.js files: `const mongoose = require('mongoose')`
+- body-parser, cookie-parser, morgan
+	- Install: `npm i body-parser cookie-parser morgan`
+	- Import in app.js file:
+		```js
+		const morgan = require('morgan');
+		const bodyParser = require('body-parser');
+		const cookieParser = require('cookie-parser');
+		```
+- crypto and uuid
+	- Install: `npm i crypto uuid`
+	- Import in models/user.js file: `const crypto = require('crypto')`
+	- Import in models/user.js file: `const { v4: uuidv4 } = require('uuid')`
+- express-validator middleware
+	- Install: `npm i express-validator@5.3.1`
+	- Import in app.js file: `const expressValidator = require('express-validator');`
+- express-jwt and jsonwebtoken
+	- Install: `npm i express-jwt jsonwebtoken`
+	- Import in controllers/auth.js file:
+		- Import jwt. It's used to generate signed token: `const jwt = require('jsonwebtoken')`
+		- Import expressJWT. It's used for authorization check: `const expressJWT = require('express-jwt')`
+- formidable and lodash
+	- Install: `npm i formidable lodash`
+	- Import in controllers/product.js file:
+		```js
+		const formidable = require('formidable');
+		const _ = require('lodash');
+		```
 - cors
+	- CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS for various options. This way, our application will be able to handle requests coming from different routes/ports
+	- Install: `npm i cors`
+	- Import in app.js file: `const cors = require('cors')`
+
+
 
 # VSCODE EXTENSIONS
 - Auto Import

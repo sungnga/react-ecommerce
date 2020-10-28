@@ -1,4 +1,4 @@
-# STEPS TO BUILDING THE FRONTEND PORTION OF THIS ECOMMERCE APP WITH REACT
+# STEPS TO BUILDING THE FRONTEND PORTION OF THIS E-COMMERCE APP WITH REACT
 
 ## REACT: REACT APP WITH PAGES AND LAYOUTS
 **1. Create react app**
@@ -217,7 +217,7 @@
 
 **3. User signup success and error handling**
 - In Signup.js file:
-  - When form submit button is clicked, we send the data to backend to cr               eate a new user using the signup() method
+  - When form submit button is clicked, we send the data to backend to create a new user using the signup() method
   - This is an async operation. The data we get back is either an error or a success
   - If it's an error, set error property state to the data.error we get back and set success state to false
   - If it's a success, clear the form input fields and set success state to true
@@ -329,7 +329,7 @@
     }; 
     ```
 - In Signin.js file:
-  - Import the authenicate method: `import { authenticate } from '../auth'`
+  - Import the authenticate method: `import { authenticate } from '../auth'`
   - Inside the signin() method, if the user is successfully signed-in, call the authenticate() method to save the data in local storage
   - For 2nd arg callback function, set the redirectToReferrer property state to true. This will redirect user after the data is saved in local storage
 - Check to see if user jwt is in local storage
@@ -377,7 +377,7 @@
 - If the user is authenticated(signed in), hide signup and signin. Only show signout
 - In auth/index.js file:
   - We need to access the user from the local storage
-  - Write a isAuthenticated helpher method that returns true if the user is authenticated (jwt is in local storage), else returns false
+  - Write a isAuthenticated helper method that returns true if the user is authenticated (jwt is in local storage), else returns false
   ```javascript
   export const isAuthenticated = () => {
     // Check if window object is undefined, return false
@@ -706,7 +706,7 @@
       }, []);
       ```
       - The useEffect() runs when the component mounts and anytime the values state changes
-      - useEffect() is a replacement to lifecyle method that is used in class component
+      - useEffect() is a replacement to lifecycle method that is used in class component
       - So when handleChange() method runs, we update the state and populate the formData as well
       - Everything in the state will go into the formData. And we send the formData to the backend to create a new product
       - In handleChange method, call set() method on formData to set the name and value
@@ -747,7 +747,7 @@
     - `<AdminRoute path='/create/product' exact component={AddProduct} />`
 
 **4. Create product with categories**
-- When creating a new product, populate the list of categeories for users to pick
+- When creating a new product, populate the list of categories for users to pick
 - Write a method that gets the categories from backend
 - In src/admin/apiAdmin.js file:
   - Write a getCategories method that gets the categories from backend
@@ -1365,7 +1365,7 @@
 - In src/core folder, create a new component/file called Search.js
 - In Search.js file:
   - Import React, useState, useEffect: `import React, { useState, useEffect } from 'react'`
-  - Create a functional Search component. Render an h2 "Seach bar" text for now
+  - Create a functional Search component. Render an h2 "Search bar" text for now
     ```javascript
     const Search = () => {
       return (
@@ -1418,7 +1418,7 @@
       ```
   - Next, destructure all the data object properties so we can use them
     - `const { categories, category, search, results, searched } = data;`
-  - Lets test to see if we have categories in the state. Render categeories in json stringify form
+  - Lets test to see if we have categories in the state. Render categories in json stringify form
     - `<h2>Search bar {JSON.stringify(categories)}</h2>`
 
 **2. Search form**
@@ -1432,7 +1432,7 @@
     - handleChange method is called when a category is selected from the drop-down menu: `onChange={handleChange('category')}`
     - handleChange method is called when the value in search input field is changing: `onChange={handleChange('search')}`
     - searchSubmit method is called when the search button is clicked: `<form onSubmit={searchSubmit}>`
-    - finally, render the searchbar by calling the searchForm() method inside a div element in the Search component
+    - finally, render the search bar by calling the searchForm() method inside a div element in the Search component
       - `<div className='container mb-3'>{searchForm()}</div>`
     ```javascript
     const searchForm = () => (
@@ -1698,7 +1698,7 @@
 - In Product.js file:
   - In the Card component, pass in another props called showViewProductButton and set it to false
 - In Card.js file:
-  - In the Card component, pass in showViewProudctButton as 2nd arg and set the default value to true: `const Card = ({ product, showViewProudctButton = true }) => {...}`
+  - In the Card component, pass in showViewProductButton as 2nd arg and set the default value to true: `const Card = ({ product, showViewProductButton = true }) => {...}`
   - Let's extract the "View Product" button and the link into a separate function so we can show or hide this button when we want
   - Write a showViewButton method that renders the "View Product" button and link
     - it accepts showViewProductButton as argument
@@ -1967,7 +1967,7 @@
   - Import Link component from react-router-dom: `import { Link } from 'react-router-dom'`
   - Import Layout component : `import Layout from './Layout'`
   - Import getCart method: `import { getCart } from './cartHelpers'`
-  - Immport Card component: `import Card from './Card'`
+  - Import Card component: `import Card from './Card'`
   - Write a Cart functional component that renders cart items from the localStorage
     - Create a state for items and initialize it to an empty array
       - `const [items, setItems] = useState([])`
@@ -2174,7 +2174,7 @@ In cartHelpers.js file:
   - Write a showRemoveButton method that renders the 'Remove Product' button if showRemoveProductButton is true
     - This method takes showRemoveProductButton as argument
     - Check to see if showRemoveProductButton is true. If it is, render a 'Remove Product' button
-    - On onClick event, inside a callback function, exectute the removeItem() method and pass in the product._id
+    - On onClick event, inside a callback function, execute the removeItem() method and pass in the product._id
     - This will remove the item in localStorage when the remove button is clicked
     ```javascript
     const showRemoveButton = (showRemoveProductButton) => {
@@ -2192,10 +2192,10 @@ In cartHelpers.js file:
     ```
   - Lastly, in the render section of Card component, call the showRemoveButton() method and pass it the showRemoveProductButton as an argument. This will show the 'Remove Product' button if showRemoveProductButton is true
     - `{showRemoveButton(showRemoveProductButton)}`
-- The problem we have right now is after the product is removed, the content on Cart page doesn't update with the product being removed, even though it's removed in localStorage. Another problem occuring is an infinite loop MAX dept reached causing the browser to freeze
-- In this scenario, the product is being renedered in the Card component and Card component is instantiated in the Cart component. Thus, Cart is the parent component of Card component
+- The problem we have right now is after the product is removed, the content on Cart page doesn't update with the product being removed, even though it's removed in localStorage. Another problem occurring is an infinite loop MAX dept reached causing the browser to freeze
+- In this scenario, the product is being rendered in the Card component and Card component is instantiated in the Cart component. Thus, Cart is the parent component of Card component
   - When the product is removed, Card component must inform the parent component/Cart to update its state
-  - When there's a change in items state in Cart component, we can call useEffect() to run which will cause the Cart component to rerender and update the content on Cart page
+  - When there's a change in items state in Cart component, we can call useEffect() to run which will cause the Cart component to re-render and update the content on Cart page
   - This will remove the product from Cart page when the 'Remove' is clicked
 - Steps to solving this issue:
   - In Cart.js file:
@@ -2213,7 +2213,7 @@ In cartHelpers.js file:
       - `setRun(!run)`
     - In showRemoveButton method, in the onClick event, right after calling the removeItem() method, call setRun() and pass in !run
       - `setRun(!run)`
-    - Use setRun() to change run state so that we can run useEffect() in parent Cart component. This will rerender that Cart page
+    - Use setRun() to change run state so that we can run useEffect() in parent Cart component. This will re-render that Cart page
     - So now in Card whenever we increment/decrement or remove product, setRun() is called causing run state in parent Cart component to change. When run state changes in Cart component, the useEffect() runs to update the content in Cart page 
 
 **7. Checkout component and implement total price in Cart**
@@ -2518,7 +2518,7 @@ In cartHelpers.js file:
     - `router.post('/braintree/payment/:userId', requireSignin, isAuth, processPayment)`
 - In controllers/braintree.js file:
   - Write a processPayment method that process the payment
-    - We need the payment metod and total amount from the client side
+    - We need the payment method and total amount from the client side
     - Get the nonce from client side: `let nonceFromTheClient = req.body.paymentMethodNonce;`
     - Get the amount from client side: `let amountFromTheClient = req.body.amountFromTheClient;`
     - After we have the information, we can now make the transaction by connecting to the braintree using gateway and call .transaction.sale() method on gateway
@@ -2530,7 +2530,7 @@ In cartHelpers.js file:
       - if success, send the result in json format
     ```javascript
     exports.processPayment = (req, res) => {
-      // We need the payment metod and total amount that comes from the client side
+      // We need the payment method and total amount that comes from the client side
       let nonceFromTheClient = req.body.paymentMethodNonce;
       let amountFromTheClient = req.body.amountFromTheClient;
       // Charge
@@ -2669,7 +2669,7 @@ In cartHelpers.js file:
     ```
   - Go to Braintree Sandbox webpage, make sure PayPay payment method is enabled. Find this under Processing Options in settings
   - Next, while the payment is processing, we want to show some kind of loading to the user
-    - Create a loading state, and initalize its value to false by default
+    - Create a loading state, and initialize its value to false by default
       - `const [data, setData] = useState({ loading: false })`
     - In the buy() method, 
       - when the 'Pay' button is clicked, set the loading state to true
@@ -2845,7 +2845,7 @@ In cartHelpers.js file:
     ```
 
 **3. Save orders in the database - backend**
-- In order to save the orders in the datebase, we need to create two schemas, two models. One is an order schema and the other is a cart item schema to create a product
+- In order to save the orders in the database, we need to create two schemas, two models. One is an order schema and the other is a cart item schema to create a product
 - In nodejs-backend/models folder, create a model/file called order.js
 - In order.js file:
   - Import mongoose: `const mongoose = require("mongoose");`
@@ -3414,7 +3414,7 @@ In cartHelpers.js file:
   - Write an orderById middleware method that finds an order by id in the Order model and returns order's product name and price to the request object 
     - This method receives the id from the route parameter as an argument
     - Use .findById() method on Order model and pass in the id
-    - If it finds the order, pouplate the product name and price. Note that the order may contain multiple products in the products array. Use `products.product` to access each product
+    - If it finds the order, populate the product name and price. Note that the order may contain multiple products in the products array. Use `products.product` to access each product
     - Then use the .exec() method to handle the callback
     - In the callback, we'll get back either an error or the order
     - If we get back the order, make the order available in the request object
@@ -3660,10 +3660,10 @@ In cartHelpers.js file:
     - We can use this values state in a form, so the user can update their profile info
 
 **3. User profile update - frontend**
-- Create a form with prepopulated information about the user so the user can update their profile. To populate the user info, we need to get the user info from the backend using the read() method with the given userId. Once the user updates their profile, we can use the update() method to make an api request to update the user info in the backend. Also use the updateUser() method to update the user info in the localStorage so the user can see the updated changes. After they have successfully updated the profile, we can redirect them to the cart page
+- Create a form with pre-populated information about the user so the user can update their profile. To populate the user info, we need to get the user info from the backend using the read() method with the given userId. Once the user updates their profile, we can use the update() method to make an api request to update the user info in the backend. Also use the updateUser() method to update the user info in the localStorage so the user can see the updated changes. After they have successfully updated the profile, we can redirect them to the cart page
 - In Profile.js file:
   - Import Redirect component from react-router-dom: `import { Link, Redirect } from 'react-router-dom';`
-  - Write a profileUpdate method that renders a form with prepopulated user info coming from the values states
+  - Write a profileUpdate method that renders a form with pre-populated user info coming from the values states
     - This method takes name, email, and password as arguments
     - The form has input fields for name, email, and password, and a submit button
     - The handleChange method will be executed when the input field value changes
@@ -4042,7 +4042,7 @@ In cartHelpers.js file:
       - This method takes productId, user._id, and token as arguments. The user._id comes from the isAuthenticated() user object
       - This is an async operation. We'll get back either an error or the data. Use the .then() method to handle both in a callback
       - If error, console log the data.error
-      - If success, execute the loadProducts(). This will cause the component to rerender and this time the deleted product will not show up
+      - If success, execute the loadProducts(). This will cause the component to re-render and this time the deleted product will not show up
     ```javascript
     const destroy = (productId) => {
       deleteProduct(productId, user._id, token).then((data) => {
@@ -4094,7 +4094,7 @@ In cartHelpers.js file:
     ```
 
 **4. Get all products for admin CRUD - frontend**
-- At the moment, we are only getting 6 products at a time fron backend. This is set by default with limit param. We want to display all the products. Fix this issue and we also want to display the total products on the page
+- At the moment, we are only getting 6 products at a time from backend. This is set by default with limit param. We want to display all the products. Fix this issue and we also want to display the total products on the page
 - In ManageProducts.js file:
   - In the render section, display the total products in an h2 element. Do this just above the ul element
     - `<h2 className='text-center'>Total {products.length} products</h2>`
@@ -4143,7 +4143,7 @@ In cartHelpers.js file:
     };
     ```
   - We need to get that single product from backend based on the product id we get in the route parameter
-  - First thing, we need to pass in props to the UpdateProduct component so that we have access to the route param using props.match.params. And then we can get the prodoct id in the route param
+  - First thing, we need to pass in props to the UpdateProduct component so that we have access to the route param using props.match.params. And then we can get the product id in the route param
   - Write an init method that executes the getProduct() method to get the product from backend based on the given productId. This init() method will execute when the UpdateProduct component mounts
     - This init method accepts productId as an argument. This productId comes from the route param
     - Call the getProduct() method and pass in the productId as argument
